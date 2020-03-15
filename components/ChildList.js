@@ -3,6 +3,7 @@ import {View, Text, TouchableOpacity, TextInput, StyleSheet, ToolbarAndroid, But
 import {Card,CardImage,CardContent} from 'react-native-cards'
 import Modal from 'react-native-modal';
 
+
 export default class ChildList extends Component {
     constructor(props) {
         super(props);
@@ -10,7 +11,8 @@ export default class ChildList extends Component {
             dataSource: {},
             isVisible: false,
             count: 0,
-            page: null
+            page: null,
+            selectedChild: null
         };
         this.onPress =this.onPress.bind(this);
        this.navigateToOtherScreen =this.navigateToOtherScreen.bind(this);
@@ -27,15 +29,18 @@ export default class ChildList extends Component {
             dataSource: items,
         });
     }
-    onPress() {
+    onPress(item) {
+        console.log(item);
         this.setState({
-            isVisible: true
+            isVisible: true,
+            selectedChild: item
         });
         console.log(this.state.isVisible);
+        console.log(this.state.selectedChild);
     }
     navigateToOtherScreen(screen){
-       // console.log(this.state.navItems);
-       this.props.navigation.navigate(screen);
+        // console.log(this.state.navItems);
+        this.props.navigation.navigate(screen, { child: this.state.selectedChild });
     }
     closeModal(){
         this.setState({
@@ -51,12 +56,14 @@ export default class ChildList extends Component {
 
     render() {
         const items=[
-            {key: 'Status', page: 'Status'},
+            { key: 'Status', page: 'ChildStatus'},
             {key: 'Health', page: 'Health'},
             {key: 'Education', page: 'Education'},
             {key: 'General Info' ,page: 'GeneralInfo'},
             {key: 'View Profile', page: 'Profile'},
-            {key: 'Committee', page: 'Committee'}
+            {key: 'Committee', page: 'Committee'},
+            { key: 'View Profile', page: 'Profile' },
+            { key: 'Follow Up', page: 'FollowUpBy' },
         ];
         return (
             <View style={styles.MainContainer}>
@@ -64,7 +71,7 @@ export default class ChildList extends Component {
                     data={this.state.dataSource}
                     renderItem={({ item }) => (
                         <View style={{ flex: 1, flexDirection: 'column', margin: 1 }}>
-                            <TouchableOpacity style={styles.container} onPress={this.onPress}>
+                            <TouchableOpacity style={styles.container} onPress={(event) => { this.onPress(item) }}>
                                 {/*react-native-elements Card*/}
                                 <Card>
                                     <CardImage resizeMode="cover" resizeMethod="resize" source={{ uri: item.src }} />
@@ -100,7 +107,7 @@ const styles = StyleSheet.create({
     MainContainer: {
         justifyContent: 'space-between',
         flex: 1,
-        paddingTop: 30,
+        paddingTop: 10,
 
     },
     imageThumbnail: {
@@ -122,7 +129,8 @@ const styles = StyleSheet.create({
         backgroundColor : '#696969',
         width: Dimensions.get('window').width / 2,
         maxHeight:Dimensions.get('window').height / 2,
-        margin: 90
+        margin: 90,
+       
     },
     item: {
         padding: 10,

@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
 import {  View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-//import HomeScreen from './HomeScreen';
 import CheckBox from 'react-native-check-box';
 import DatePicker from 'react-native-datepicker';
-//import SelectDate from  '../components/SelectDate';
-//import globalStyles from '../styles/sampleStyles';
 //import DateTimePicker from '@react-native-community/datetimepicker';
-//import moment from 'moment';
 //import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 export default class CommitteeScreen extends Component{
@@ -48,7 +44,6 @@ export default class CommitteeScreen extends Component{
           placeholderTextColor = "#000000"
           onChangeText = {this.handleText}/>
          
-         {/* <View style={styles.checkBoxStyle}>        */}
            <CheckBox    style={styles.checkBoxStyle}
                onClick={()=>{
                   this.setState({
@@ -154,7 +149,6 @@ export default class CommitteeScreen extends Component{
                 isChecked={this.state.isMember10}       
                 rightText='Staff Member 10'  
              /> 
-         {/* </View> */}
               
 
             <DatePicker
@@ -232,86 +226,3 @@ checkBoxText:{
    paddingRight:240
 }
 })
-
-
-
-          
-             
-
-                      {/* <View>
-               <Button title="Select Date" onClick={this.showDatePicker} />
-               <DateTimePickerModal
-               isVisible={this.state.isDatePickerVisible}
-               mode="date"
-               onConfirm={this.handleConfirm}
-               onCancel={this.hideDatePicker}
-               />
-            </View> */}
-
-
-
-   
-           {/* <View>
-            
-            <DateTimePicker
-               style={{ width: 100 }}
-               mode="date" //The enum of date, datetime and time
-               value={new Date()}
-               mode={'date'}
-               //onChange={(e, date) => this._pickStartDate(e, date, props.handleChange('StartingDate'))}
-               onPress={(date) => {this.setState({date: date})}}
-            /> 
-            </View>
-  */}
-
-//   showDatePicker = () => {
-//    this.setState({setDatePickerVisibility:true});
-//  };
-
-//  hideDatePicker = () => {
-//    this.setState({setDatePickerVisibility:false});
-//  };
-
-//  _pickStartDate = (event, date, handleChange) => {
-//    console.log(date);
-//    let a = moment(date).format('DD/MM/YYYY');
-//    console.log(a);
-//    console.log(typeof (a));
-//    this.setState({
-//        startingdate: a, showSD: false
-//    });
-//    handleChange(a);
-// };
-
-// showSDDatepicker = () => {
-// this.setState({ showSD: true });
-// };
- 
-//  handleConfirm = date => {
-//    console.warn("A date has been picked: ", date);
-//    hideDatePicker();
-//  };
-{/* <Text style={globalStyles.text}>Starting Date:</Text>
-<View style={globalStyles.dobView}>
-   <TextInput
-       style={globalStyles.inputText, globalStyles.dobValue}
-       value={this.state.startingdate}
-       editable={true}
-       onValueChange={props.handleChange('StartingDate')}
-    />
-    <TouchableHighlight onPress={this.showSDDatepicker}>
-      <View>
-          <Feather style={globalStyles.dobBtn} name="calendar" />
-      </View>
-    </TouchableHighlight>
-  <Text style={globalStyles.errormsg}>{props.touched.StartingDate && props.errors.StartingDate}</Text>
-    {this.state.showSD &&
-       <DateTimePicker
-          style={{ width: 100 }}
-          mode="date" //The enum of date, datetime and time
-          value={new Date()}
-          mode={'date'}
-          onChange={(e, date) => this._pickStartDate(e, date, props.handleChange('StartingDate'))}
-       />
-    }
-  </View> */}

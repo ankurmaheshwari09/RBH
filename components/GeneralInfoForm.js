@@ -7,7 +7,16 @@ import * as yup from 'yup';
 
 const GeneralInfoFormSchema = yup.object({
     IdentificationPlace1: yup.string().required(),
-    MarkType1: yup.string().required()
+    MarkType1: yup.string().required(),
+    IdentificationPlace2: yup.string(),
+    MarkType2: yup.string(),
+    SpecialNeed: yup.string(),
+    OccupationOnStreet: yup.string(),
+    DurationOnStreet: yup.string(),
+    PSOName: yup.string(),
+    CWCRefNo: yup.string(),
+    CWCStayReason: yup.string()
+
 })
 
 export default class GeneralInfoForm extends React.Component{
@@ -23,11 +32,11 @@ export default class GeneralInfoForm extends React.Component{
                         IdentificationPlace2 : '', 
                         MarkType2: '', 
                         SpecialNeed: '',
-                        // OccupationOnStreet: '',
+                        OccupationOnStreet: '',
                         DurationOnStreet: '',
                         PSOName: '',
                         CWCRefNo: '',
-                        // CWCStayReason: ''
+                        CWCStayReason: ''
                     }
                 }
                 validationSchema = {GeneralInfoFormSchema}
@@ -43,7 +52,9 @@ export default class GeneralInfoForm extends React.Component{
                         <KeyboardAvoidingView behavior="padding" 
                             enabled style={globalStyles.keyboardavoid} 
                             keyboardVerticalOffset={200}>
-                        <ScrollView>
+                        <ScrollView
+                            showsVerticalScrollIndicator = {false}
+                        >
                             
                             <View>
                                 <Text style = {globalStyles.text}>IdentificationPlace 1</Text>
@@ -69,6 +80,7 @@ export default class GeneralInfoForm extends React.Component{
                                     selectedValue={props.values.MarkType1}
                                     style={globalStyles.dropDown}
                                     onValueChange={props.handleChange('MarkType1')}
+                                    enabled = {props.values.IdentificationPlace1 == '' ? false : true}
                                     >
                                         <Picker.Item label="Select MarkType" value="" />
                                         <Picker.Item label="Mole" value="Mole" />
@@ -97,6 +109,7 @@ export default class GeneralInfoForm extends React.Component{
                                     selectedValue={props.values.MarkType2}
                                     style={globalStyles.dropDown}
                                     onValueChange={props.handleChange('MarkType2')}
+                                    enabled = {props.values.IdentificationPlace2 == '' ? false : true}
                                     >
                                         <Picker.Item label="Select MarkType" value="" />
                                         <Picker.Item label="Mole" value="Mole" />
@@ -123,15 +136,28 @@ export default class GeneralInfoForm extends React.Component{
                                         <Picker.Item label = "None" value = "None"/>
                                         <Picker.Item label = "Chornic Illeness" value = "Chornic Illeness"/>
                                 </Picker>
+                                <Text style = {globalStyles.text}>Occupation On Street</Text>
+                                <Picker
+                                    selectedValue={props.values.OccupationOnStreet}
+                                    style={globalStyles.dropDown}
+                                    onValueChange={props.handleChange('OccupationOnStreet')}
+                                >
+                                        <Picker.Item label="Select Occupation" value="" />
+                                        <Picker.Item label="Rag Picking" value="Rag Picking" />
+                                        <Picker.Item label="Shoe Polish" value="Shoe Polish" />
+                                        <Picker.Item label = "Begging" value = "Begging"/>
+                                        <Picker.Item label = "Seller" value = "Seller"/>
+                                        <Picker.Item label = "Child Labour" value = "Child Labour"/>
+                                </Picker>
                                 <Text style = {globalStyles.text}>Duration On Street</Text>
                                 <TextInput
-                                    style = {globalStyles.input}
+                                    style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('DurationOnStreet')} //This will update the IdentificationMArk value in 'values'
                                     value = {props.values.DurationOnStreet} //value updated in 'values' is reflected here
                                 />
                                 <Text style = {globalStyles.text}>Previously Stayed Organisation Name</Text>
                                 <TextInput
-                                    style = {globalStyles.input}
+                                    style = {globalStyles.inputText}
                                     //placeholder = 'MarkType'
                                     onChangeText = {props.handleChange('PSOName')}
                                     value = {props.values.PSOName}
@@ -139,11 +165,21 @@ export default class GeneralInfoForm extends React.Component{
                                 />
                                 <Text style = {globalStyles.text}>CWC Reference No</Text>
                                 <TextInput
-                                    style = {globalStyles.input}
+                                    style = {globalStyles.inputText}
                                     //placeholder = 'MarkType'
                                     onChangeText = {props.handleChange('CWCRefNo')}
                                     value = {props.values.CWCRefNo}
                                 />
+                                <Text style = {globalStyles.text}>CWC Stay Reason</Text>
+                                <Picker
+                                    selectedValue={props.values.CWCStayReason}
+                                    style={globalStyles.dropDown}
+                                    onValueChange={props.handleChange('CWCStayReason')}
+                                >
+                                    <Picker.Item label="Select Stay Reason" value="" />
+                                    <Picker.Item label="Long term stay (care and protection including health, education etc.)" value="Long term" />
+                                    <Picker.Item label="Short term stay (Repatriation, adoption and foster care)" value="Short term" />
+                                </Picker>
                                 <Button style = {globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                             </View>
                             </ScrollView>  

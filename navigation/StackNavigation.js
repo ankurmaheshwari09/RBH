@@ -12,6 +12,10 @@ import GeneralInfoForm from '../components/GeneralInfoForm';
 import InfoGeneral from '../screens/InfoGeneral';
 import GeneralInfoStack from './GeneralInfoNavigation';
 import CommitteeScreen from '../screens/CommitteeScreen';
+import StatusNavigator from './StatusNavigator';
+import FollowUpScreen from '../screens/FollowUpScreen';
+import FollowUpNavigation from './FollowUpNavigation';
+
 
 
 // const Stack = createStackNavigator();
@@ -37,8 +41,8 @@ const screens = {
     Education: {
         screen: EducationScreen
     },
-    Status:{
-        screen: StatusScreen
+    Status: {
+        screen: StatusNavigator
     },
     Health:{
         screen: HealthScreen
@@ -52,6 +56,10 @@ const screens = {
     Committee:{
         screen: CommitteeScreen
     },
+    FollowUp: {
+        screen: FollowUpNavigation
+    }
+
 };
 
 

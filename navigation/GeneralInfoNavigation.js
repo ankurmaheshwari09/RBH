@@ -1,12 +1,12 @@
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer} from 'react-navigation'
 import {React} from 'react';
-import GeneralInfoForm from '../components/GeneralInfoForm';
+import GeneralInfoSegControl from '../components/GeneralInfoSegControl'
 import InfoGeneral from '../screens/InfoGeneral';
 
 const screens = {
-    GeneralInfoForm: {
-        screen: GeneralInfoForm
+    Modify: {
+        screen: GeneralInfoSegControl
     },
     InfoGeneral: {
         screen: InfoGeneral
