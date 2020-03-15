@@ -6,7 +6,7 @@ import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
 
 
-HealthDuringAddSchema = yup.object({
+const HealthDuringAddSchema = yup.object({
     bloodGroup: yup.string(),
     generalHealth: yup.string(),
     height: yup.string()

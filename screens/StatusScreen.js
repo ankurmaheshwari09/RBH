@@ -66,7 +66,7 @@ export default class StatusScreen extends React.Component {
             <View style={globalStyles.container}>
                 <View >
                      
-                    <Text> Child Id: {this.state.child.id}</Text>
+                    <Text> Child Name: {this.state.child.name.first}</Text>
                 </View>  
                 <Formik
                     initialValues={{
