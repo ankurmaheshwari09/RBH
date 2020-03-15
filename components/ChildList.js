@@ -60,6 +60,8 @@ export default class ChildList extends Component {
             {key: 'Health', page: 'Health'},
             {key: 'Education', page: 'Education'},
             {key: 'General Info' ,page: 'GeneralInfo'},
+            {key: 'View Profile', page: 'Profile'},
+            {key: 'Committee', page: 'Committee'},
             { key: 'View Profile', page: 'Profile' },
             { key: 'Follow Up', page: 'FollowUpBy' },
         ];
