@@ -64,7 +64,7 @@ export default class FamilyForm extends React.Component {
                             <Formik
                                 initialValues={
                                     {
-                                        Name: this.props.values.Name || '',
+                                        Name: '',
                                         Relation: '',
                                         Occupation: '',
                                         Age: '',
