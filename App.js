@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import AppNavigator from './navigation/AppNavigator';
 import Login from './screens/Login';
-// import {generalInfoConstants} from './statics/GeneralInfoGlobals';
 
 
 
@@ -11,10 +10,6 @@ export default class App extends Component {
         username: "username",
         password: "password",
         message: "",
-    }
-
-    componentDidMount(){
-        //generalInfoConstants()
     }
 
     render ()  {
