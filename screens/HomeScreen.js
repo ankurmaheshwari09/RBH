@@ -1,11 +1,29 @@
 import  React, { Component } from 'react';
-import { View, StyleSheet, Button, Text} from 'react-native';
+import { Alert, View, StyleSheet, Button, Text} from 'react-native';
 import { CustomHeader } from '../components/CustomHeader';
 import {globalStyles} from '../styles/global';
 
+
+
 export default class HomeScreen extends Component {
 
-
+displayHealthRemainder = () => {
+    var month = new Date().getMonth() + 1; //Current Month
+    if(month == 1 || month == 3 || month == 7 || month == 10){
+        Alert.alert(
+          'Health Assessment Remainder',
+          ' Do the Health-Checkup',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+            },
+            {text: 'OK', onPress: () => console.log('OK Pressed')},
+          ],
+          {cancelable: false},
+        );
+      }
+}
     render () {
         return (
             <View style={globalStyles.homeView}>
@@ -13,8 +31,10 @@ export default class HomeScreen extends Component {
                 <View>
                     <Text style={globalStyles.homeScreenText}>Rainbow Homes Child Reporting Tool</Text>
                 </View>
-                <Button style={globalStyles.vuChildBtn} onPress={() => this.props.navigation.navigate('ViewChild')} title="Veiw/Update Child"></Button>
+                <Button style={globalStyles.vuChildBtn} onPress={() => this.props.navigation.navigate('ViewChild')} title="View/Update Child"></Button>
+                <Button onPress ={this.displayHealthRemainder} title="Check Alerts"></Button>
             </View>
+
         );
     }
 }

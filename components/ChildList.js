@@ -125,8 +125,11 @@ export default class ChildList extends Component {
             { key: 'Status', page: 'ChildStatus'},
             {key: 'Health', page: 'Health'},
             {key: 'Education', page: 'Education'},
+            { key: 'Family', page: 'Family' },
+            { key: 'Communication', page: 'Communication' },
             {key: 'General Info' ,page: 'GeneralInfo'},
-            { key: 'View Profile', page: 'Profile' },
+            {key: 'View Profile', page: 'Profile'},
+            {key: 'Committee', page: 'Committee'},
             { key: 'Follow Up', page: 'FollowUpBy' },
         ];
         return (

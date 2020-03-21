@@ -37,6 +37,8 @@ export default class Layout extends Component {
             {key: 'Status'},
             {key: 'Health'},
             {key: 'Education'},
+            { key: 'Family' },
+            { key: 'Communication' },
             {key: 'General Info'},
             {key: 'View'}
         ];

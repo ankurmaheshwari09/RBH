@@ -11,9 +11,14 @@ import ViewProfile from '../screens/ViewProfile';
 import GeneralInfoForm from '../components/GeneralInfoForm';
 import InfoGeneral from '../screens/InfoGeneral';
 import GeneralInfoStack from './GeneralInfoNavigation';
+import CommitteeScreen from '../screens/CommitteeScreen';
 import StatusNavigator from './StatusNavigator';
 import FollowUpScreen from '../screens/FollowUpScreen';
 import FollowUpNavigation from './FollowUpNavigation';
+import FamilyScreen from '../screens/FamilyScreen';
+import CommunicationScreen from '../screens/CommunicationScreen';
+import FamilyInfoNavigation from './FamilyInfoNavigation';
+import CommunicationInfoNavigation from './CommunicationInfoNavigation';
 
 
 
@@ -52,9 +57,19 @@ const screens = {
     Profile:{
         screen: ViewProfile
     },
+        Family: {
+        screen: FamilyInfoNavigation
+    },
+    Communication: {
+        screen: CommunicationInfoNavigation
+    },
+    Committee:{
+        screen: CommitteeScreen
+    },
     FollowUp: {
         screen: FollowUpNavigation
     }
+
 };
 
 
