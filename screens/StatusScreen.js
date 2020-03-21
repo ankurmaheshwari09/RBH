@@ -32,16 +32,6 @@ export default class StatusScreen extends React.Component {
             child: this.props.navigation.getParam('child')
         }
         this.pickDob = this.pickDob.bind(this);
-         radio_props = [
-             {
-                 label: 'Child Exits',
-                 value: 'exit'
-             },
-             {
-                 label: 'Child Moves To Future Program',
-                 value: 'futureProgram'
-             }
-        ];
         
     }
 
@@ -61,12 +51,21 @@ export default class StatusScreen extends React.Component {
 
 
     render() {
-
+        const radio_props = [
+            {
+                label: 'Child Exits',
+                value: 'exit'
+            },
+            {
+                label: 'Child Moves To Future Program',
+                value: 'futureProgram'
+            }
+        ];
         return (
             <View style={globalStyles.container}>
                 <View >
                      
-                    <Text> Child Name: {this.state.child.name.first}</Text>
+                    <Text> Child Name: {this.state.child.firstName}</Text>
                 </View>  
                 <Formik
                     initialValues={{
