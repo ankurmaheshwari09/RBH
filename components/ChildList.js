@@ -4,6 +4,7 @@ import {Card,CardImage,CardContent} from 'react-native-cards'
 import Modal from 'react-native-modal';
 import { SearchBar } from 'react-native-elements';
 import moment from 'moment';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export default class ChildList extends Component {
     constructor(props) {
@@ -30,26 +31,26 @@ export default class ChildList extends Component {
         // this.show =this.show.bind(this);
     }
     componentDidMount() {
-        this.setState({ search: null });
+        this.setState({ search: null, loading: true });
         var that = this;
-        let items = Array.apply(null, Array(30)).map((v, i) => {
+        /*let items = Array.apply(null, Array(30)).map((v, i) => {
             return { id: i, src: 'https://picsum.photos/id/'+(i+1)+'/200/300' };
         });
         that.setState({
             dataSource: items,
-        });
-        fetch('https://randomuser.me/api/?&results=20', {
+        });*/
+        fetch('https://rest-service.azurewebsites.net/api/v1/children/59', {
             method: 'GET',
         })
             .then(res => res.json())
             .then(res => {
                 this.setState({
-                    data: res.results,
+                    data: res,
                     error: res.error || null,
                     loading: false,
                 });
-
-                this.arrayholder = res.results;
+                console.log(this.state.data, 'aaaaa');
+                this.arrayholder = res;
             })
             .catch(error => {
                 this.setState({ error, loading: false });
@@ -89,10 +90,14 @@ export default class ChildList extends Component {
             });
             return;
         } else {
-           
             this.state.data = this.arrayholder.filter(function (item) {
-                 let date = moment(item.dob.date).format('DD/MM/YYYY');
-                return item.name.first.toLowerCase().includes(text.toLowerCase()) || item.name.last.toLowerCase().includes(text.toLowerCase()) || (item.dob.age == text) || date.includes(text);
+                let dateOfBirth = moment(item.dateOfBirth).format('DD/MM/YYYY');
+                let admissionDate = moment(item.admissionDate).format('DD/MM/YYYY');
+                return (item.firstName.toLowerCase().includes(text.toLowerCase())
+                    || item.lastName.toLowerCase().includes(text.toLowerCase())
+                    || dateOfBirth.includes(text)
+                    || admissionDate.includes(text)
+                    || item.childStatus.childStatus.includes(text));
             });
         }
     }
@@ -109,14 +114,16 @@ export default class ChildList extends Component {
         );
     };
 
-    getStyles(item) {
+    getStyles(status) {
         
-        if (item.dob.age > 20 && item.dob.age <= 40) {
-            return styles.red;
-        } else if (item.dob.age > 40 && item.dob.age < 60) {
+        if (status == 'Observation') {
             return styles.blue;
-        } else if (item.dob.age >= 60 ) {
+        } else if (status == 'Present') {
             return styles.green;
+        } else if (item.dob.age == 'Close' ) {
+            return styles.red;
+        } else if (item.dob.age == 'Absent') {
+            return styles.yellow;
         }
     }
 
@@ -134,19 +141,42 @@ export default class ChildList extends Component {
         ];
         return (
             <View style={styles.MainContainer}>
+
+                <Spinner
+                    //visibility of Overlay Loading Spinner
+                    visible={this.state.loading}
+                    //Text with the Spinner 
+                    textContent={'Loading...'}
+                    //Text style of the Spinner Text
+                  //  textStyle={styles.spinnerTextStyle}
+                />
                
                 <FlatList
                     data={this.state.data}
                     renderItem={({ item }) => (
-                        <View style={{ flex: 1/2, flexDirection: 'column', margin: 1 }}>
+                        <View style={{
+                            flex: 1/2 , flexDirection: 'column', margin: 1, justifyContent: 'space-evenly'}}>
                             <TouchableOpacity style={styles.container} onPress={(event) => { this.onPress(item) }}>
                                 {/*react-native-elements Card*/}
-                                <Card style={this.getStyles(item)}>
-                                    <CardImage resizeMode="cover" resizeMethod="resize" source={{ uri: item.picture.large }} />
+                                <Card style={this.getStyles(item.childStatus.childStatus)}>
+                                    <CardImage resizeMode="cover" resizeMethod="resize" source={{ uri: "https://picsum.photos/id/1/300/300" }} />
                                     <CardContent style={styles.paragraph}>
-                                        <Text>Name: {`${item.name.first} ${item.name.last}`}  </Text>
-                                        <Text>Age: {item.dob.age}</Text>
-                                        <Text>DOB: {moment(item.dob.date).format('DD/MM/YYYY')}</Text>
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <Text style={styles.heading}>Name:</Text >
+                                            <Text style={styles.cardContent}>{`${item.firstName} ${item.lastName}`}  </Text>
+                                        </View>
+                                        <View style={{ flexDirection: 'row'}}>
+                                            <Text style={styles.heading}>Adm Date:</Text >
+                                            <Text style={styles.cardContent}>{moment(item.admissionDate).format('DD/MM/YYYY')}</Text>
+                                        </View>
+                                        <View style={{ flexDirection: 'row'}}>
+                                            <Text style={styles.heading}>DOB:</Text >
+                                            <Text style={styles.cardContent}>{moment(item.dateOfBirth).format('DD/MM/YYYY')}</Text>
+                                        </View>
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <Text style={styles.heading}>Status:</Text >
+                                            <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>
+                                        </View>
                                     </CardContent>
                                 </Card>
                             </TouchableOpacity>
@@ -154,7 +184,7 @@ export default class ChildList extends Component {
                     )}
                     //Setting the number of column
                     numColumns={2}
-                    keyExtractor={item => item.email} 
+                    keyExtractor={item => item.childNo} 
                     ListHeaderComponent={this.renderHeader}
                 />
                 <Modal  style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
@@ -183,15 +213,19 @@ const styles = StyleSheet.create({
         margin: 20
     },
     paragraph:{
-        padding:20
+        padding: 20,
+        textAlign: 'left',
+        /*borderWidth: 1,
+        borderColor: 'red'*/
     },
     container : {
-        // width : 150,
-        height : 200,
-        marginLeft : 10,
+      //  width : 400,
+        height: 250,
+        
+      /*  marginLeft : 10,
         marginTop: 10,
-        marginRight: 10,
-        // borderRadius : 15,
+        marginRight: 10,*/
+      //  borderRadius : 30,
         // backgroundColor : '#FFFFFF',
     },
     modalContainer: {
@@ -213,16 +247,31 @@ const styles = StyleSheet.create({
         padding: 10
 
     },
+    heading: {
+        color: 'black',
+        fontSize: 15,
+        fontFamily: 'sans-serif-medium',
+       // fontWeight: 'bold',
+    },
+    cardContent: {
+        color: 'black',
+        paddingLeft: 3,
+        fontFamily: 'sans-serif',
+    },
     red: {
         backgroundColor: '#ff80b3',
+      //  borderWidth: 5
     },
     blue: {
-        backgroundColor: '#AED6F1'
+        backgroundColor: '#AED6F1',
+      //  borderWidth: 5
     },
     green: {
-        backgroundColor: '#ABEBC6'
+        backgroundColor: '#ABEBC6',
+      //  borderWidth: 5,
     },
     yellow: {
-        backgroundColor: '#ffff80'
+        backgroundColor: '#ffff80',
+      //  borderWidth: 5
     }
 });
