@@ -26,7 +26,7 @@ displayHealthRemainder = () => {
 }
 
     componentDidMount(){
-      generalInfoConstants()
+      generalInfoConstants();
     }
 
     render () {
