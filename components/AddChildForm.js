@@ -10,6 +10,7 @@ import * as yup from 'yup';
 import moment from 'moment';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import {base_url,getDataAsync} from '../constants/Base';
+import { ActivityIndicator } from 'react-native';
 
 const AddChildSchema = yup.object({
     // ChildPhoto: yup.object(),
@@ -25,6 +26,7 @@ const AddChildSchema = yup.object({
     ReasonForAdmission: yup.string().required(),
     PreviousEducationStatus: yup.string().required(),
     AdmittedBy: yup.string().required(),
+    DOA: yup.string().required(),
     ReferredSource: yup.string().required(),
     ReferredBy: yup.string().required(),
     ChildStatus: yup.string().required(),
@@ -93,7 +95,7 @@ const addChildStyles = StyleSheet.create({
         marginLeft: 2,
         flex: 2,
         fontSize: 40,
-    }
+    },
   });
 
 const defaultImg = require('../assets/person.png');
@@ -103,8 +105,12 @@ export default class AddChild extends React.Component{
     
     state = {
         image : null,
-        show: false,
+        showdob: false,
+        showdoa: false,
+        showLoader: false,
+        loaderIndex: 0,
         dob: '',
+        doa: '',
         religions: [],
         communities: [],
         motherTongues: [],
@@ -114,6 +120,7 @@ export default class AddChild extends React.Component{
         homeStaffList: [],
         referralSourcesList: [],
         childStatusList: [],
+        submitAlertMessage: '',
     };
 
     async _pickImage (handleChange) {
@@ -150,15 +157,28 @@ export default class AddChild extends React.Component{
 
     _pickDob = (event,date,handleChange) => {
         console.log(date);
-        let a = moment(date).format('DD/MM/YYYY');
+        let a = moment(date).format('YYYY-MM-DD');
         console.log(a);
         console.log(typeof(a));
-        this.setState({dob:a, show: false});
+        this.setState({dob:a, showdob: false});
         handleChange(a);
     }
 
-    showDatepicker = () => {
-        this.setState({show: true});
+    _pickDoa = (event,date,handleChange) => {
+        console.log(date);
+        let a = moment(date).format('YYYY-MM-DD');
+        console.log(a);
+        console.log(typeof(a));
+        this.setState({doa:a, showdoa: false});
+        handleChange(a);
+    }
+
+    showDatepickerDOB = () => {
+        this.setState({showdob: true});
+    };
+
+    showDatepickerDOA = () => {
+        this.setState({showdoa: true});
     };
 
     handleDobChange = () => {
@@ -167,6 +187,47 @@ export default class AddChild extends React.Component{
 
     componentDidMount() {
         this.addChildConstants();
+    }
+
+    _submitAddChildForm(values) {
+        let request_body = JSON.stringify({
+            "firstName": values.FirstName,
+                "lastName": values.LastName,
+                "gender": values.Gender,
+                "dateOfBirth": values.DOB,
+                "religion": values.Religion,
+                "community": values.Community,
+                "motherTongue": values.MotherTongue,
+                "parentalStatus": values.ParentalStatus,
+                "reasonForAdmission": values.ReasonForAdmission,
+                "educationStatus": values.PreviousEducationStatus,
+                "admittedBy": values.AdmittedBy,
+                "referredBy": values.ReferredBy,
+                "referredSource": values.ReferredSource,
+                "childStatus": values.ChildStatus
+        });
+        let result = {};
+        fetch(base_url+"/child", {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: request_body,
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson);
+            this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo});
+            alert(this.state.submitAlertMessage);
+            this.setState({showLoader: false,loaderIndex:0});
+        })
+        .catch((error) => {
+            this.setState({submitAlertMessage: 'Unable to add child. Plesae contact the Admin.'});
+            alert(this.state.submitAlertMessage);
+            console.log(error);
+            this.setState({showLoader: false,loaderIndex:0});
+        });
     }
 
     render() {
@@ -184,6 +245,7 @@ export default class AddChild extends React.Component{
                         LastName: '',
                         Gender: '',
                         DOB: this.state.dob,
+                        DOA: this.state.doa,
                         Religion: '',
                         Community: '',
                         MotherTongue: '',
@@ -197,21 +259,24 @@ export default class AddChild extends React.Component{
                     }
                 }
                 validationSchema = {AddChildSchema}
-                onSubmit = {(values, actions) => {
-                    console.log("Submit method called");
-                    actions.resetForm();
+                onSubmit = {async (values, actions) => {
                     console.log(values);
-                    alert("Data Has been submitted")
-                    this.props.navigation.navigate('Info', values)
-                    
+                    console.log("Submit method called here ");
+                    this.setState({showLoader: true,loaderIndex:10});
+                    let result = this._submitAddChildForm(values);
+                    let alertMessage = this.state.submitAlertMessage;
+                    console.log(result);
+                    actions.resetForm();
                 }}
                 >
                     {props => (
                         <KeyboardAvoidingView behavior="padding" 
                             enabled style={globalStyles.keyboardavoid} 
                             keyboardVerticalOffset={150}>
+                        <View style={{ position: 'absolute', top:"45%",right: 0, left: 0, zIndex: this.state.loaderIndex }}>
+                            <ActivityIndicator animating={this.state.showLoader} size="large" color="red" />
+                        </View>
                         <ScrollView>
-
                             
                             <View>
                                 {/* Child Photo */}
@@ -259,8 +324,8 @@ export default class AddChild extends React.Component{
                                     style = {addChildStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Gender' value = ''/>
-                                    <Picker.Item label='Male' value = 'Male'/>
-                                    <Picker.Item label='Female' value = 'Female'/>
+                                    <Picker.Item label='Male' value = '1'/>
+                                    <Picker.Item label='Female' value = '2'/>
                                 </Picker>
 
                                 {/* DOB */}
@@ -272,13 +337,13 @@ export default class AddChild extends React.Component{
                                         editable = {false}
                                         onValueChange = {props.handleChange('DOB')}
                                     />
-                                    <TouchableHighlight onPress={this.showDatepicker}>
+                                    <TouchableHighlight onPress={this.showDatepickerDOB}>
                                         <View>
                                             <Feather style={addChildStyles.dobBtn}  name="calendar"/>
                                         </View>
                                     </TouchableHighlight>
                                     {/* <Button style= {addChildStyles.dobBtn} onPress={this.showDatepicker} title="Select DOB" /> */}
-                                    {this.state.show && 
+                                    {this.state.showdob && 
                                         <DateTimePicker
                                             style={{width: 200}}
                                             mode="date" //The enum of date, datetime and time
@@ -412,10 +477,37 @@ export default class AddChild extends React.Component{
                                     <Picker.Item label='Select Admitted By' value = ''/>
                                     {
                                         this.state.homeStaffList.map((item) => {
-                                            return <Picker.Item key = {item.staffNo} label = {item.firstName + ' ' + item.lastName} value = {item.staffId}/>
+                                            return <Picker.Item key = {item.staffNo} label = {item.firstName + ' ' + item.lastName} value = {item.staffNo}/>
                                         })
                                     }
                                 </Picker>
+
+                                {/* DOA */}
+                                <Text style = {addChildStyles.label}>Date Of Admission :</Text>
+                                <View style={addChildStyles.dobView}>
+                                    <TextInput
+                                        style = {addChildStyles.inputText, addChildStyles.dobValue}
+                                        value = {this.state.doa}
+                                        editable = {false}
+                                        onValueChange = {props.handleChange('DOA')}
+                                    />
+                                    <TouchableHighlight onPress={this.showDatepickerDOA}>
+                                        <View>
+                                            <Feather style={addChildStyles.dobBtn}  name="calendar"/>
+                                        </View>
+                                    </TouchableHighlight>
+                                    {/* <Button style= {addChildStyles.dobBtn} onPress={this.showDatepicker} title="Select DOB" /> */}
+                                    {this.state.showdoa && 
+                                        <DateTimePicker
+                                            style={{width: 200}}
+                                            mode="date" //The enum of date, datetime and time
+                                            value={ new Date() }
+                                            mode= { 'date' }
+                                            onChange= {(e,date) => this._pickDoa(e,date,props.handleChange('DOA'))} 
+                                        />
+                                    }
+                                    <Text style = {globalStyles.errormsg}>{props.touched.DOB && props.errors.DOB}</Text>
+                                </View>
 
                                 {/* Referred Source */}
                                 <Text style = {addChildStyles.label}>Referred Source :</Text>
