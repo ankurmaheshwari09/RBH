@@ -58,6 +58,7 @@ export default class PrevEduForm extends React.Component{
                                         onChangeText = {props.handleChange('dropOutReason')}
                                         value = {props.values.dropOutReason}
                                         />
+
                                         <Text style = {globalStyles.text}>Year Of Studied</Text>
                                         <Text style = {globalStyles.errormsg}>{ props.touched.yearOfStudied && props.errors.yearOfStudied }</Text>
                                         <TextInput
@@ -65,18 +66,23 @@ export default class PrevEduForm extends React.Component{
                                         onChangeText = {props.handleChange('yearOfStudied')}
                                         value = {props.values.yearOfStudied}
                                         />
+
                                         <Text style = {globalStyles.text}>Medium</Text>
                                         <Text style = {globalStyles.errormsg}>{ props.touched.medium && props.errors.medium }</Text>
                                         <Picker
-                                        style = {globalStyles.dropDown}
-                                        onValueChange = {props.handleChange('medium')}
                                         selectedValue = {props.values.medium}
+                                        style = {globalStyles.dropDown}
+                                        onValueChange = {value => {
+                                            props.setFieldValue('medium', value)
+                                        }}
                                         >
-                                            <Picker.Item label = 'Select Meduim' value = ''/>
-                                            <Picker.Item label = 'Telugu' value = 'Telugu'/>
-                                            <Picker.Item label = 'Hindi' value = 'Hindi' />
-                                            <Picker.Item label = 'Malyalam' value = 'Malyalam' />
+                                            <Picker.Item label="Select Medium" value="" />
+                                            {global.medium.map((item) => {
+                                                return <Picker.Item key = {item.motherTongueId} label = {item.motherTongue} value = {item.motherTongueId}/>
+                                            })}
+                                    
                                         </Picker>
+
                                         <Text style = {globalStyles.text}>School Name</Text>
                                         <Text style = {globalStyles.errormsg}>{ props.touched.schoolName && props.errors.schoolName }</Text>
                                         <TextInput
@@ -84,18 +90,23 @@ export default class PrevEduForm extends React.Component{
                                         onChangeText = {props.handleChange('schoolName')}
                                         value = {props.values.schoolName}
                                         />
+
                                         <Text style = {globalStyles.text}>School Type</Text>
                                         <Text style = {globalStyles.errormsg}>{ props.touched.schoolType && props.errors.schoolType }</Text>
                                         <Picker
-                                        style = {globalStyles.dropDown}
-                                        onValueChange = {props.handleChange('schoolType')}
                                         selectedValue = {props.values.schoolType}
+                                        style = {globalStyles.dropDown}
+                                        onValueChange = {value => {
+                                            props.setFieldValue('schoolType', value)
+                                        }}
                                         >
-                                            <Picker.Item label = 'Select School Type' value = ''/>
-                                            <Picker.Item label = 'Govt' value = 'Govt'/>
-                                            <Picker.Item label = 'Private' value = 'Private' />
-                                            <Picker.Item label = 'None' value = 'None' />
+                                            <Picker.Item label="Select School Type" value="" />
+                                            {global.schoolType.map((item) => {
+                                                return <Picker.Item key = {item.schoolTypeID} label = {item.schoolType} value = {item.schoolTypeID}/>
+                                            })}
+                                    
                                         </Picker>
+
                                         <Text style = {globalStyles.text}>Class</Text>
                                         <Text style = {globalStyles.errormsg}>{ props.touched.class && props.errors.class }</Text>
                                         <Picker
@@ -108,6 +119,20 @@ export default class PrevEduForm extends React.Component{
                                             <Picker.Item label = 'II' value = 'II' />
                                             <Picker.Item label = 'III' value = 'III' />
                                         </Picker>
+                                        {/* <Picker
+                                        selectedValue = {props.values.class}
+                                        style = {globalStyles.dropDown}
+                                        onValueChange = {value => {
+                                            props.setFieldValue('class', value)
+                                        }}
+                                        >
+                                            <Picker.Item label="Select Class" value="" />
+                                            {global.class.map((item) => {
+                                                return <Picker.Item key = {item.studyingclassId} label = {item.status} value = {item.studyingclassId}/>
+                                            })}
+                                    
+                                        </Picker> */}
+
                                         <Text style = {globalStyles.text}>School Place</Text>
                                         <Text style = {globalStyles.errormsg}>{ props.touched.schoolPlace && props.errors.schoolPlace }</Text>
                                         <TextInput

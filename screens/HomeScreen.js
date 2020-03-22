@@ -2,7 +2,7 @@ import  React, { Component } from 'react';
 import { Alert, View, StyleSheet, Button, Text} from 'react-native';
 import { CustomHeader } from '../components/CustomHeader';
 import {globalStyles} from '../styles/global';
-
+import {generalInfoConstants} from '../constants/GeneralInfoConstants';
 
 
 export default class HomeScreen extends Component {
@@ -24,6 +24,11 @@ displayHealthRemainder = () => {
         );
       }
 }
+
+    componentDidMount(){
+      generalInfoConstants()
+    }
+
     render () {
         return (
             <View style={globalStyles.homeView}>
