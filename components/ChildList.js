@@ -259,19 +259,19 @@ const styles = StyleSheet.create({
         fontFamily: 'sans-serif',
     },
     red: {
-        borderColor: '#ff80b3',
-        borderWidth: 5
+        backgroundColor: '#ff80b3',
+      //  borderWidth: 5
     },
     blue: {
-        borderColor: '#AED6F1',
-        borderWidth: 5
+        backgroundColor: '#AED6F1',
+      //  borderWidth: 5
     },
     green: {
-        borderColor: '#ABEBC6',
-        borderWidth: 5,
+        backgroundColor: '#ABEBC6',
+      //  borderWidth: 5,
     },
     yellow: {
-        borderColor: '#ffff80',
-        borderWidth: 5
+        backgroundColor: '#ffff80',
+      //  borderWidth: 5
     }
 });
