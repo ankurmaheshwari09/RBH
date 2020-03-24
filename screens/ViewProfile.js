@@ -1,23 +1,27 @@
 import React, { Component } from 'react';
-//import Dialog, { DialogContent } from 'react-native-popup-dialog';
 import { Image, Button } from 'react-native';
 import {  Alert, View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-//import childpic from 'child.jpeg'; 
-import HomeScreen from './HomeScreen';
 
 export default class ViewProfile extends Component {
 
-state = { description: '' }
+   constructor(props){
+      super(props)
+      this.state = {
+         description: ''
+      };
+    }
    handleText = (text) => {
       this.setState({ description: text})
    }
    addDetails = (text) => {
-      alert("Details added successfully")
+      alert("Details added successfully \n" + text)
+      this.props.navigation.push('ProfileDisplay', {text})
    }
-
    
    _simpleAlertHandler=()=>{
       //function to make simple alert
+      var date = new Date().getDate();
+      
       alert('Update Profile Description!');
     }
 
@@ -39,20 +43,11 @@ state = { description: '' }
                 onPress = {
                    () => this.addDetails(this.state.description)
                 }>
-                <Text style = {styles.submitButtonText}> Submit </Text>
+                <Text style = {styles.submitButtonText}> Submit </Text>    
              </TouchableOpacity>
-
-             <Button style={{flex:1,alignItems:'right', justifyContent:'right'}}
-              title='Simple Alert' onPress={this._simpleAlertHandler}/> 
+             <Button style={{flex:1,alignItems:'right', justifyContent:'right'}}   
+              title='Update Profile?' onPress={this._simpleAlertHandler}/> 
           </View>
-
-         //  <View style={styles.container}>
-         //    <Button title="Show Dialog" onPress={() => {this.setState({ visible: true });}} />
-         //    <Dialog visible={this.state.visible} onTouchOutside={() => {this.setState({ visible: false });}}>
-         //       <DialogContent> Please Update Child's Description</DialogContent>
-         //    </Dialog>
-         // </View>
-
 )
    }
 }
