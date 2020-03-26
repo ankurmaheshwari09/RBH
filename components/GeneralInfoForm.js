@@ -156,7 +156,7 @@ export default class GeneralInfoForm extends React.Component{
                                     props.setFieldValue('occupationOnStreet', value)
                                 }}
                                 >
-                                    <Picker.Item label="Select Occupation" value="" />
+                                    <Picker.Item label="Select Occupation" value="0" />
                                     {global.occupation.map((item) => {
                                         return <Picker.Item key = {item.occupationNo} label = {item.occupation} value = {item.occupationNo}/>
                                     })}
