@@ -1,4 +1,3 @@
-/* @flow */
 import React, { Component } from 'react'
 import {
   StyleSheet,
@@ -10,19 +9,39 @@ import GeneralInfoForm from './GeneralInfoForm';
 import HealtDuringAdd from './HealthDuringAddForm'
 import PrevEduForm from './PrevEduForm';
 import { globalStyles } from '../styles/global';
+import {base_url, getDataAsync} from '../constants/Base';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export default class GeneralInfoSegControl extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
-      formIndex: 0
+      formIndex: 0,
+      loading: false,
+      child: this.props.navigation.getParam('child'),
+      childHealth: [],
+      prevEducation: []
     }
   }
 
+    componentDidMount(){
+      this.setState({ search: null, loading: true });
+      getDataAsync(base_url + '/child-health/' + this.state.child.childNo).then(data => {this.setState({childHealth: data});this.setState({loading: false})})
+      // getDataAsync(base_url + '/child-education/' + this.state.child.childNo).then(data => {
+      //   this.setState({prevEducation: data})
+      //   this.setState({loading: false})
+      // })
+      console.log('asdfgwerty')
+      console.log(this.state.child)
+    }
     render() {
       const {formIndex} = this.state
       return (
         <View style = {globalStyles.container}>
+          <Spinner
+        visible={this.state.loading}
+        textContent={'Loading...'}
+        />
           <View style = {globalStyles.segView}>
           <ScrollView
             horizontal = {true}
@@ -54,7 +73,7 @@ export default class GeneralInfoSegControl extends Component {
             <View style = {globalStyles.scrollContainer}>
               {formIndex === 0 && <GeneralInfoForm navigation = {this.props.navigation}/>}
               {formIndex === 1 && <PrevEduForm navigation = {this.props.navigation}/>}
-              {formIndex === 2 && <HealtDuringAdd navigation = {this.props.navigation}/>}
+              {formIndex === 2 && <HealtDuringAdd navigation = {this.props.navigation} childHealth = {this.state.childHealth}/>}
               {formIndex === 3 && <Text>Child Addmission Form goes here</Text>}
             </View>
         </View>

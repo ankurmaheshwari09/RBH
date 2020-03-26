@@ -19,3 +19,35 @@ export async function getDataAsync(url){
         return [{"religion": "service unavailable", "religionID": "123"}]
     }
 }
+
+export async function postDataAsync(url = '', data = {}){
+    try{
+        let response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        return await response.json();
+    }
+    catch(err){
+
+    }
+}
+
+export async function putDataAsync(url = '', data = {}){
+    try{
+        let response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        return await response.json();
+    }
+    catch(err){
+
+    }
+}

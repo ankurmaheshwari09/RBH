@@ -21,17 +21,20 @@ const HealthDuringAddSchema = yup.object({
 })
 
 export default class HealthDuringAdd extends React.Component{
+    constructor(props){
+        super(props);
+    }
     render() {
         return (
             <View style = {globalStyles.container}>
                 <Formik
                     initialValues = {
                         {
-                            bloodGroup: '',
-                            generalHealth: '',
-                            height: '',
-                            weight: '',
-                            comments: ''
+                            bloodGroup: '',//
+                            generalHealth: this.props.childHealth.generalHealth,
+                            height: this.props.childHealth.height,
+                            weight: this.props.childHealth.weight,
+                            comments: this.props.childHealth.comments
                         }
                     }
                     validationSchema = {HealthDuringAddSchema}

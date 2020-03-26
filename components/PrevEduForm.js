@@ -30,7 +30,7 @@ export default class PrevEduForm extends React.Component{
                             medium: '',
                             schoolName: '',
                             schoolType: '',
-                            class: '',
+                            class: '',//
                             schoolPlace: ''
                         }
                     }
