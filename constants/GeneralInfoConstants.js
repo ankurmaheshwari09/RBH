@@ -27,5 +27,6 @@ export function generalInfoConstants(){
     getDataAsync(base_url + '/school-type').then(data => {global.schoolType = data})
 
     global.class;
-    getDataAsync(base_url + '/studying-class').then(data => {console.log(data);global.class = data})
+    getDataAsync(base_url + '/studying-class').then(data => { console.log(data); global.class = data })
+
 }

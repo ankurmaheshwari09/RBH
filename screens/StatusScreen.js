@@ -8,6 +8,7 @@ import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
+import UpdateApi from "../constants/UpdateApi";
 
 
 const statusSchema = yup.object({
@@ -48,6 +49,12 @@ export default class StatusScreen extends React.Component {
         this.setState({ show: true });
 
     };
+
+    updateStatus(values) {
+       /* this.props.childStatus.childStatus = values.status;
+        if(values.status == '')*/
+      //  UpdateApi.updateData
+    }
 
 
     render() {
@@ -98,6 +105,7 @@ export default class StatusScreen extends React.Component {
                         }
                         if (!(this.state.leavingReasonError || this.state.reasonDescriptionError || this.state.leftPlaceError || this.state.actionTakenError || this.state.stayError || this.state.followUpByError)) {
                             console.log(values);
+                            this.updateStatus(values);
                             actions.resetForm();
                             this.setState({ date: null, showElements: false, leavingReasonError: false, reasonDescriptionError: false, leftPlaceError: false, actionTakenError: false, stayError: false, followUpByError: false, credentialsError: false });
                             alert("Data submitted Successfully");
@@ -115,12 +123,13 @@ export default class StatusScreen extends React.Component {
                                    
                                     <Text style={globalStyles.text}>Child Status:</Text>
                                     <Picker
+                                       
                                         selectedValue={props.values.childStatus}
                                         style={globalStyles.dropDown}
                                         //                                style={{height: 50, width: 100}}
                                         onValueChange={(itemValue, itemIndex) => {
                                             props.setFieldValue('childStatus', itemValue)
-                                            if (itemValue == 'closed') {
+                                            if (itemValue == 'Closed') {
                                                 this.setState({ showElements: true })
                                             } else {
                                                 this.setState({ showElements: false })
@@ -129,10 +138,10 @@ export default class StatusScreen extends React.Component {
 
                                         value={props.values.childStatus}>
                                         <Picker.Item label="Select Status" value="" />
-                                        <Picker.Item label="Observation" value="observation" />
-                                        <Picker.Item label="Present" value="present" />
-                                        <Picker.Item label="Absent" value="absent" />
-                                        <Picker.Item label="Closed" value="closed" />
+                                        {global.status.map((item) => {
+                                            return <Picker.Item key={item.childStatusId} label={item.childStatus} value={item.childStatus} />
+                                        })}
+
                                     </Picker>
                                         <Text style={globalStyles.errormsg}>{props.touched.childStatus && props.errors.childStatus}</Text>
                                     
@@ -186,14 +195,12 @@ export default class StatusScreen extends React.Component {
                                             <Picker
                                                 selectedValue={props.values.leavingReason}
                                                 style={globalStyles.dropDown}
-
                                                 onValueChange={(leavingReason) => { this.setState({ leavingReasonError: false}); props.setFieldValue('leavingReason', leavingReason) }}
                                                 value={props.values.leavingReason}>
                                                 <Picker.Item label="Select Reason " value="" />
-                                                <Picker.Item label="Future Program" value="Future Program" />
-                                                <Picker.Item label="Parents are able to take care of child" value="Parents are able to take care of child" />
-                                                <Picker.Item label="Family bonds strengthen and became responsible" value="Family bonds strengthen and became responsible" />
-                                                <Picker.Item label="Child is doing higher studies" value="Child is doing higher studies" />
+                                                {global.leavingReason.map((item) => {
+                                                        return <Picker.Item key={item.leavingReasonId} label={item.leavingReason} value={item.leavingReason} />
+                                                })}
 
                                             </Picker>
                                             { this.state.leavingReasonError ? < Text style={globalStyles.errormsg}> Leaving Reason cannot be empty</Text> : null}
@@ -219,10 +226,9 @@ export default class StatusScreen extends React.Component {
                                                 onValueChange={(leftPlace) => { this.setState({ leftPlaceError: false }); props.setFieldValue('leftPlace', leftPlace) }}
                                                 value={props.values.leftPlace}>
                                                 <Picker.Item label="Select Left Place " value="" />
-                                                <Picker.Item label="School" value="School" />
-                                                <Picker.Item label="Park" value="Park" />
-                                                <Picker.Item label="Market" value="Market" />
-                                                <Picker.Item label="RH/SG" value="RH/SG" />
+                                                {global.leftPlaces.map((item) => {
+                                                    return <Picker.Item key={item.leftPlaceId} label={item.leftPlace} value={item.leftPlace} />
+                                                })}
                                             </Picker>
                                             {this.state.leftPlaceError ? < Text style={globalStyles.errormsg}>Left Place cannot be empty</Text> : null }
 
@@ -234,10 +240,9 @@ export default class StatusScreen extends React.Component {
                                                 onValueChange={(actionTaken) => { this.setState({ actionTakenError: false }); props.setFieldValue('actionTaken', actionTaken) }}
                                                 value={props.values.actionTaken}>
                                                 <Picker.Item label="Select Action Taken " value="" />
-                                                <Picker.Item label="Complained To Police" value="Complained To Police" />
-                                                <Picker.Item label="Informed to Peers" value="Informed to Peers" />
-                                                <Picker.Item label="Informed to CWC in Written" value="Informed to CWC in Written" />
-                                                <Picker.Item label="Informed to Parents or Guardians" value="Informed to Parents or Guardians" />
+                                                {global.actionTaken.map((item) => {
+                                                    return <Picker.Item key={item.actionId} label={item.actionTaken} value={item.actionTaken} />
+                                                })}
                                             </Picker>
                                             {this.state.actionTakenError ? < Text style={globalStyles.errormsg}>Action Taken is required</Text> : null}
 
