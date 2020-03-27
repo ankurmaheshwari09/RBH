@@ -30,6 +30,7 @@ displayHealthRemainder = () => {
         generalInfoConstants()
         statusConstants()
     }
+
     render () {
         return (
             <View style={globalStyles.homeView}>
