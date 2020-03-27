@@ -77,7 +77,7 @@ export default class GeneralInfoForm extends React.Component{
                                     props.setFieldValue('identificationPlace1', value)
                                 }}
                                 >
-                                    <Picker.Item key = '0' label="Select Identification" value = "0"/>
+                                    <Picker.Item label="Select Identification" value = "0"/>
                                     {global.identification.map((item) => {
                                         return <Picker.Item key = {item.identificationId} label = {item.identification} value = {item.identificationId}/>
                                     })}
@@ -95,7 +95,7 @@ export default class GeneralInfoForm extends React.Component{
                                 }}
                                 enabled = {props.values.identificationPlace1 == '0' ? false : true}
                                 >
-                                    <Picker.Item key = "0" label="Select MarkType" value="0" />
+                                    <Picker.Item  label="Select MarkType" value="0" />
                                     {global.markTypes.map((item) => {
                                         return <Picker.Item key = {item.markTypeId} label = {item.markType} value = {item.markTypeId}/>
                                     })}
@@ -110,7 +110,7 @@ export default class GeneralInfoForm extends React.Component{
                                     props.setFieldValue('identificationPlace2', value)
                                 }}
                                 >
-                                    <Picker.Item key = "0" label="Select Identification" value="0" />
+                                    <Picker.Item label="Select Identification" value="0" />
                                     {global.identification.map((item) => {
                                         return <Picker.Item key = {item.identificationId} label = {item.identification} value = {item.identificationId}/>
                                     })}
@@ -126,7 +126,7 @@ export default class GeneralInfoForm extends React.Component{
                                 }}
                                 enabled = {props.values.identificationPlace2 == '0' ? false : true}
                                 >
-                                    <Picker.Item key = "0" label="Select MarkType" value="0" />
+                                    <Picker.Item label="Select MarkType" value="0" />
                                     {global.markTypes.map((item) => {
                                         return <Picker.Item key = {item.markTypeId} label = {item.markType} value = {item.markTypeId}/>
                                     })}
@@ -141,7 +141,7 @@ export default class GeneralInfoForm extends React.Component{
                                     props.setFieldValue('specialNeed', value)
                                 }}
                                 >
-                                    <Picker.Item key = "0" label="Select Differently Abled Group" value="0" />
+                                    <Picker.Item label="Select Differently Abled Group" value="0" />
                                     {global.specialNeed.map((item) => {
                                         return <Picker.Item key = {item.differentlyAbledGroupId} label = {item.differentlyAbledGroup} value = {item.differentlyAbledGroupId}/>
                                     })}
