@@ -8,6 +8,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
+import {base_url} from '../constants/Base';
 
 const MedicalTreatmentSchema = yup.object({
     IllnessStartDate: yup.string().required(),
@@ -16,7 +17,7 @@ const MedicalTreatmentSchema = yup.object({
     DoctorName: yup.string().required(),
     DiseasesDiagnosed: yup.string().required(),
     FurtherTests: yup.string(),
-    TotalFees: yup.number().required(),
+    TotalMedicalCost: yup.number().required(),
     Remarks: yup.string()
 })
 
@@ -28,7 +29,8 @@ this.state ={
 startDate: '',
 visitDate: '',
 showSD: false,
-showVD: false
+showVD: false,
+submitAlertMessage: '',
 }
 }
 
@@ -67,6 +69,40 @@ showVisitedDatepicker = () => {
       showVD: true
     });
   };
+
+
+    submitMedicalTreatmentForm(values) {
+        let request_body = JSON.stringify({
+                "IllnessStartDate": values.IllnessStartDate,
+                "VisitedDate": values.VisitedDate,
+                "HospitalName": values.HospitalName,
+                "DoctorName": values.DoctorName,
+                "DiseasesDiagnosed": values.DiseasesDiagnosed,
+                "FurtherTests": values.FurtherTests,
+                "TotalMedicalCost": values.TotalMedicalCost,
+                "Remarks": values.Remarks
+        });
+        let result = {};
+        fetch(base_url+"/medical-treatment", {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: request_body,
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson);
+            this.setState({submitAlertMessage: 'Successfully added child medical treatment '});
+            alert(this.state.submitAlertMessage);
+        })
+        .catch((error) => {
+            this.setState({submitAlertMessage: 'Unable to add child medical treatment details. Please contact the Admin.'});
+            alert(this.state.submitAlertMessage);
+            console.log(error);
+        });
+    }
     render() {
         return (
             <View style = {globalStyles.formcontainer}>
@@ -80,18 +116,19 @@ showVisitedDatepicker = () => {
                        DoctorName: '',
                        DiseasesDiagnosed: '',
                        FurtherTests: '',
-                       TotalFees: '',
+                       TotalMedicalCost: '',
                        Remarks: ''
                     }
                 }
                 validationSchema = {MedicalTreatmentSchema}
-                onSubmit = {(values, actions) => {
-                    actions.resetForm();
+                onSubmit = {async (values, actions) => {
+
                     console.log(values);
                     this.setState({startDate:'',visitDate:''});
+                    let result = this.submitMedicalTreatmentForm(values);
+                    console.log(result);
                     alert("Data Has been submitted")
-
-//                    this.props.navigation.navigate('Info', values)
+                    actions.resetForm();
 
                 }}
                 >
@@ -170,10 +207,10 @@ showVisitedDatepicker = () => {
                                         {props.touched.FurtherTests && props.errors.FurtherTests}
                                         </Text>
 
-               <Text style={globalStyles.textform}>TotalFees(Rs)</Text>
-                    <TextInput style={globalStyles.inputform} value={props.values.TotalFees} onChangeText ={props.handleChange("TotalFees")} onBlur ={props.handleBlur("TotalFees")}></TextInput>
+               <Text style={globalStyles.textform}>TotalMedicalCost(Rs)</Text>
+                    <TextInput style={globalStyles.inputform} value={props.values.TotalMedicalCost} onChangeText ={props.handleChange("TotalMedicalCost")} onBlur ={props.handleBlur("TotalMedicalCost")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
-                                        {props.touched.TotalFees && props.errors.TotalFees}
+                                        {props.touched.TotalMedicalCost && props.errors.TotalMedicalCost}
                                         </Text>
 
                <Text style={globalStyles.textform}>Remarks</Text>
