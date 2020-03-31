@@ -8,6 +8,7 @@ import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
+import {base_url} from '../constants/Base';
 
 const ChildGrowthSchema = yup.object({
     AssessmentDate: yup.string().required(),
@@ -26,7 +27,8 @@ constructor(){
 super()
 this.state ={
 AssessmentOn:'',
-showAD: false
+showAD: false,
+submitAlertMessage: ''
 }
 }
 
@@ -47,6 +49,36 @@ _pickAssessmentDate = (event, date, handleChange) => {
         handleChange(a);
     }
 
+    submitChildGrowthForm(values) {
+        let request_body = JSON.stringify({
+                AssessmentDate:values.AssessmentDate,
+                Height:values.Height,
+                Weight:values.Weight,
+                GeneralHealth:values.GeneralHealth,
+                Comments:values.Comments,
+                HealthStatus: values.HealthStatus
+        });
+        let result = {};
+        fetch(base_url+"/child-health", {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: request_body,
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson);
+            this.setState({submitAlertMessage: 'Successfully added child growth details '});
+            alert(this.state.submitAlertMessage);
+        })
+        .catch((error) => {
+            this.setState({submitAlertMessage: 'Unable to add child growth details. Please contact the Admin.'});
+            alert(this.state.submitAlertMessage);
+            console.log(error);
+        });
+    }
 
     render() {
         return (
@@ -69,13 +101,15 @@ _pickAssessmentDate = (event, date, handleChange) => {
                     }
                 }
                 validationSchema = {ChildGrowthSchema}
-                onSubmit = {(values, actions) => {
-                    actions.resetForm();
+                onSubmit = {async (values, actions) => {
                     console.log(values);
                     this.setState({
                     AssessmentOn:''
                     });
+                    let result = this.submitChildGrowthForm(values);
+                    console.log(result);
                     alert("Data Has been submitted")
+                    actions.resetForm();
 
                 }}
                 >
@@ -123,7 +157,7 @@ _pickAssessmentDate = (event, date, handleChange) => {
                     style = {globalStyles.dropDown}
                     >
                     <Picker.Item label='Select Condition' value = ''/>
-                    <Picker.Item label='Good' value = 'Godd'/>
+                    <Picker.Item label='Good' value = 'Good'/>
                     <Picker.Item label='Normal' value = 'Normal'/>
                     <Picker.Item label='Sick' value = 'Sick'/>
                     </Picker>
