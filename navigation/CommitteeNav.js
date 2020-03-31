@@ -2,15 +2,16 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 import { React } from 'react';
 import CommitteeDisplay from '../screens/CommitteeDisplay';
-import CommitteeScreen from '../screens/CommitteeScreen';
+import CommitteeSuggestionForm from '../components/CommitteeSuggestionForm';
 
 const screens = {
+    CommitteeScreen: {
+        screen: CommitteeSuggestionForm
+    },
     CommitteeDisplay: {
         screen: CommitteeDisplay
     },
-    CommitteeScreen: {
-        screen: CommitteeScreen
-    }
+    
 }
 
 const HomeStack = createStackNavigator(screens, {

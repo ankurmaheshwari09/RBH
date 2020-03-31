@@ -2,16 +2,16 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 import { React } from 'react';
 import ProfileDisplay from '../screens/ProfileDisplay';
-import ViewProfile from '../screens/ViewProfile';
+import ViewProfile from '../components/ViewProfile';
 
 const screens = {
-    ProfileDisplay: {
-        screen: ProfileDisplay
-    },
     ViewProfile: {
         screen: ViewProfile
     },
-    initialRouteName: 'ViewProfile',
+    // ProfileDisplay: {
+    //     screen: ProfileDisplay
+    // },
+   
 }
 
 const ProfileStack = createStackNavigator(screens, {

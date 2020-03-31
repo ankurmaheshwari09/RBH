@@ -6,14 +6,15 @@ export default class InfoGeneral extends React.Component{
     render() {
         return (
         <View>
-            <Text>{this.props.navigation.getParam('IdentificationPlace1')}</Text>
-            <Text>{this.props.navigation.getParam('MarkType1')}</Text>
-            <Text>{this.props.navigation.getParam('IdentificationPlace2')}</Text>
-            <Text>{this.props.navigation.getParam('MarkType2')}</Text> 
-            <Text>{this.props.navigation.getParam('SpecialNeed')}</Text>
-             <Text>{this.props.navigation.getParam('DurationOnStreet')}</Text>
-            <Text>{this.props.navigation.getParam('PSOName')}</Text>            
-            <Text>{this.props.navigation.getParam('CWCRefNo')}</Text>
+            <Text>{this.props.navigation.getParam('identificationPlace1')}</Text>
+            <Text>{this.props.navigation.getParam('markType1')}</Text>
+            <Text>{this.props.navigation.getParam('identificationPlace2')}</Text>
+            <Text>{this.props.navigation.getParam('markType2')}</Text> 
+            <Text>{this.props.navigation.getParam('specialNeed')}</Text>
+             <Text>{this.props.navigation.getParam('durationOnStreet')}</Text>
+            <Text>{this.props.navigation.getParam('psoName')}</Text>            
+            <Text>{this.props.navigation.getParam('cwcRefNo')}</Text>
+            <Text>{this.props.navigation.getParam('cwcStayReason')}</Text>
 
             <Text>{this.props.navigation.getParam('dropOutReason')}</Text>
             <Text>{this.props.navigation.getParam('yearOfStudied')}</Text>

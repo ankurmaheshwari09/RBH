@@ -7,14 +7,20 @@ import EducationScreen from '../screens/EducationScreen';
 import StatusScreen from '../screens/StatusScreen';
 import HealthScreen from '../screens/HealthScreen';
 import ChildList from '../components/ChildList';
-import ViewProfile from '../screens/ViewProfile';
+import ViewProfile from '../components/ViewProfile';
+import ProfileNav from './ProfileNav';
 import GeneralInfoForm from '../components/GeneralInfoForm';
 import InfoGeneral from '../screens/InfoGeneral';
 import GeneralInfoStack from './GeneralInfoNavigation';
-import CommitteeScreen from '../screens/CommitteeScreen';
+//import CommitteeScreen from '../screens/CommitteeScreen';
+import CommitteeSuggestionForm from '../components/CommitteeSuggestionForm';
 import StatusNavigator from './StatusNavigator';
 import FollowUpScreen from '../screens/FollowUpScreen';
 import FollowUpNavigation from './FollowUpNavigation';
+import FamilyScreen from '../screens/FamilyScreen';
+import CommunicationScreen from '../screens/CommunicationScreen';
+import FamilyInfoNavigation from './FamilyInfoNavigation';
+import CommunicationInfoNavigation from './CommunicationInfoNavigation';
 
 
 
@@ -53,8 +59,14 @@ const screens = {
     Profile:{
         screen: ViewProfile
     },
+        Family: {
+        screen: FamilyInfoNavigation
+    },
+    Communication: {
+        screen: CommunicationInfoNavigation
+    },
     Committee:{
-        screen: CommitteeScreen
+        screen: CommitteeSuggestionForm
     },
     FollowUp: {
         screen: FollowUpNavigation
