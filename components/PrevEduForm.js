@@ -18,6 +18,12 @@ const PrevEduSchema = yup.object({
 })
 
 export default class PrevEduForm extends React.Component{
+    constructor(props){
+        super(props)
+        this.state = {
+            child: this.props.navigation.getParam('child')
+        }
+    }
     render() {
         return (
             <View style = {globalStyles.container}>
@@ -25,13 +31,13 @@ export default class PrevEduForm extends React.Component{
                 <Formik
                     initialValues = {
                         {
-                            dropOutReason: '',
+                            dropOutReason: '',//this.state.child.dropOutReason
                             yearOfStudied: '',
-                            medium: '',
-                            schoolName: '',
-                            schoolType: '',
-                            class: '',//
-                            schoolPlace: ''
+                            medium: this.props.prevEducation.medium,
+                            schoolName: this.props.prevEducation.schoolName,
+                            schoolType: this.props.prevEducation.schoolType,
+                            class: this.state.child.previousClassStudied,
+                            schoolPlace: this.props.prevEducation.address
                         }
                     }
                     validationSchema = {PrevEduSchema}

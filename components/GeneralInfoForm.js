@@ -4,6 +4,8 @@ import {Button, Text, TextInput, View, Picker, ScrollView,
 import {Formik} from 'formik';
 import {globalStyles} from '../styles/global';
 import * as yup from 'yup';
+import {putDataAsync, base_url} from '../constants/Base'
+import { ActivityIndicator } from 'react-native';
 
 const GeneralInfoFormSchema = yup.object({
     identificationPlace1: yup.string().required(),
@@ -23,16 +25,56 @@ export default class GeneralInfoForm extends React.Component{
     constructor(props){
         super(props)
         this.state = {
-            child: this.props.navigation.getParam('child')
+            child: this.props.navigation.getParam('child'),
+            showLoader: false,
+            loaderIndex: 0
         }
-        console.log('ASDFGFGHVBNMTYU')
-        console.log(this.state.child)
+        console.log("CHILD:")
+        console.log(this.props.childData)
+    }
+    _submitGeneralInfo(values){
+        let child = this.props.childData
+        child.identificationMark1 =  values.identificationPlace1.toString() + ',' + values.markType1.toString()
+        child.identificationMark2 = values.identificationPlace2.toString() + ',' + values.markType2.toString()
+        child.stayReason =  values.cwcStayReason
+        child.occupation = values.occupationOnStreet
+        child.differentlyAbledGroup = values.specialNeed
+        child.duration = values.durationOnStreet
+        child.organisationName = values.psoName
+        child.cWCRefNo =  values.cwcRefNo
+        child.stayReason = values.cwcStayReason
+        console.log(child)
+        fetch(base_url + '/child/' + child.childNo, {
+            method: 'PUT',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(child),
+        })
+        .then((response) => {console.log(response.status);return response.json()})
+        .then((responseJson) => {
+            console.log(responseJson);
+            this.setState({submitAlertMessage: 'Successfully updated child with Child Number '+this.state.child.childNo});
+            alert(this.state.submitAlertMessage);
+            this.setState({showLoader: false,loaderIndex:0});
+        })
+        .catch((error) => {
+            this.setState({submitAlertMessage: 'Unable to update child. Plesae contact the Admin.'});
+            alert(this.state.submitAlertMessage);
+            console.log(error);
+            this.setState({showLoader: false,loaderIndex:0});
+        });
+    
+        console.log('Done calling put')
     }
     render() {
         return (
             
             <View style = {globalStyles.container}>
-
+                <View style={{ position: 'absolute', top:"45%",right: 0, left: 0, zIndex: this.state.loaderIndex }}>
+                    <ActivityIndicator animating={this.state.showLoader} size="large" color="red" />
+                </View>
                 <Formik
                 enableReinitialize
                 initialValues = {
@@ -43,18 +85,22 @@ export default class GeneralInfoForm extends React.Component{
                         markType2: parseInt(this.state.child.identificationMark2.split(',')[1]), 
                         specialNeed: this.state.child.differentlyAbledGroup,
                         occupationOnStreet: this.state.child.occupation,
-                        durationOnStreet: '',//duration
-                        psoName: '',//OrganizationName
-                        cwcRefNo: '',//CWCRefNo
+                        durationOnStreet: this.state.child.duration,
+                        psoName: this.state.child.organisationName,
+                        cwcRefNo: this.state.child.cWCRefNo,
                         cwcStayReason: this.state.child.stayReason
                     }
                 }
                 validationSchema = {GeneralInfoFormSchema}
                 onSubmit = {(values, actions) => {
-                    actions.resetForm();
+                    //actions.resetForm();
+                    console.log('in submit')
+                    this.setState({showLoader: true,loaderIndex:10});
+                    let result = this._submitGeneralInfo(values);
+                    let alertMessage = this.state.submitAlertMessage;
+
                     console.log(values);
-                    alert("Data Has been submitted")
-                    this.props.navigation.push('InfoGeneral', values)
+                    //this.props.navigation.push('InfoGeneral', values)
                     
                 }}
                 >
