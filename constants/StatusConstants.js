@@ -14,5 +14,8 @@ export function statusConstants() {
         global.actionTaken;
         getDataAsync(base_url + '/action-taken-list').then(data => { console.log(data); global.actionTaken = data })
 
+        global.staff;
+        getDataAsync(base_url + '/home-staff-list').then(data => { console.log(data); global.staff = data })
+
 }
 

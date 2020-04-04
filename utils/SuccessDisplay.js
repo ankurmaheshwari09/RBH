@@ -1,16 +1,16 @@
 import React from 'react';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { View, StyleSheet,Text } from 'react-native';
+import { View, Text, StyleSheet} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { globalStyles } from '../styles/global';
 
-
-export function ErrorDisplay(props) {
-    if (props.errorDisplay) {
+export function SuccessDisplay(props) {
+    if (props.successDisplay) {
         return (
             <View style={styles.container}>
-                <Ionicons name="md-warning" size={60} color="red" />
-                <Text style={globalStyles.text}>Something went wrong!</Text>
+                <Ionicons name="md-checkmark-circle" size={60} color="green" />
+                <Text style={globalStyles.text}>Successfully updated {props.type} for child {props.childNo} !</Text>
+                 
             </View>);
     }
     else {

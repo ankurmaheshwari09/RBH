@@ -21,7 +21,19 @@ export default class ChildList extends Component {
             data: [],
             error: null,
             search: null,
-            errorDisplay: false
+            errorDisplay: false, 
+            modalItems: [
+                { key: 'Status', page: 'ChildStatus' },
+                { key: 'Health', page: 'Health' },
+                { key: 'Education', page: 'Education' },
+                { key: 'Family', page: 'Family' },
+                { key: 'Communication', page: 'Communication' },
+                { key: 'General Info', page: 'GeneralInfo' },
+                { key: 'View Profile', page: 'Profile' },
+                { key: 'Committee', page: 'Committee' },
+                { key: 'Follow Up', page: 'FollowUpBy' },
+            ],
+            modalItemsForCurrentItem:null
         };
         this.arrayholder = [];
         this.onPress =this.onPress.bind(this);
@@ -32,56 +44,60 @@ export default class ChildList extends Component {
         this.renderHeader = this.renderHeader.bind(this);
         this.getStyles = this.getStyles.bind(this);
         this.getData = this.getData.bind(this);
+        this.getModalItems = this.getModalItems.bind(this);
         // this.show =this.show.bind(this);
     }
     componentDidMount() {
-        this.getData();
-    } 
+       this.getData();
+    }
+
+   
     componentWillUnmount() {
         this.setState({
             loading: false,
             search: null,
             errorDisplay: false
-        });
+        }, () => { this.getData() });
     }
     getData() {
+        console.log('inside get');
         this.setState({ search: null, loading: true });
-        fetch('https://rest-service.azurewebsites.net/api/v1/children/59', {
+        fetch('https://rest-service.azurewebsites.net/api/v1/children/45', {
             method: 'GET',
         })
             
             .then(res => {
                 if (res.ok) {
+                    
                     res.json().then((data) => {
                         this.setState({
                             data: data,
                             loading: false,
                         });
-                        console.log(this.state.data, 'aaaaa');
+                  
                         this.arrayholder = data;
                     });
                 } else {
-                    console.log(res.statusText);
-                    throw Error(res.statusText)
+                    console.log(res.status);
+                    throw Error(res.status);
                 }
             })
             .catch(error => {
-              //  console.log(error,'fffffffff');
                 this.setState({ loading: false, errorDisplay: true });
             });  
     }
     onPress(item) {
-        console.log(item);
+        let list = this.getModalItems(item);
         this.setState({
             isVisible: true,
-            selectedChild: item
+            selectedChild: item,
+            modalItemsForCurrentItem: list
         });
-        console.log(this.state.isVisible);
-      //  console.log(this.state.selectedChild);
+       
     }
-    navigateToOtherScreen(screen){
+    navigateToOtherScreen(screen) {
         // console.log(this.state.navItems);
-        this.props.navigation.navigate(screen, { child: this.state.selectedChild });
+        this.props.navigation.navigate(screen, { child: this.state.selectedChild, refreshChildList: this.getData.bind(this) });
     }
     closeModal(){
         this.setState({
@@ -89,14 +105,14 @@ export default class ChildList extends Component {
         });
     }
     onPressForList(screen){
-        console.log("event:"+screen);
+       
         this.closeModal();
        // this.setState({page: page});
        this.navigateToOtherScreen(screen);
     }
     searchFilterFunction = text => {
 
-        console.log(text);
+       // console.log(text);
         this.setState({ search: text });
         if ('' == text) {
             this.setState({
@@ -134,28 +150,26 @@ export default class ChildList extends Component {
             return styles.blue;
         } else if (status == 'Present') {
             return styles.green;
-        } else if (item.dob.age == 'Close' ) {
+        } else if (status == 'Closed' ) {
             return styles.red;
-        } else if (item.dob.age == 'Absent') {
+        } else if (status == 'Absent') {
             return styles.yellow;
         }
     }
 
+    getModalItems(item) {
+        console.log('modal items');
+        let updatedList = this.state.modalItems;
+        if (item.childStatus.childStatus !== 'Closed') {
+            updatedList = this.state.modalItems.filter(item => item.key !== 'Follow Up');
+        }
+        return updatedList;
+    }
+
     render() {
-        const items=[
-            { key: 'Status', page: 'ChildStatus'},
-            {key: 'Health', page: 'Health'},
-            {key: 'Education', page: 'Education'},
-            { key: 'Family', page: 'Family' },
-            { key: 'Communication', page: 'Communication' },
-            {key: 'General Info' ,page: 'GeneralInfo'},
-            {key: 'View Profile', page: 'Profile'},
-            {key: 'Committee', page: 'Committee'},
-            { key: 'Follow Up', page: 'FollowUpBy' },
-        ];
+        
         return (
             <View style={styles.MainContainer}>
-
                 <LoadingDisplay loading={this.state.loading} />
                 {this.state.errorDisplay ?
                     <ErrorDisplay errorDisplay={this.state.errorDisplay} />
@@ -200,10 +214,12 @@ export default class ChildList extends Component {
                 }
                 <Modal  style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
                     <View style={styles.MainContainer}>
-                        <FlatList data={items} renderItem={({item})=>(
-                            <TouchableOpacity style={styles.styleContents} onPress={(event) =>this.onPressForList(item.page)}>
-                                <Text style={styles.item}>{item.key}</Text>
+                        <FlatList data={this.state.modalItemsForCurrentItem} renderItem={({ item }) => (
+
+                            < TouchableOpacity style={styles.styleContents} onPress={(event) => this.onPressForList(item.page)}>
+                            <Text style={styles.item}>{item.key}</Text>
                             </TouchableOpacity>
+                                                               
                         )}
                         />
                     </View>
@@ -282,7 +298,7 @@ const styles = StyleSheet.create({
       //  borderWidth: 5,
     },
     yellow: {
-        backgroundColor: '#ffff80',
+        backgroundColor: '#ffff99',
       //  borderWidth: 5
     }
 });
