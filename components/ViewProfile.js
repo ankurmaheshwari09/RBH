@@ -22,8 +22,60 @@ export default class ViewProfile extends React.Component {
         this.state = {
             description: '',
             showElements: false,
-            showSSElements: false
+            showSSElements: false,
+            submitAlertMessage: '',
         }
+    }
+    async addData(){
+        getDataAsync(base_url + '/child-profile-description').then(data => {console.log(data); this.setState({date: data})});
+        getDataAsync(base_url + '/child-profile-all-description/childNo').then(data => {console.log(data); this.setState({date: data})});
+    }
+
+    componentDidMount() {
+        this.addData();
+    }
+
+    _submitProfile(values) {
+        let request_body = JSON.stringify({
+                "description": values.Suggestion,
+                
+        });
+        // let result = {};
+        fetch(base_url+"/child-profile-description", {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: request_body,
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson);
+            this.setState({submitAlertMessage: 'Successfully added suggestions given by committee '
+            + 'Child No: '+responseJson.childNo + 'profileDescriptionNo '+responseJson.profileDescriptionNo});
+            alert(this.state.submitAlertMessage);
+            this.setState({date: null, showElements: false, showSSElements: false});
+        })
+        .catch((error) => {
+            this.setState({submitAlertMessage: 'Unable to add Details. Plesae contact the Admin.'});
+            alert(this.state.submitAlertMessage);
+            console.log(error);
+            this.setState({date: null, showElements: false, showSSElements: false});
+        });
+    }
+
+    _getProfile(){
+        fetch(base_url+"/child-profile-description",{
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            }
+        })
+        .then((response)=>response.json)
+        
+
     }
 
     render() {
@@ -37,15 +89,17 @@ export default class ViewProfile extends React.Component {
                         }
                     }
                     validationSchema={ViewProfileSchema}
-                    onSubmit={(values, actions) => {
-                        actions.resetForm();
+                    onSubmit={async (values, actions) => {
+                        //actions.resetForm();
                         console.log(values);
                         this.setState({
-                            description: '', showElements: false, showSSElements: false
+                            showElements: false, showSSElements: false
                         });
-                        alert("Data Has been submitted")
-                        this.props.navigation.push('ViewProfile', values)
-
+                        let result = this._submitProfile(values);
+                        let alertMessage = this.state.submitAlertMessage;
+                        console.log(result);
+                        alert(alertMessage);
+                        this.props.navigation.push('CommitteeSuggestionForm', values)
                     }}
                 >
         {props => (

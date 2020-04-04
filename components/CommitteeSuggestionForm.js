@@ -10,7 +10,9 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
-import CheckBox from 'react-native-check-box'
+import CheckBox from 'react-native-check-box';
+import { ActivityIndicator } from 'react-native';
+import {base_url,getDataAsync} from '../constants/Base';
 const CommitteeFormSchema = yup.object({
     Suggestion: yup.string().required(),
     // Date: yup.string().required(),
@@ -22,13 +24,18 @@ export default class CommitteeScreen extends React.Component {
         this.state = {
             date: null,
             showElements: false,
-            showSSElements: false
+            showSSElements: false,
+            submitAlertMessage: '',
         }
     }
     state = {
         showSD: false,
         startingdate: '',
     };
+
+    async addData(){
+        getDataAsync(base_url + '').then(data => {console.log(data); this.setState({date: data})});
+    }
     
     _pickDate = (event, date, handleChange) => {
         console.log(date);
@@ -50,6 +57,39 @@ export default class CommitteeScreen extends React.Component {
         console.log("change called");
     }
 
+    componentDidMount() {
+        this.addData();
+    }
+
+    _submitCommitteeSuggestionForm(values) {
+        let request_body = JSON.stringify({
+                "suggestion": values.Suggestion,
+                "date": values.StartingDate
+        });
+        let result = {};
+        fetch(base_url+"/admission-committee-suggestion", {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: request_body,
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson);
+            this.setState({submitAlertMessage: 'Successfully added suggestions given by committee '+responseJson.childNo});
+            alert(this.state.submitAlertMessage);
+            this.setState({date: null, showElements: false, showSSElements: false});
+        })
+        .catch((error) => {
+            this.setState({submitAlertMessage: 'Unable to add Details. Plesae contact the Admin.'});
+            alert(this.state.submitAlertMessage);
+            console.log(error);
+            this.setState({date: null, showElements: false, showSSElements: false});
+        });
+    }
+
     render() {
         return (<View style={globalStyles.container1}>
             <View style={globalStyles.container}>
@@ -62,15 +102,17 @@ export default class CommitteeScreen extends React.Component {
                         }
                     }
                     validationSchema={CommitteeFormSchema}
-                    onSubmit={(values, actions) => {
+                    onSubmit={async (values, actions) => {
                         actions.resetForm();
                         console.log(values);
                         this.setState({
                             date: null, showElements: false, showSSElements: false
                         });
-                        alert("Data Has been submitted")
+                        let result = this._submitCommitteeSuggestionForm(values);
+                        let alertMessage = this.state.submitAlertMessage;
+                        console.log(result);
+                        alert(alertMessage);
                         this.props.navigation.push('CommitteeSuggestionForm', values)
-
                     }}
                 >
         {props => (
