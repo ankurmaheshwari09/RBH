@@ -6,11 +6,12 @@ import {
 import { Formik } from 'formik';
 import { globalStyles } from '../styles/samplestyles';
 import * as yup from 'yup';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
-import CheckBox from 'react-native-check-box'
+//import ChildList from './ChildList.js';
+import {base_url,getDataAsync} from '../constants/Base';
+import { ActivityIndicator } from 'react-native';
 const ViewProfileSchema = yup.object({
     Description: yup.string().required(),
     // Date: yup.string().required(),
@@ -24,23 +25,71 @@ export default class ViewProfile extends React.Component {
             showElements: false,
             showSSElements: false,
             submitAlertMessage: '',
+            error: null,
+            child: this.props.navigation.getParam('child'),
+            updateProfile: false,
+            profileDescriptionNo: '',
+            editText:false,
         }
-    }
-    async addData(){
-        getDataAsync(base_url + '/child-profile-description').then(data => {console.log(data); this.setState({date: data})});
-        getDataAsync(base_url + '/child-profile-all-description/childNo').then(data => {console.log(data); this.setState({date: data})});
+        this._submitProfile =this._submitProfile.bind(this);
+        this._updateProfile =this._updateProfile.bind(this);
+        //this.handleChange=this.handleChange.bind(this);
     }
 
+    // handleChange = (value) => {  
+    //     this.setState({ description: value })  
+    //   }  
+
     componentDidMount() {
-        this.addData();
-    }
+        console.log(this.state.child.childNo);
+        fetch(base_url+"/child-profile-all-description/"+this.state.child.childNo,{
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            }
+        })
+        .then((response)=>response.json())
+        .then((responseJson)=>{
+            console.log(responseJson,'111');
+
+            if(responseJson == null){
+                this.state.updateProfile=false;
+                this.setState({description:''});
+            }
+            else{
+                this.state.updateProfile=true;
+                this.setState({description:responseJson[0].description,
+                    profileDescriptionNo:responseJson[0].profileDescriptionNo});
+                console.log(this.state.description);
+            
+            let date_modified = responseJson[0].modified_ON;        
+            let dm = moment(date_modified).format("YYYY-MM-DD");
+             console.log(dm,'formatted');
+            let dm1 = moment(new Date()).format("YYYY-MM-DD");
+			 console.log(dm1,'formatted new date');
+            let a = new Date(dm);
+            console.log(a);
+            let b = new Date(dm1);
+            console.log(b);          
+            let diffInDate = b-a ;          
+             console.log(diffInDate,'difference');   //Future date - current date
+            let daysTillToday = Math.floor(diffInDate/ (1000 * 60 * 60 * 24));
+            console.log(daysTillToday,'daysTillToday');
+            if(daysTillToday>=365){
+                alert('Alert: Update Profile!!!');
+            }
+        }
+    });
+}
 
     _submitProfile(values) {
         let request_body = JSON.stringify({
-                "description": values.Suggestion,
-                
+                "description": values.Description,
+                "childNo": this.state.child.childNo,
+                "modified_ON": new Date()
         });
-        // let result = {};
+        let result = {};
         fetch(base_url+"/child-profile-description", {
             method: 'POST',
             headers: {
@@ -52,31 +101,50 @@ export default class ViewProfile extends React.Component {
         .then((response) => response.json())
         .then((responseJson) => {
             console.log(responseJson);
-            this.setState({submitAlertMessage: 'Successfully added suggestions given by committee '
-            + 'Child No: '+responseJson.childNo + 'profileDescriptionNo '+responseJson.profileDescriptionNo});
+            this.setState({submitAlertMessage: 'Successfully added profile description for \n'
+            +'Child Number:'+responseJson.childNo+'\nProfile Description Number:'+responseJson.profileDescriptionNo});
+            
             alert(this.state.submitAlertMessage);
-            this.setState({date: null, showElements: false, showSSElements: false});
         })
         .catch((error) => {
             this.setState({submitAlertMessage: 'Unable to add Details. Plesae contact the Admin.'});
             alert(this.state.submitAlertMessage);
             console.log(error);
-            this.setState({date: null, showElements: false, showSSElements: false});
         });
     }
 
-    _getProfile(){
-        fetch(base_url+"/child-profile-description",{
-            method: 'GET',
+    _updateProfile(values) {
+        let request_body = JSON.stringify({
+                "description": values.Description,
+                "childNo": this.state.child.childNo,
+                "modified_ON": new Date(),
+                "profileDescriptionNo": this.state.profileDescriptionNo
+        });
+        let result = {};
+        fetch(base_url+"/child-profile-description/"+this.state.profileDescriptionNo, {
+            method: 'PUT',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
-            }
+            },
+            body: request_body,
         })
-        .then((response)=>response.json)
-        
-
+        .then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson);
+            this.setState({submitAlertMessage: 'Successfully updated profile description for \n'
+            +'Child Number:'+responseJson.childNo+'\nProfile Description Number:'+responseJson.profileDescriptionNo});
+            
+            alert(this.state.submitAlertMessage);
+        })
+        .catch((error) => {
+            this.setState({submitAlertMessage: 'Unable to update details. Plesae contact the Admin.'});
+            alert(this.state.submitAlertMessage);
+            console.log(error);
+        });
     }
+
+   
 
     render() {
         return (<View style={globalStyles.container1}>
@@ -92,14 +160,19 @@ export default class ViewProfile extends React.Component {
                     onSubmit={async (values, actions) => {
                         //actions.resetForm();
                         console.log(values);
-                        this.setState({
-                            showElements: false, showSSElements: false
-                        });
-                        let result = this._submitProfile(values);
-                        let alertMessage = this.state.submitAlertMessage;
-                        console.log(result);
-                        alert(alertMessage);
-                        this.props.navigation.push('CommitteeSuggestionForm', values)
+                        let checkUpdate =  this.state.updateProfile;
+                        if(checkUpdate)
+                        {
+                            let result = this._updateProfile(values);
+                            console.log(result);
+                        }
+                        else
+                        {
+                          
+                            let result = this._submitProfile(values);
+                            console.log(result);
+                        }
+                        this.props.navigation.push('ViewProfile', values)
                     }}
                 >
         {props => (
@@ -109,12 +182,14 @@ export default class ViewProfile extends React.Component {
                 <ScrollView>
 
                     <View>
-                        <Text style={globalStyles.text}>Enter Description about child:</Text>
+                        <Text style={globalStyles.text}>Entered Description is : {this.state.description}</Text>
+                        <Text style={globalStyles.text}>Enter/Update Description about child:</Text>
                         <Text style={globalStyles.errormsg}>{props.touched.Description && props.errors.Description}</Text>
                         <TextInput
                             style={globalStyles.input}
+                            //value={this.state.description}
                             onChangeText={props.handleChange('Description')}
-                            value={props.values.Description}
+                            value={props.values.Description} 
                         />
 
                          <Text style={globalStyles.padding}></Text>
@@ -133,98 +208,3 @@ export default class ViewProfile extends React.Component {
         );
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React, { Component } from 'react';
-// import { Image, Button } from 'react-native';
-// import {  Alert, View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-
-// export default class ViewProfile extends Component {
-
-//    constructor(props){
-//       super(props)
-//       this.state = {
-//          description: ''
-//       };
-//     }
-//    handleText = (text) => {
-//       this.setState({ description: text})
-//    }
-//    addDetails = (text) => {
-//       alert("Details added successfully \n" + text)
-//       this.props.navigation.push('ProfileDisplay', {text})
-//    }
-   
-//    _simpleAlertHandler=()=>{
-//       //function to make simple alert
-//       var date = new Date().getDate();
-      
-//       alert('Update Profile Description!');
-//     }
-
-//    render(){
-//        return(
-//           <View style = {styles.container}>
-//              <Image
-//                style={{marginLeft: 160, width: 70, height: 70, alignItems:'center', justifyContent:'center'}}
-//                source={{uri: 'https://reactnative.dev/img/tiny_logo.png'}}
-//              />
-//              <TextInput style = {styles.input}
-//              underlineColorAndroid = "transparent"
-//              placeholder = "Add Child description briefly"
-//              placeholderTextColor = "#000000"
-//              onChangeText = {this.handleText}/>
-
-//              <TouchableOpacity
-//                 style = {styles.submitButton}
-//                 onPress = {
-//                    () => this.addDetails(this.state.description)
-//                 }>
-//                 <Text style = {styles.submitButtonText}> Submit </Text>    
-//              </TouchableOpacity>
-//              <Button style={{flex:1,alignItems:'right', justifyContent:'right'}}   
-//               title='Update Profile?' onPress={this._simpleAlertHandler}/> 
-//           </View>
-// )
-//    }
-// }
-
-// const styles = StyleSheet.create({
-//    container: {
-//       paddingTop: 50
-//    },   
-//    input: {
-//       margin: 15,
-//       height: 120,
-//       paddingLeft: 90,
-//       borderColor: '#000000',
-//       borderWidth: 1
-//    },
-//    submitButton: {
-//       margin: 15,
-//       height: 40,
-//       paddingLeft: 150,
-//       paddingTop: 10,
-//       borderColor: '#000000',    
-//       borderWidth: 1
-//    },
-//    submitButtonText:{
-//       color: '#000000'
-//    }
-// })
-
