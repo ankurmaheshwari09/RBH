@@ -9,8 +9,9 @@ export function SuccessDisplay(props) {
         return (
             <View style={styles.container}>
                 <Ionicons name="md-checkmark-circle" size={60} color="green" />
-                <Text style={globalStyles.text}>Successfully updated {props.type} for child {props.childNo} !</Text>
-                 
+                <Text style={styles.text}>Successfully updated</Text>
+                <Text style={styles.text}>{props.type} for child {props.childNo} !</Text>
+
             </View>);
     }
     else {
@@ -22,6 +23,13 @@ const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         alignSelf: 'center',
-        top: 50
-    }
+        top: 50,
+        justifyContent: 'center'
+    },
+    text: {
+        color: '#000000',
+        fontSize: 15,
+        fontWeight: 'bold',
+        borderColor: '#000000'
+        },
 });

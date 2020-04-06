@@ -29,8 +29,6 @@ displayHealthRemainder = () => {
     componentDidMount() {
         generalInfoConstants()
         statusConstants()
-    componentDidMount(){
-      generalInfoConstants();
       this.displayHealthRemainder();
     }
 
