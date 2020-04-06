@@ -8,6 +8,7 @@ import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
+import {base_url} from '../constants/Base';
 
 const ChildGrowthSchema = yup.object({
     AssessmentDate: yup.string().required(),
@@ -22,14 +23,15 @@ var month = new Date().getMonth() + 1; //Current Month
 var year = new Date().getFullYear(); //Current Year
 
 export default class ChildGrowth extends React.Component{
-constructor(){
-super()
+constructor(props){
+super(props);
 this.state ={
 AssessmentOn:'',
-showAD: false
+showAD: false,
+submitAlertMessage: '',
+child: this.props.navigation.getParam('child')
 }
 }
-
 showAssessmentDatePicker = () => {
     this.setState({
       showAD: true
@@ -38,7 +40,7 @@ showAssessmentDatePicker = () => {
 
 _pickAssessmentDate = (event, date, handleChange) => {
         console.log(date);
-        let a = moment(date).format('DD/MM/YYYY');
+        let a = moment(date).format('YYYY-MM-DD');
         console.log(a);
         console.log(typeof (a));
         this.setState({
@@ -47,6 +49,37 @@ _pickAssessmentDate = (event, date, handleChange) => {
         handleChange(a);
     }
 
+    submitChildGrowthForm(values) {
+        let request_body = JSON.stringify({
+                "childNo": this.state.child.childNo,
+                "healthDate":values.AssessmentDate,
+                "height":values.Height,
+                "weight":values.Weight,
+                "generalHealth":values.GeneralHealth,
+                "comments":values.Comments,
+                "healthStatus": values.HealthStatus
+        });
+        let result = {};
+        fetch(base_url+"/child-health", {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: request_body,
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson);
+            this.setState({submitAlertMessage: 'Successfully added child growth details '});
+            alert(this.state.submitAlertMessage);
+        })
+        .catch((error) => {
+            this.setState({submitAlertMessage: 'Unable to add child growth details. Please contact the Admin.'});
+            alert(this.state.submitAlertMessage);
+            console.log(error);
+        });
+    }
 
     render() {
         return (
@@ -61,21 +94,23 @@ _pickAssessmentDate = (event, date, handleChange) => {
                         Weight: '',
                         GeneralHealth: '',
                         Comments: '',
-                        CreatedBy: 'admin',
-                        ModifiedBy: 'admin',
-                        CreatedDate: date + '/' + month + '/' + year,
-                        ModifiedDate: date + '/' + month + '/' + year,
+//                        CreatedBy: 'admin',
+//                        ModifiedBy: 'admin',
+//                        CreatedDate: date + '/' + month + '/' + year,
+//                        ModifiedDate: date + '/' + month + '/' + year,
                         HealthStatus: '1'
                     }
                 }
                 validationSchema = {ChildGrowthSchema}
-                onSubmit = {(values, actions) => {
-                    actions.resetForm();
+                onSubmit = {async (values, actions) => {
                     console.log(values);
                     this.setState({
                     AssessmentOn:''
                     });
-                    alert("Data Has been submitted")
+                     this.submitChildGrowthForm(values);
+//                    console.log(result);
+//                    alert("Data Has been submitted")
+                    actions.resetForm();
 
                 }}
                 >
@@ -119,13 +154,15 @@ _pickAssessmentDate = (event, date, handleChange) => {
                <Text style = {globalStyles.textform}>GeneralHealth</Text>
                    <Picker
                     selectedValue = {props.values.GeneralHealth}
-                    onValueChange = {props.handleChange('GeneralHealth')}
+                    onValueChange = {value => {
+                                                props.setFieldValue('GeneralHealth', value)
+                                               }}
                     style = {globalStyles.dropDown}
                     >
-                    <Picker.Item label='Select Condition' value = ''/>
-                    <Picker.Item label='Good' value = 'Godd'/>
-                    <Picker.Item label='Normal' value = 'Normal'/>
-                    <Picker.Item label='Sick' value = 'Sick'/>
+                       <Picker.Item label="Select General Health" value="" />
+                       {global.generalHealth.map((item) => {
+                            return <Picker.Item key = {item.generalHealthID} label = {item.generalHealth} value = {item.generalHealthID}/>
+                       })}
                     </Picker>
                     <Text style={globalStyles.errormsgform}>
                     {props.touched.GeneralHealth && props.errors.GeneralHealth}

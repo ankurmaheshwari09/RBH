@@ -12,12 +12,15 @@ import {
 } from 'react-native';
 
 export default class SegmentedHealthView extends Component {
-constructor() {
-    super()
+constructor(props) {
+    super(props);
+    console.log(this.props.navigation.getParam('child').childNo);
     this.state = {
       customStyleIndex: 0
     }
   }
+//  health_child_No;
+//  health_child_No = this.props.navigation.getParam('child').childNo;
 
     handleCustomIndexSelect = (index) => {
       this.setState(prevState => ({ ...prevState, customStyleIndex: index }))
@@ -50,9 +53,9 @@ constructor() {
                     </View>
                   </ScrollView>
                   </View>
-                    {customStyleIndex === 0 && <ChildGrowthForm/>}
-                    {customStyleIndex === 1 && <ChildMedicalTreatment/>}
-                    {customStyleIndex === 2 && <ChildHealthCheckList/>}
+                    {customStyleIndex === 0 && <ChildGrowthForm navigation = {this.props.navigation}/>}
+                    {customStyleIndex === 1 && <ChildMedicalTreatment navigation = {this.props.navigation}/>}
+                    {customStyleIndex === 2 && <ChildHealthCheckList navigation = {this.props.navigation}/>}
                 </View>
        );
      }
