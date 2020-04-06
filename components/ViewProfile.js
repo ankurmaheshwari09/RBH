@@ -1,20 +1,16 @@
 import React from 'react';
 import {
-    Button, Text, TextInput, View, Picker, ScrollView,
+    Button, Text, TextInput, View, ScrollView,
     KeyboardAvoidingView, Field,
 } from 'react-native';
 import { Formik } from 'formik';
 import { globalStyles } from '../styles/samplestyles';
 import * as yup from 'yup';
-import { TouchableHighlight } from 'react-native-gesture-handler';
-import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
-//import ChildList from './ChildList.js';
 import {base_url,getDataAsync} from '../constants/Base';
 import { ActivityIndicator } from 'react-native';
 const ViewProfileSchema = yup.object({
     Description: yup.string().required(),
-    // Date: yup.string().required(),
 })
 
 export default class ViewProfile extends React.Component {
@@ -133,9 +129,19 @@ export default class ViewProfile extends React.Component {
         .then((responseJson) => {
             console.log(responseJson);
             this.setState({submitAlertMessage: 'Successfully updated profile description for \n'
-            +'Child Number:'+responseJson.childNo+'\nProfile Description Number:'+responseJson.profileDescriptionNo});
-            
+            +'Child Number:'+responseJson.childNo+'\nProfile Description Number:'+responseJson.profileDescriptionNo});           
             alert(this.state.submitAlertMessage);
+            fetch(base_url+"/child-profile-all-description/"+this.state.child.childNo,{
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then((response)=>response.json())
+            .then((responseJson)=>{
+                console.log(responseJson,'222');
+            })
         })
         .catch((error) => {
             this.setState({submitAlertMessage: 'Unable to update details. Plesae contact the Admin.'});
@@ -182,16 +188,19 @@ export default class ViewProfile extends React.Component {
                 <ScrollView>
 
                     <View>
-                        <Text style={globalStyles.text}>Entered Description is : {this.state.description}</Text>
+                        if(this.state.updateProfile){
+                        <Text style={globalStyles.text}>Child Name : {this.state.child.firstName}</Text>}
+                        <Text style={globalStyles.text}>Entered Description is : {this.state.description}</Text>}
                         <Text style={globalStyles.text}>Enter/Update Description about child:</Text>
-                        <Text style={globalStyles.errormsg}>{props.touched.Description && props.errors.Description}</Text>
+                        {/* <Text style={globalStyles.text}>Entered  :{props.values.Description} </Text> */}
                         <TextInput
                             style={globalStyles.input}
-                            //value={this.state.description}
+                            value={props.values.Description}
                             onChangeText={props.handleChange('Description')}
-                            value={props.values.Description} 
+                        //    onChangeText={text => props.setFieldValue('Description', text)}
+                        //   value={props.values.Description} 
                         />
-
+                        <Text style={globalStyles.errormsg}>{props.touched.Description && props.errors.Description}</Text>
                          <Text style={globalStyles.padding}></Text>
                         <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
 

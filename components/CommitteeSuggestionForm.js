@@ -76,18 +76,9 @@ export default class CommitteeScreen extends React.Component {
     };
 
     populateSelectedStaff = (committeeSuggestion) => {
-        var joined = this.state.selectedStaff.concat(committeeSuggestion[1].staffNo);
+        var joined = this.state.selectedStaff.concat(committeeSuggestion[0].staffNo);
        this.setState({selectedStaff: joined});
     } 
-
-    // handleCheckBox = (event) => {
-    // let staffMembers = this.state.staffMembers
-    // staffMembers.forEach(staffMember => {
-    //    if (staffMember.staffNo === event.target.staffNo)
-    //    staffMember.isSelected =  event.target.checked
-    // })
-    // this.setState({staffMembers: staffMembers})
-    // }
 
 
     componentDidMount() {
@@ -112,11 +103,10 @@ export default class CommitteeScreen extends React.Component {
         .then(([responseJson1, responseJson2])=>{
             console.log(responseJson1,'it is response for getting stored details');
             console.log(responseJson2,'it is response for staff list');
-            this.populateSelectedStaff(responseJson1);
             this.setState({staffMembers: responseJson2})
             //this.setState({staffMembers: [...this.state.staffMembers, this.getStaffMembers()]})
-            this.getStaffMembers();
-            console.log(this.state.staffMembers);
+            console.log(this.getStaffMembers(),'returning members');
+            console.log(this.state.staffMembers,'staff members list');
             if(responseJson1 == null)
             {
                 this.state.updateDetails=false;
@@ -124,6 +114,7 @@ export default class CommitteeScreen extends React.Component {
             else{
                 this.state.updateDetails=true;
                 this.setState({ committeeSuggestionNo:responseJson1[0].committeeSuggestionNo});
+                this.populateSelectedStaff(responseJson2);
              }
     });
     }
