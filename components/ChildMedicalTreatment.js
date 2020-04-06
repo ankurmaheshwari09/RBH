@@ -10,6 +10,7 @@ import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 import {base_url} from '../constants/Base';
 
+
 const MedicalTreatmentSchema = yup.object({
     IllnessStartDate: yup.string().required(),
     VisitedDate: yup.string().required(),
@@ -23,20 +24,21 @@ const MedicalTreatmentSchema = yup.object({
 
 
 export default class ChildMedicalTreatment extends React.Component{
-constructor(){
-super()
+constructor(props){
+super(props)
 this.state ={
 startDate: '',
 visitDate: '',
 showSD: false,
 showVD: false,
 submitAlertMessage: '',
+child: this.props.navigation.getParam('child')
 }
 }
 
 _pickStartDate = (event, date, handleChange) => {
         console.log(date);
-        let a = moment(date).format('DD/MM/YYYY');
+        let a = moment(date).format('YYYY-MM-DD');
         console.log(a);
         console.log(typeof (a));
         this.setState({
@@ -47,7 +49,7 @@ _pickStartDate = (event, date, handleChange) => {
 
 _pickVisitedDate = (event, date, handleChange) => {
         console.log(date);
-        let a = moment(date).format('DD/MM/YYYY');
+        let a = moment(date).format('YYYY-MM-DD');
         console.log(a);
         console.log(typeof (a));
         this.setState({
@@ -73,14 +75,15 @@ showVisitedDatepicker = () => {
 
     submitMedicalTreatmentForm(values) {
         let request_body = JSON.stringify({
-                "IllnessStartDate": values.IllnessStartDate,
-                "VisitedDate": values.VisitedDate,
-                "HospitalName": values.HospitalName,
-                "DoctorName": values.DoctorName,
-                "DiseasesDiagnosed": values.DiseasesDiagnosed,
-                "FurtherTests": values.FurtherTests,
-                "TotalMedicalCost": values.TotalMedicalCost,
-                "Remarks": values.Remarks
+                "childNo": this.state.child.childNo,
+                "illnessStartDate": values.IllnessStartDate,
+                "visitedDate": values.VisitedDate,
+                "hospitalName": values.HospitalName,
+                "doctorName": values.DoctorName,
+                "diseaseDiagnosed": values.DiseasesDiagnosed,
+                "furtherTests": values.FurtherTests,
+                "totalMedicalCost": values.TotalMedicalCost,
+                "remarks": values.Remarks
         });
         let result = {};
         fetch(base_url+"/medical-treatment", {
@@ -125,9 +128,9 @@ showVisitedDatepicker = () => {
 
                     console.log(values);
                     this.setState({startDate:'',visitDate:''});
-                    let result = this.submitMedicalTreatmentForm(values);
-                    console.log(result);
-                    alert("Data Has been submitted")
+                    this.submitMedicalTreatmentForm(values);
+//                    console.log(result);
+//                    alert("Data Has been submitted")
                     actions.resetForm();
 
                 }}

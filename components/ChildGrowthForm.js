@@ -23,15 +23,15 @@ var month = new Date().getMonth() + 1; //Current Month
 var year = new Date().getFullYear(); //Current Year
 
 export default class ChildGrowth extends React.Component{
-constructor(){
-super()
+constructor(props){
+super(props);
 this.state ={
 AssessmentOn:'',
 showAD: false,
-submitAlertMessage: ''
+submitAlertMessage: '',
+child: this.props.navigation.getParam('child')
 }
 }
-
 showAssessmentDatePicker = () => {
     this.setState({
       showAD: true
@@ -40,7 +40,7 @@ showAssessmentDatePicker = () => {
 
 _pickAssessmentDate = (event, date, handleChange) => {
         console.log(date);
-        let a = moment(date).format('DD/MM/YYYY');
+        let a = moment(date).format('YYYY-MM-DD');
         console.log(a);
         console.log(typeof (a));
         this.setState({
@@ -51,12 +51,13 @@ _pickAssessmentDate = (event, date, handleChange) => {
 
     submitChildGrowthForm(values) {
         let request_body = JSON.stringify({
-                AssessmentDate:values.AssessmentDate,
-                Height:values.Height,
-                Weight:values.Weight,
-                GeneralHealth:values.GeneralHealth,
-                Comments:values.Comments,
-                HealthStatus: values.HealthStatus
+                "childNo": this.state.child.childNo,
+                "healthDate":values.AssessmentDate,
+                "height":values.Height,
+                "weight":values.Weight,
+                "generalHealth":values.GeneralHealth,
+                "comments":values.Comments,
+                "healthStatus": values.HealthStatus
         });
         let result = {};
         fetch(base_url+"/child-health", {
@@ -93,10 +94,10 @@ _pickAssessmentDate = (event, date, handleChange) => {
                         Weight: '',
                         GeneralHealth: '',
                         Comments: '',
-                        CreatedBy: 'admin',
-                        ModifiedBy: 'admin',
-                        CreatedDate: date + '/' + month + '/' + year,
-                        ModifiedDate: date + '/' + month + '/' + year,
+//                        CreatedBy: 'admin',
+//                        ModifiedBy: 'admin',
+//                        CreatedDate: date + '/' + month + '/' + year,
+//                        ModifiedDate: date + '/' + month + '/' + year,
                         HealthStatus: '1'
                     }
                 }
@@ -106,9 +107,9 @@ _pickAssessmentDate = (event, date, handleChange) => {
                     this.setState({
                     AssessmentOn:''
                     });
-                    let result = this.submitChildGrowthForm(values);
-                    console.log(result);
-                    alert("Data Has been submitted")
+                     this.submitChildGrowthForm(values);
+//                    console.log(result);
+//                    alert("Data Has been submitted")
                     actions.resetForm();
 
                 }}
@@ -153,13 +154,15 @@ _pickAssessmentDate = (event, date, handleChange) => {
                <Text style = {globalStyles.textform}>GeneralHealth</Text>
                    <Picker
                     selectedValue = {props.values.GeneralHealth}
-                    onValueChange = {props.handleChange('GeneralHealth')}
+                    onValueChange = {value => {
+                                                props.setFieldValue('GeneralHealth', value)
+                                               }}
                     style = {globalStyles.dropDown}
                     >
-                    <Picker.Item label='Select Condition' value = ''/>
-                    <Picker.Item label='Good' value = 'Good'/>
-                    <Picker.Item label='Normal' value = 'Normal'/>
-                    <Picker.Item label='Sick' value = 'Sick'/>
+                       <Picker.Item label="Select General Health" value="" />
+                       {global.generalHealth.map((item) => {
+                            return <Picker.Item key = {item.generalHealthID} label = {item.generalHealth} value = {item.generalHealthID}/>
+                       })}
                     </Picker>
                     <Text style={globalStyles.errormsgform}>
                     {props.touched.GeneralHealth && props.errors.GeneralHealth}
