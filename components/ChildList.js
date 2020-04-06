@@ -120,9 +120,9 @@ export default class ChildList extends Component {
             return styles.blue;
         } else if (status == 'Present') {
             return styles.green;
-        } else if (item.dob.age == 'Close' ) {
+        } else if (status == 'Close' ) {
             return styles.red;
-        } else if (item.dob.age == 'Absent') {
+        } else if (status == 'Absent') {
             return styles.yellow;
         }
     }
