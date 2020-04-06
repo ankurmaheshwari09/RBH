@@ -5,6 +5,8 @@ import Modal from 'react-native-modal';
 import { SearchBar } from 'react-native-elements';
 import moment from 'moment';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
 
 export default class ChildList extends Component {
     constructor(props) {
@@ -18,7 +20,20 @@ export default class ChildList extends Component {
             loading: false,
             data: [],
             error: null,
-            search: null
+            search: null,
+            errorDisplay: false,
+            modalItems: [
+                { key: 'Status', page: 'ChildStatus' },
+                { key: 'Health', page: 'Health' },
+                { key: 'Education', page: 'Education' },
+                { key: 'Family', page: 'Family' },
+                { key: 'Communication', page: 'Communication' },
+                { key: 'General Info', page: 'GeneralInfo' },
+                { key: 'View Profile', page: 'Profile' },
+                { key: 'Committee', page: 'Committee' },
+                { key: 'Follow Up', page: 'FollowUpBy' },
+            ],
+            modalItemsForCurrentItem:null
         };
         this.arrayholder = [];
         this.onPress =this.onPress.bind(this);
@@ -28,46 +43,61 @@ export default class ChildList extends Component {
         this.searchFilterFunction = this.searchFilterFunction.bind(this);
         this.renderHeader = this.renderHeader.bind(this);
         this.getStyles = this.getStyles.bind(this);
+        this.getData = this.getData.bind(this);
+        this.getModalItems = this.getModalItems.bind(this);
         // this.show =this.show.bind(this);
     }
     componentDidMount() {
+       this.getData();
+    }
+
+
+    componentWillUnmount() {
+        this.setState({
+            loading: false,
+            search: null,
+            errorDisplay: false
+        }, () => { this.getData() });
+    }
+    getData() {
+        console.log('inside get');
         this.setState({ search: null, loading: true });
-        var that = this;
-        /*let items = Array.apply(null, Array(30)).map((v, i) => {
-            return { id: i, src: 'https://picsum.photos/id/'+(i+1)+'/200/300' };
-        });
-        that.setState({
-            dataSource: items,
-        });*/
-        fetch('https://rest-service.azurewebsites.net/api/v1/children/59', {
+        fetch('https://rest-service.azurewebsites.net/api/v1/children/45', {
             method: 'GET',
         })
-            .then(res => res.json())
+
             .then(res => {
-                this.setState({
-                    data: res,
-                    error: res.error || null,
-                    loading: false,
-                });
-                console.log(this.state.data, 'aaaaa');
-                this.arrayholder = res;
+                if (res.ok) {
+
+                    res.json().then((data) => {
+                        this.setState({
+                            data: data,
+                            loading: false,
+                        });
+
+                        this.arrayholder = data;
+                    });
+                } else {
+                    console.log(res.status);
+                    throw Error(res.status);
+                }
             })
             .catch(error => {
-                this.setState({ error, loading: false });
+                this.setState({ loading: false, errorDisplay: true });
             });  
     }
     onPress(item) {
-        console.log(item);
+        let list = this.getModalItems(item);
         this.setState({
             isVisible: true,
-            selectedChild: item
+            selectedChild: item,
+            modalItemsForCurrentItem: list
         });
-        console.log(this.state.isVisible);
-      //  console.log(this.state.selectedChild);
+
     }
-    navigateToOtherScreen(screen){
+    navigateToOtherScreen(screen) {
         // console.log(this.state.navItems);
-        this.props.navigation.navigate(screen, { child: this.state.selectedChild });
+        this.props.navigation.navigate(screen, { child: this.state.selectedChild, refreshChildList: this.getData.bind(this) });
     }
     closeModal(){
         this.setState({
@@ -75,14 +105,14 @@ export default class ChildList extends Component {
         });
     }
     onPressForList(screen){
-        console.log("event:"+screen);
+
         this.closeModal();
        // this.setState({page: page});
        this.navigateToOtherScreen(screen);
     }
     searchFilterFunction = text => {
 
-        console.log(text);
+       // console.log(text);
         this.setState({ search: text });
         if ('' == text) {
             this.setState({
@@ -120,79 +150,76 @@ export default class ChildList extends Component {
             return styles.blue;
         } else if (status == 'Present') {
             return styles.green;
-        } else if (status == 'Close' ) {
+        } else if (status == 'Closed' ) {
             return styles.red;
         } else if (status == 'Absent') {
             return styles.yellow;
         }
     }
 
+    getModalItems(item) {
+        console.log('modal items');
+        let updatedList = this.state.modalItems;
+        if (item.childStatus.childStatus !== 'Closed') {
+            updatedList = this.state.modalItems.filter(item => item.key !== 'Follow Up');
+        }
+        return updatedList;
+    }
+
     render() {
-        const items=[
-            { key: 'Status', page: 'ChildStatus'},
-            {key: 'Health', page: 'Health'},
-            {key: 'Education', page: 'Education'},
-            { key: 'Family', page: 'Family' },
-            { key: 'Communication', page: 'Communication' },
-            {key: 'General Info' ,page: 'GeneralInfo'},
-            {key: 'View Profile', page: 'Profile'},
-            {key: 'Committee', page: 'Committee'},
-            { key: 'Follow Up', page: 'FollowUpBy' },
-        ];
+
         return (
             <View style={styles.MainContainer}>
-
-                <Spinner
-                    //visibility of Overlay Loading Spinner
-                    visible={this.state.loading}
-                    //Text with the Spinner 
-                    textContent={'Loading...'}
-                    //Text style of the Spinner Text
-                  //  textStyle={styles.spinnerTextStyle}
-                />
-               
-                <FlatList
-                    data={this.state.data}
-                    renderItem={({ item }) => (
-                        <View style={{
-                            flex: 1/2 , flexDirection: 'column', margin: 1, justifyContent: 'space-evenly'}}>
-                            <TouchableOpacity style={styles.container} onPress={(event) => { this.onPress(item) }}>
-                                {/*react-native-elements Card*/}
-                                <Card style={this.getStyles(item.childStatus.childStatus)}>
-                                    <CardImage resizeMode="cover" resizeMethod="resize" source={{ uri: "https://picsum.photos/id/1/300/300" }} />
-                                    <CardContent style={styles.paragraph}>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text style={styles.heading}>Name:</Text >
-                                            <Text style={styles.cardContent}>{`${item.firstName} ${item.lastName}`}  </Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row'}}>
-                                            <Text style={styles.heading}>Adm Date:</Text >
-                                            <Text style={styles.cardContent}>{moment(item.admissionDate).format('DD/MM/YYYY')}</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row'}}>
-                                            <Text style={styles.heading}>DOB:</Text >
-                                            <Text style={styles.cardContent}>{moment(item.dateOfBirth).format('DD/MM/YYYY')}</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <Text style={styles.heading}>Status:</Text >
-                                            <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>
-                                        </View>
-                                    </CardContent>
-                                </Card>
-                            </TouchableOpacity>
-                        </View>
-                    )}
-                    //Setting the number of column
-                    numColumns={2}
-                    keyExtractor={item => item.childNo} 
-                    ListHeaderComponent={this.renderHeader}
-                />
+                <LoadingDisplay loading={this.state.loading} />
+                {this.state.errorDisplay ?
+                    <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                    :
+                    <FlatList
+                        data={this.state.data}
+                        renderItem={({ item }) => (
+                            <View style={{
+                                flex: 1 / 2, flexDirection: 'column', margin: 1, justifyContent: 'space-evenly'
+                            }}>
+                                <TouchableOpacity style={styles.container} onPress={(event) => { this.onPress(item) }}>
+                                    {/*react-native-elements Card*/}
+                                    <Card style={this.getStyles(item.childStatus.childStatus)}>
+                                        <CardImage resizeMode="cover" resizeMethod="resize" source={{ uri: "https://picsum.photos/id/1/300/300" }} />
+                                        <CardContent style={styles.paragraph}>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text style={styles.heading}>Name:</Text >
+                                                <Text style={styles.cardContent}>{`${item.firstName} ${item.lastName}`}  </Text>
+                                            </View>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text style={styles.heading}>Adm Date:</Text >
+                                                <Text style={styles.cardContent}>{moment(item.admissionDate).format('DD/MM/YYYY')}</Text>
+                                            </View>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text style={styles.heading}>DOB:</Text >
+                                                <Text style={styles.cardContent}>{moment(item.dateOfBirth).format('DD/MM/YYYY')}</Text>
+                                            </View>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text style={styles.heading}>Status:</Text >
+                                                <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>
+                                            </View>
+                                        </CardContent>
+                                    </Card>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                        //Setting the number of column
+                        numColumns={2}
+                        keyExtractor={item => item.childNo}
+                        ListHeaderComponent={this.renderHeader}
+                    />
+                }
                 <Modal  style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
                     <View style={styles.MainContainer}>
-                        <FlatList data={items} renderItem={({item})=>(
-                            <TouchableOpacity style={styles.styleContents} onPress={(event) =>this.onPressForList(item.page)}>
-                                <Text style={styles.item}>{item.key}</Text>
+                        <FlatList data={this.state.modalItemsForCurrentItem} renderItem={({ item }) => (
+
+                            < TouchableOpacity style={styles.styleContents} onPress={(event) => this.onPressForList(item.page)}>
+                            <Text style={styles.item}>{item.key}</Text>
                             </TouchableOpacity>
+
                         )}
                         />
                     </View>
@@ -271,7 +298,7 @@ const styles = StyleSheet.create({
       //  borderWidth: 5,
     },
     yellow: {
-        backgroundColor: '#ffff80',
+        backgroundColor: '#ffff99',
       //  borderWidth: 5
     }
 });

@@ -14,8 +14,8 @@ export async function getDataAsync(url){
             throw error;
         }
     }
-    catch(errr) {
-        console.log(errr)
+    catch (errr) {
+        console.log(JSON.stringify(errr), 'ppppp');
         return [{"religion": "service unavailable", "religionID": "123"}]
     }
 }
