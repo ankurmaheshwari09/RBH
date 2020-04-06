@@ -221,6 +221,9 @@ export default class CommitteeScreen extends React.Component {
                 <ScrollView>
 
                     <View>
+                        
+                    <Text style={globalStyles.text}>Child Name : {this.state.child.firstName}</Text>
+                    <Text style={globalStyles.padding}></Text>
                         <Text style={globalStyles.text}>Suggestion:</Text>
                         <Text style={globalStyles.errormsg}>{props.touched.Suggestion && props.errors.Suggestion}</Text>
                         <TextInput
@@ -256,15 +259,6 @@ export default class CommitteeScreen extends React.Component {
                             }
                         </View>
                          
-             {/* <CheckBox    style={styles.checkBoxStyle}
-               onClick={()=>{
-                  this.setState({
-                     isMember1: !this.state.isMember1
-                  })
-                  }}
-                  isChecked={this.state.isMember1}     
-                  rightText='Staff Member 1'               
-            />            */}
 
              {
               this.state.staffMembers.map((staffMember,index) => {
@@ -280,7 +274,6 @@ export default class CommitteeScreen extends React.Component {
                     this.setState({
                     staffMembers: tempStaffMembers
                     });
-                    //console.log(staffMembers);
                     }}
                     isChecked={staffMember.isSelected}     
                     rightText={staffMember.firstName + " " + staffMember.lastName}  

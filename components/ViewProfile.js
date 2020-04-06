@@ -189,9 +189,9 @@ export default class ViewProfile extends React.Component {
                 <ScrollView>
 
                     <View>
-                        if(this.state.updateProfile){
-                        <Text style={globalStyles.text}>Child Name : {this.state.child.firstName}</Text>}
-                        <Text style={globalStyles.text}>Entered Description is : {this.state.description}</Text>}
+                      
+                        <Text style={globalStyles.text}>Child Name : {this.state.child.firstName}</Text>
+                        <Text style={globalStyles.text}>Previously Entered Description is : {this.state.description}</Text>
                         <Text style={globalStyles.text}>Enter/Update Description about child:</Text>
                         {/* <Text style={globalStyles.text}>Entered  :{props.values.Description} </Text> */}
                         <TextInput
