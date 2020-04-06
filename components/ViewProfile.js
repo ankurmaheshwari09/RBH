@@ -139,8 +139,9 @@ export default class ViewProfile extends React.Component {
                 }
             })
             .then((response)=>response.json())
-            .then((responseJson)=>{
-                console.log(responseJson,'222');
+            .then((responseJson2)=>{
+                console.log(responseJson2,'222');
+                this.setState({description: responseJson2.description});
             })
         })
         .catch((error) => {
