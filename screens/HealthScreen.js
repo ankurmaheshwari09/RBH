@@ -4,7 +4,7 @@ import SegmentedHealthView from '../components/SegmentedHealthView';
 export default class HealthScreen extends Component {
     render() {
         return (
-           <SegmentedHealthView/>
+           <SegmentedHealthView navigation = {this.props.navigation}/>
         )
     }
 }

@@ -21,7 +21,7 @@ export default class ChildList extends Component {
             data: [],
             error: null,
             search: null,
-            errorDisplay: false, 
+            errorDisplay: false,
             modalItems: [
                 { key: 'Status', page: 'ChildStatus' },
                 { key: 'Health', page: 'Health' },
@@ -51,7 +51,7 @@ export default class ChildList extends Component {
        this.getData();
     }
 
-   
+
     componentWillUnmount() {
         this.setState({
             loading: false,
@@ -65,16 +65,16 @@ export default class ChildList extends Component {
         fetch('https://rest-service.azurewebsites.net/api/v1/children/45', {
             method: 'GET',
         })
-            
+
             .then(res => {
                 if (res.ok) {
-                    
+
                     res.json().then((data) => {
                         this.setState({
                             data: data,
                             loading: false,
                         });
-                  
+
                         this.arrayholder = data;
                     });
                 } else {
@@ -93,7 +93,7 @@ export default class ChildList extends Component {
             selectedChild: item,
             modalItemsForCurrentItem: list
         });
-       
+
     }
     navigateToOtherScreen(screen) {
         // console.log(this.state.navItems);
@@ -105,7 +105,7 @@ export default class ChildList extends Component {
         });
     }
     onPressForList(screen){
-       
+
         this.closeModal();
        // this.setState({page: page});
        this.navigateToOtherScreen(screen);
@@ -167,7 +167,7 @@ export default class ChildList extends Component {
     }
 
     render() {
-        
+
         return (
             <View style={styles.MainContainer}>
                 <LoadingDisplay loading={this.state.loading} />
@@ -219,7 +219,7 @@ export default class ChildList extends Component {
                             < TouchableOpacity style={styles.styleContents} onPress={(event) => this.onPressForList(item.page)}>
                             <Text style={styles.item}>{item.key}</Text>
                             </TouchableOpacity>
-                                                               
+
                         )}
                         />
                     </View>
