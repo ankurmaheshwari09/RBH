@@ -19,8 +19,25 @@ export default class GeneralInfoSegControl extends Component {
       formIndex: 0,
       loading: false,
       child: this.props.navigation.getParam('child'),
-      childHealth: [],
-      prevEducation: [],
+      childHealth: {
+        "bloodGroup": '',
+        "generalHealth": '',
+        "height": '',
+        "weight": '',
+        "comments": '',
+        "newChild": true
+      },
+      prevEducation: {
+        "dropoutReason": '',
+        "date_to": '',
+        "yearOfStudied": '',
+        "medium": '',
+        "schoolName": '',
+        "schooltype": '',
+        "studyingclass": '',
+        "address": '',
+        "newChild": true
+      },
       childData: []
     }
   }
@@ -28,13 +45,15 @@ export default class GeneralInfoSegControl extends Component {
     componentDidMount(){
       this.setState({ search: null, loading: true });
       getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => this.setState({childData: data}))
-      getDataAsync(base_url + '/child-health/' + this.state.child.childNo).then(data => {this.setState({childHealth: data})})
+      getDataAsync(base_url + '/child-health-all-records/' + this.state.child.childNo).then(data => {
+        if(data !== [] && data !== null)
+          this.setState({childHealth: data[0]})
+        })
       getDataAsync(base_url + '/child-education/' + this.state.child.childNo).then(data => {
-        this.setState({prevEducation: data})
+        if(data !== null && data !== [])
+          this.setState({prevEducation: data[0]})
         this.setState({loading: false})
       })
-      console.log('asdfgwerty')
-      //console.log(this.state.child)
     }
     render() {
       const {formIndex} = this.state
@@ -73,8 +92,6 @@ export default class GeneralInfoSegControl extends Component {
             </ScrollView>
             </View>
             <View style = {globalStyles.scrollContainer}>
-              {console.log('------------------------')}
-              {console.log(this.props.navigation.getParam('child'))}
               {formIndex === 0 && <GeneralInfoForm navigation = {this.props.navigation} childData = {this.state.childData}/>}
               {formIndex === 1 && <PrevEduForm navigation = {this.props.navigation} prevEducation = {this.state.prevEducation}/>}
               {formIndex === 2 && <HealtDuringAdd navigation = {this.props.navigation} childHealth = {this.state.childHealth}/>}

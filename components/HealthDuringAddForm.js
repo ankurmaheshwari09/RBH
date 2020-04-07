@@ -32,19 +32,22 @@ export default class HealthDuringAdd extends React.Component{
         }
     }
     _submitHealthDuringAdd(values){
-        console.log(this.props.childHealth)
-        console.log('******************')
         let childHealth = this.props.childHealth
+        let apimethod = "PUT"
+        let url = base_url + '/child-health/' + childHealth.healthNo
+        if('newChild' in this.props.childHealth){
+            apimethod = "POST"
+            url = base_url + '/child-health'
+        }
         childHealth.bloodGroup = parseInt(values.bloodGroup)
         childHealth.generalHealth = values.generalHealth
         childHealth.healthDate = new Date()
         childHealth.height =  values.height
         childHealth.weight = values.weight
         childHealth.comments =  values.comments
-        console.log(childHealth)
-        console.log('&&&&&&&&&&&&&&&&&&&&&&&')
-        fetch(base_url + '/child-health/' + childHealth.healthNo, {
-            method: 'PUT',
+
+        fetch(url, {
+            method: apimethod,
             headers: {
                 Accept: '*/*',
                 'Content-Type': 'application/json',
@@ -74,7 +77,7 @@ export default class HealthDuringAdd extends React.Component{
                 <Formik
                     initialValues = {
                         {
-                            bloodGroup: this.state.child.bloodGroup,
+                            bloodGroup: this.state.child.bloodGroup.toString(),
                             generalHealth: this.state.childHealth.generalHealth,
                             height: this.state.childHealth.height,
                             weight: this.state.childHealth.weight,
@@ -106,11 +109,11 @@ export default class HealthDuringAdd extends React.Component{
                                 onValueChange = {props.handleChange('bloodGroup')}
                                 selectedValue = {props.values.bloodGroup}
                                 >
-                                    <Picker.Item label = 'Select Blood Group' value = ''/>
-                                    <Picker.Item label = 'O+' value = '0'/>
-                                    <Picker.Item label = 'B+' value = '1'/>
-                                    <Picker.Item label = 'AB-' value = '2'/>
-                                    <Picker.Item label = 'A+' value = '3'/>
+                                    <Picker.Item label = 'Select Blood Group' value = '0'/>
+                                    <Picker.Item label = 'O+' value = "1"/>
+                                    <Picker.Item label = 'B+' value = "2"/>
+                                    <Picker.Item label = 'AB-' value = "3"/>
+                                    <Picker.Item label = 'A+' value = "4"/>
                                 </Picker>
 
                                 <Text style = {globalStyles.text}>General Helath</Text>

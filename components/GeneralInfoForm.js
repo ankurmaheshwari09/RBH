@@ -1,11 +1,10 @@
 import React from 'react';
 import {Button, Text, TextInput, View, Picker, ScrollView,
-    KeyboardAvoidingView} from 'react-native';
+    KeyboardAvoidingView, ActivityIndicator} from 'react-native';
 import {Formik} from 'formik';
 import {globalStyles} from '../styles/global';
 import * as yup from 'yup';
 import {putDataAsync, base_url} from '../constants/Base'
-import { ActivityIndicator } from 'react-native';
 
 const GeneralInfoFormSchema = yup.object({
     identificationPlace1: yup.string().required(),
@@ -29,8 +28,6 @@ export default class GeneralInfoForm extends React.Component{
             showLoader: false,
             loaderIndex: 0
         }
-        console.log("CHILD:")
-        console.log(this.props.childData)
     }
     _submitGeneralInfo(values){
         let child = this.props.childData
@@ -43,7 +40,6 @@ export default class GeneralInfoForm extends React.Component{
         child.organisationName = values.psoName
         child.cWCRefNo =  values.cwcRefNo
         child.stayReason = values.cwcStayReason
-        console.log(child)
         fetch(base_url + '/child/' + child.childNo, {
             method: 'PUT',
             headers: {
@@ -66,7 +62,6 @@ export default class GeneralInfoForm extends React.Component{
             this.setState({showLoader: false,loaderIndex:0});
         });
     
-        console.log('Done calling put')
     }
     render() {
         return (
@@ -94,12 +89,9 @@ export default class GeneralInfoForm extends React.Component{
                 validationSchema = {GeneralInfoFormSchema}
                 onSubmit = {(values, actions) => {
                     //actions.resetForm();
-                    console.log('in submit')
                     this.setState({showLoader: true,loaderIndex:10});
                     let result = this._submitGeneralInfo(values);
                     let alertMessage = this.state.submitAlertMessage;
-
-                    console.log(values);
                     //this.props.navigation.push('InfoGeneral', values)
                     
                 }}
