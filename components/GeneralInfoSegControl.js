@@ -10,7 +10,7 @@ import HealtDuringAdd from './HealthDuringAddForm'
 import PrevEduForm from './PrevEduForm';
 import { globalStyles } from '../styles/global';
 import {base_url, getDataAsync} from '../constants/Base';
-import Spinner from 'react-native-loading-spinner-overlay';
+import {LoadingDisplay} from '../utils/LoadingDisplay';
 
 export default class GeneralInfoSegControl extends Component {
   constructor(props) {
@@ -55,14 +55,12 @@ export default class GeneralInfoSegControl extends Component {
         this.setState({loading: false})
       })
     }
+    
     render() {
       const {formIndex} = this.state
       return (
         <View style = {globalStyles.container}>
-          <Spinner
-        visible={this.state.loading}
-        textContent={'Loading...'}
-        />
+          <LoadingDisplay loading={this.state.loading} />
           <View style = {globalStyles.segView}>
           <ScrollView
             horizontal = {true}

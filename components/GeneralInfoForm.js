@@ -4,7 +4,12 @@ import {Button, Text, TextInput, View, Picker, ScrollView,
 import {Formik} from 'formik';
 import {globalStyles} from '../styles/global';
 import * as yup from 'yup';
-import {putDataAsync, base_url} from '../constants/Base'
+import {putDataAsync, base_url} from '../constants/Base';
+import UpdateApi from "../constants/UpdateApi";
+import Modal from 'react-native-modal';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
 
 const GeneralInfoFormSchema = yup.object({
     identificationPlace1: yup.string().required(),
@@ -25,11 +30,15 @@ export default class GeneralInfoForm extends React.Component{
         super(props)
         this.state = {
             child: this.props.navigation.getParam('child'),
-            showLoader: false,
-            loaderIndex: 0
+            sucessDisplay: false,
+            errorDisplay: false,
+            loading: false,
+            isVisible: false,
         }
     }
+    
     _submitGeneralInfo(values){
+        this.setState({ loading: true });
         let child = this.props.childData
         child.identificationMark1 =  values.identificationPlace1.toString() + ',' + values.markType1.toString()
         child.identificationMark2 = values.identificationPlace2.toString() + ',' + values.markType2.toString()
@@ -40,26 +49,22 @@ export default class GeneralInfoForm extends React.Component{
         child.organisationName = values.psoName
         child.cWCRefNo =  values.cwcRefNo
         child.stayReason = values.cwcStayReason
-        fetch(base_url + '/child/' + child.childNo, {
-            method: 'PUT',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(child),
-        })
-        .then((response) => {console.log(response.status);return response.json()})
-        .then((responseJson) => {
-            console.log(responseJson);
-            this.setState({submitAlertMessage: 'Successfully updated child with Child Number '+this.state.child.childNo});
-            alert(this.state.submitAlertMessage);
-            this.setState({showLoader: false,loaderIndex:0});
-        })
-        .catch((error) => {
-            this.setState({submitAlertMessage: 'Unable to update child. Plesae contact the Admin.'});
-            alert(this.state.submitAlertMessage);
-            console.log(error);
-            this.setState({showLoader: false,loaderIndex:0});
+        
+        path = `/child/${child.childNo}`
+        UpdateApi.updateData(JSON.stringify(child), path).then((response) => {
+            this.setState({ loading: false, isVisible: true });
+            if(response.ok){
+                response.json().then((res) => {
+                    console.log(res)
+                })
+                this.setState({ successDisplay: true });
+            }
+            else{
+                throw Error(response.status);
+            }
+        }).catch(error => {
+            console.log(error, 'ffff');
+            this.setState({ errorDisplay: true });
         });
     
     }
@@ -67,9 +72,7 @@ export default class GeneralInfoForm extends React.Component{
         return (
             
             <View style = {globalStyles.container}>
-                <View style={{ position: 'absolute', top:"45%",right: 0, left: 0, zIndex: this.state.loaderIndex }}>
-                    <ActivityIndicator animating={this.state.showLoader} size="large" color="red" />
-                </View>
+                
                 <Formik
                 enableReinitialize
                 initialValues = {
@@ -89,7 +92,6 @@ export default class GeneralInfoForm extends React.Component{
                 validationSchema = {GeneralInfoFormSchema}
                 onSubmit = {(values, actions) => {
                     //actions.resetForm();
-                    this.setState({showLoader: true,loaderIndex:10});
                     let result = this._submitGeneralInfo(values);
                     let alertMessage = this.state.submitAlertMessage;
                     //this.props.navigation.push('InfoGeneral', values)
@@ -244,7 +246,13 @@ export default class GeneralInfoForm extends React.Component{
                     )}
 
                 </Formik>
-
+                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={globalStyles.MainContainer}>
+                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='General Info' childNo={this.state.child.firstName} />
+                    </View>
+                </Modal>
+                <LoadingDisplay loading={this.state.loading} />
             </View>
         );
     }

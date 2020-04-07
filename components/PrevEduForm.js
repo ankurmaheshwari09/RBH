@@ -4,8 +4,12 @@ import {Text, KeyboardAvoidingView, Picker, View, ScrollView,
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
-import {base_url} from '../constants/Base';
 import moment from 'moment';
+import UpdateApi from "../constants/UpdateApi";
+import Modal from 'react-native-modal';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
 
 const PrevEduSchema = yup.object({
     dropoutReason: yup.string(),
@@ -25,8 +29,10 @@ export default class PrevEduForm extends React.Component{
         super(props)
         this.state = {
             child: this.props.navigation.getParam('child'),
-            showLoader: false,
-            loaderIndex: 0,
+            sucessDisplay: false,
+            errorDisplay: false,
+            loading: false,
+            isVisible: false,
         }
     }
 
@@ -34,13 +40,18 @@ export default class PrevEduForm extends React.Component{
         return moment(date_to).format('YYYY')
     }
 
-    _submitPrevEdu(values){
-        let prevEducation = this.props.prevEducation
-        let apimethod = "PUT"
-        let url = base_url + '/child-education'
+    getApiMethod(data, path){
         if('newChild' in this.props.prevEducation){
-            apimethod = "POST"
+            return UpdateApi.addData(data, path)
         }
+        else{
+            return UpdateApi.updateData(data, path)
+        }
+    }
+    _submitPrevEdu(values){
+        this.setState({ loading: true });
+
+        let prevEducation = this.props.prevEducation
         prevEducation.dropoutReason = values.dropOutReason
         prevEducation.date_from = new Date(parseInt(values.yearOfStudied) - 1, 4)
         prevEducation.date_to = new Date(parseInt(values.yearOfStudied), 4)
@@ -50,34 +61,26 @@ export default class PrevEduForm extends React.Component{
         prevEducation.studyingclass = values.class,
         prevEducation.address = values.schoolPlace,
         prevEducation.modified_on = new Date()
-        fetch(url, {
-            method: apimethod,
-            headers: {
-                Accept: '*/*',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(prevEducation),
-        })
-        .then((response) => {console.log(response.status);return response.json()})
-        .then((responseJson) => {
-            console.log(responseJson);
-            this.setState({submitAlertMessage: 'Successfully updated child with Child Number '+this.state.child.childNo});
-            alert(this.state.submitAlertMessage);
-            this.setState({showLoader: false,loaderIndex:0});
-        })
-        .catch((error) => {
-            this.setState({submitAlertMessage: 'Unable to update child. Plesae contact the Admin.'});
-            alert(this.state.submitAlertMessage);
-            console.log(error);
-            this.setState({showLoader: false,loaderIndex:0});
-        });
+
+        this.getApiMethod(JSON.stringify(prevEducation), '/child-education').then((response) => {
+            this.setState({ loading: false, isVisible: true });
+            if(response.ok){
+                response.json().then((res) => {
+                    console.log(res)
+                })
+                this.setState({ successDisplay: true });
+            }
+            else{
+                throw Error(response.status);
+            }
+            }).catch(error => {
+            console.log(error, 'ffff');
+            this.setState({ errorDisplay: true });
+            });
     }
     render() {
         return (
             <View style = {globalStyles.container}>
-                <View style={{ position: 'absolute', top:"45%",right: 0, left: 0, zIndex: this.state.loaderIndex }}>
-                    <ActivityIndicator animating={this.state.showLoader} size="large" color="red" />
-                </View>
                 <Formik
                     initialValues = {
                         {
@@ -94,9 +97,7 @@ export default class PrevEduForm extends React.Component{
                     onSubmit = {(values, actions) => {
                         //actions.resetForm();
                         console.log(values)
-                        this.setState({showLoader: true,loaderIndex:10});
                         let result = this._submitPrevEdu(values);
-                        let alertMessage = this.state.submitAlertMessage;
                         //this.props.navigation.push('InfoGeneral', values)
                     }}
                 >
@@ -196,6 +197,13 @@ export default class PrevEduForm extends React.Component{
                     )}
 
                 </Formik>
+                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={globalStyles.MainContainer}>
+                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Prev Edu' childNo={this.state.child.firstName} />
+                    </View>
+                </Modal>
+                <LoadingDisplay loading={this.state.loading} />
 
             </View>
         );
