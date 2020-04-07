@@ -6,16 +6,18 @@ import {
 import { Formik } from 'formik';
 import { globalStyles } from '../styles/global';
 import * as yup from 'yup';
+import { base_url, getDataAsync } from '../constants/Base';
 import { Card, CardContent } from 'react-native-cards'
 import { MaterialIcons } from '@expo/vector-icons';
 import { Item } from 'native-base';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const FamilyFormSchema = yup.object({
-    Name: yup.string(),
-    Relation: yup.string(),
-    Occupation: yup.string(),
+    Name: yup.string().required(),
+    Relation: yup.string().required(),
+    Occupation: yup.string().required(),
     Age: yup.string(),
-    Present: yup.string(),
+    Present: yup.string().required(),
     Remarks: yup.string(),
     Income: yup.string(),
 })
@@ -24,10 +26,76 @@ let arr = "";
 
 export default class FamilyForm extends React.Component {
     reviews = [];
+    family=[];
     state = {
         modalVisible: false,
-        modaledit:false,
+        child: this.props.navigation.getParam('child'),
+        modaledit: false,
+        loading: false,
+        submitAlertMessage: '',
+        loaderIndex: 0,
+        relations: [],
+        occupations: [],
+        childFamilyList: [],
+        childFamilyDetails:[],
+        familyDetails: [],
+        updatefamily: [],
+        presentConditions: [
+            {
+                presentId: 1,
+                present:"Alive",
+            },
+            {
+                presentId: 2,
+                present: "Late",
+            },
+            {
+                presentId: 3,
+                present: "Married",
+            },
+            {
+                presentId: 4,
+                present: "Single",
+            },
+            {
+                presentId: 5,
+                present: "Divorced",
+            }
+        ],
+        display:[],
+        error:null
     };
+
+    async familyFormConstants() {
+ 
+        getDataAsync(base_url + '/relations').then(data => { console.log(data); this.setState({ relations: data }) });
+
+        getDataAsync(base_url + '/occupations').then(data => { console.log(data); this.setState({ occupations: data }) });
+    }
+    componentDidMount() {
+        this.setState({ loading: true });
+        this.familyFormConstants();
+        console.log("=============", this.state.child.childNo);
+        fetch(base_url + '/child-family/' + this.state.child.childNo, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((res) => res.json())
+            .then((resJson) => {
+                this.setState({
+                    childFamilyList: resJson,
+                    //display: [{ familyDisplay: this.state.childFamilyList }, { relationDisplay: this.state.relations.relation }],
+                   // error: res.error || null,
+                    loading: false,
+                });
+                console.log("ncdiuuir", this.state.childFamilyList);
+               // this.arrayholder = res;
+            })
+            ;
+    }
     renderDetails = () => {
         let items = this.reviews.map((v, i) => {
             return { id: i };
@@ -40,12 +108,162 @@ export default class FamilyForm extends React.Component {
     setModaledit(visible) {
         this.setState({ modaledit: visible });
     }
+
+    _submitFamilyForm(values) {
+        console.log("post", values);
+        this.setState({ loading: true, loaderIndex: 0 });
+        let request_body = JSON.stringify({
+            childNo: this.state.child.childNo,
+            name: values.Name,
+            relation: values.Relation,
+            occupation: values.Occupation,
+            age: values.Age,
+            presentcondition: values.Present,
+            remarks: values.Remarks,
+            income: values.Income,
+        });
+        let result = {};
+        fetch(base_url + "/child-family", {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: request_body,
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({ familyDetails: responseJson });
+                console.log("response.......", responseJson);
+               
+               // this.setState({ loading: true, loaderIndex: 0 });
+                fetch(base_url + '/child-family/' + this.state.child.childNo, {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                })
+                    .then((res) => res.json())
+                    .then((resJson) => {
+                        this.setState({
+                            childFamilyList: resJson,
+                            //display: [{ familyDisplay: this.state.childFamilyList }, { relationDisplay: this.state.relations.relation }],
+                            // error: res.error || null,
+                            loading: false,
+                        });
+                        this.setState({ submitAlertMessage: 'Successfully added family details with family number ' + this.state.familyDetails.familyNo });
+                        alert(this.state.submitAlertMessage);
+                        console.log("ncdiuuir", this.state.childFamilyList);
+                        // this.arrayholder = res;
+                    })
+                    ;
+            })
+            .catch((error) => {
+                this.setState({ submitAlertMessage: 'Unable to add family Details. Plesae contact the Admin.' });
+                alert(this.state.submitAlertMessage);
+                console.log(error);
+                this.setState({ loading: false, loaderIndex: 0 });
+            });
+    }
+
+    _updateSubmitFamilyForm(values) {
+        console.log("put", values);
+        this.setState({ loading: true, loaderIndex: 0 });
+        let request_body = JSON.stringify({
+            childNo: this.state.child.childNo,
+            familyNo: this.family.familyNo,
+            name: values.Name,
+            relation: values.Relation,
+            occupation: values.Occupation,
+            age: values.Age,
+            presentcondition: values.Present,
+            remarks: values.Remarks,
+            income: values.Income,
+        });
+        let result = {};
+        fetch(base_url + "/child-family", {
+            method: 'PUT',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: request_body,
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({ familyDetails: responseJson });
+                console.log("[[[[[[[[[[", responseJson);
+                
+               
+               // this.setState({ loading: true, loaderIndex: 0 });
+                fetch(base_url + '/child-family/' + this.state.child.childNo, {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                })
+                    .then((res) => res.json())
+                    .then((resJson) => {
+                        this.setState({
+                            childFamilyList: resJson,
+                            //display: [{ familyDisplay: this.state.childFamilyList }, { relationDisplay: this.state.relations.relation }],
+                            // error: res.error || null,
+                            loading: false,
+                        });
+                        this.setState({ submitAlertMessage: 'Successfully updated family with family Number ' + this.family.familyNo });
+                        alert(this.state.submitAlertMessage);
+                        console.log("ncdiuuir", this.state.childFamilyList);
+                        // this.arrayholder = res;
+                    })
+                    ;
+            })
+            .catch((error) => {
+                this.setState({ submitAlertMessage: 'Unable to update child. Plesae contact the Admin.' });
+                alert(this.state.submitAlertMessage);
+                console.log(error);
+                this.setState({ loading: false, loaderIndex: 0 });
+            });
+    }
+
+
     onPressForDelete(id) {
-        alert("Deleted family details with name :"+id);
-        for (var i = 0; i < this.reviews.length; i++) { if (this.reviews[i].Name === id) { this.reviews.splice(i, 1); } }
+        alert("Deleted family details with familyID :" + id);
+        console.log(this.state.childFamilyList);
+        
+        console.log(".........id", id);
+        for (var i = 0; i < this.state.childFamilyList.length; i++) {
+            console.log(".........", this.state.childFamilyList[i].familyNo);
+            if (this.state.childFamilyList[i].familyNo === id) {
+                console.log(".........",this.state.childFamilyList[i].familyNo);
+                this.state.childFamilyList.splice(i, 1);
+                console.log(this.state.childFamilyList);
+            }
+        }
         //this.reviews = this.reviews.splice(id-1,1);
         this.setModalVisible(this.state.modalVisible)
-        console.log(this.reviews);
+        //console.log(this.reviews);
+    }
+    onPressForEdit(id) {
+       // alert("Deleted family details with familyID :" + id);
+
+        for (var i = 0; i < this.state.childFamilyList.length; i++) {
+            
+            if (this.state.childFamilyList[i].familyNo === id) {
+                console.log(".........", this.props.navigation.getParam('Present'));
+                this.family = this.state.childFamilyList[i];
+                console.log("/////", this.family.presentcondition.toString());
+                //this.setState({ updatefamily: family });
+
+            }
+        }
+        //this.reviews = this.reviews.splice(id-1,1);
+        console.log("update family details inn edit",this.family);
+        this.setModaledit(true);
+        //this.setModalVisible(this.state.modalVisible)
+        //console.log(this.reviews);
+           
     }
     render() {
         return (
@@ -59,6 +277,7 @@ export default class FamilyForm extends React.Component {
                             style={{ ...styles.modalToggle, ...styles.modalClose }}
                             onPress={() => this.setModalVisible(!this.state.modalVisible)}
                         />
+                      
                         <View style={globalStyles.container}>
 
                             <Formik
@@ -74,11 +293,16 @@ export default class FamilyForm extends React.Component {
                                     }
                                 }
                                 validationSchema={FamilyFormSchema}
-                                onSubmit={(values, actions) => {
+                                onSubmit={async(values, actions) => {
                                     actions.resetForm();
                                     console.log(values);
+                                    console.log("Submit method called here ");
+                                    this.setState({ showLoader: true, loaderIndex: 10 });
+                                    let result = this._submitFamilyForm(values);
+                                    let alertMessage = this.state.submitAlertMessage;
+                                    console.log(result);
                                     this.reviews = this.reviews.concat(values);
-                                    alert("Data Has been submitted");
+                                   // alert("Data Has been submitted");
                                     this.setModalVisible(!this.state.modalVisible);
                                     
                                     //this.setState(this.reviews.review.concat(values));
@@ -95,8 +319,8 @@ export default class FamilyForm extends React.Component {
                                     this.props.navigation.navigate('FamilyForm', values)
    
 
-}}
->
+                                }}
+        >
                                 {props => (
                                     <KeyboardAvoidingView 
                                         enabled style={globalStyles.keyboardavoid}
@@ -116,16 +340,16 @@ export default class FamilyForm extends React.Component {
                                                 <Picker
                                                     selectedValue={props.values.Relation}
                                                     style={globalStyles.dropDown}
-                                                    onValueChange={props.handleChange('Relation')}
+                                                    onValueChange={value => {
+                                                        props.setFieldValue('Relation', value);
+                                                    }}
                                                 >
-                                                    <Picker.Item label="Relation" value="" />
-                                                    <Picker.Item label="Aunty" value="Aunty" />
-                                                    <Picker.Item label="Brother" value="Brother" />
-                                                    <Picker.Item label="Elder Brother" value="Elder Brother" />
-                                                    <Picker.Item label="Elder sister" value="Elder sister" />
-                                                    <Picker.Item label="Daughter" value="Daughter" />
-                                                    <Picker.Item label="Cousin" value="Cousin" />
-                                                    <Picker.Item label="Brother in Law" value="Brother in Law" />
+                                                    <Picker.Item label="Select Relation" value="" />
+                                                    {
+                                                        this.state.relations.map((item) => {
+                                                            return <Picker.Item key={item.relationNo} label={item.relation} value={item.relationNo} />
+                                                        })
+                                                    }
                                                 </Picker>
                                                 <Text style={globalStyles.text}>Age</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.Age && props.errors.Age}</Text>
@@ -139,32 +363,32 @@ export default class FamilyForm extends React.Component {
                                                 <Picker
                                                     selectedValue={props.values.Occupation}
                                                     style={globalStyles.dropDown}
-                                                    onValueChange={props.handleChange('Occupation')}
+                                                    onValueChange={value => {
+                                                        props.setFieldValue('Occupation', value);
+                                                    }}
                                                 >
-                                                    <Picker.Item label="Occupation" value="" />
-                                                    <Picker.Item label="Abroad" value="Abroad" />
-                                                    <Picker.Item label="Achari" value="Achari" />
-                                                    <Picker.Item label="Actor" value="Actor" />
-                                                    <Picker.Item label="Agriculture Labor" value="Agriculture Labor" />
-                                                    <Picker.Item label="Artist" value="Artist" />
-                                                    <Picker.Item label="Attender" value="Attender" />
-                                                    <Picker.Item label="Any Other" value="Any Other" />
-                                                    <Picker.Item label="Banker" value="Banker" />
-                                                    <Picker.Item label="Barber" value="Barber" />
+                                                    <Picker.Item label="Select Occupation" value="" />
+                                                    {
+                                                        this.state.occupations.map((item) => {
+                                                            return <Picker.Item key={item.occupationNo} label={item.occupation} value={item.occupationNo} />
+                                                        })
+                                                    }
                                                 </Picker>
                                                 <Text style={globalStyles.text}>Present</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.Present && props.errors.Present}</Text>
                                                 <Picker
                                                     selectedValue={props.values.Present}
                                                     style={globalStyles.dropDown}
-                                                    onValueChange={props.handleChange('Present')}
+                                                    onValueChange={value => {
+                                                        props.setFieldValue('Present', value);
+                                                    }}
                                                 >
-                                                    <Picker.Item label="Present" value="" />
-                                                    <Picker.Item label="Alive" value="Alive" />
-                                                    <Picker.Item label="Late" value="Late" />
-                                                    <Picker.Item label="Married" value="Married" />
-                                                    <Picker.Item label="Single" value="Single" />
-                                                    <Picker.Item label="Divorced" value="Divorced" />
+                                                    <Picker.Item  label="Select Present Condition" value="" />
+                                                    {
+                                                        this.state.presentConditions.map((item) => {
+                                                            return <Picker.Item key={item.presentId} label={item.present} value={item.presentId} />
+                                                        })
+                                                    }
                                                 </Picker>
                                                 <Text style={globalStyles.text}>Income</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.PresentLocalAddress && props.errors.PresentLocalAddress}</Text>
@@ -199,22 +423,27 @@ export default class FamilyForm extends React.Component {
                             <Formik
                                 initialValues={
                                     {
-                                        Name: '',
-                                        Relation: '',
-                                        Occupation: '',
-                                        Age: '',
-                                        Present: '',
-                                        Remarks: '',
-                                        Income: '',
+                                        Name: this.family.name,
+                                        Relation: this.family.relation,
+                                        Occupation: this.family.occupation,
+                                        Age: this.family.age,
+                                        Present: this.family.presentcondition,
+                                        Remarks: this.family.remarks,
+                                        Income: this.family.income,
                                     }
                                 }
                                 validationSchema={FamilyFormSchema}
-                                onSubmit={(values, actions) => {
+                                onSubmit={async (values, actions) => {
                                     actions.resetForm();
                                     console.log(values);
+                                    console.log("Submit method called here ");
+                                    this.setState({ showLoader: true, loaderIndex: 10 });
+                                    let result = this._updateSubmitFamilyForm(values);
+                                    let alertMessage = this.state.submitAlertMessage;
+                                    console.log(result);
                                     this.reviews = this.reviews.concat(values);
-                                    alert("Data Has been submitted");
-                                    this.setModalVisible(!this.state.modalVisible);
+                                    // alert("Data Has been submitted");
+                                    this.setModaledit(!this.state.modaledit);
 
                                     //this.setState(this.reviews.review.concat(values));
                                     console.log("final", this.reviews);
@@ -251,16 +480,16 @@ export default class FamilyForm extends React.Component {
                                                 <Picker
                                                     selectedValue={props.values.Relation}
                                                     style={globalStyles.dropDown}
-                                                    onValueChange={props.handleChange('Relation')}
+                                                    onValueChange={value => {
+                                                        props.setFieldValue('Relation', value);
+                                                    }}
                                                 >
-                                                    <Picker.Item label="Relation" value="" />
-                                                    <Picker.Item label="Aunty" value="Aunty" />
-                                                    <Picker.Item label="Brother" value="Brother" />
-                                                    <Picker.Item label="Elder Brother" value="Elder Brother" />
-                                                    <Picker.Item label="Elder sister" value="Elder sister" />
-                                                    <Picker.Item label="Daughter" value="Daughter" />
-                                                    <Picker.Item label="Cousin" value="Cousin" />
-                                                    <Picker.Item label="Brother in Law" value="Brother in Law" />
+                                                    <Picker.Item label="Select Relation" value="" />
+                                                    {
+                                                        this.state.relations.map((item) => {
+                                                            return <Picker.Item key={item.relationNo} label={item.relation} value={item.relationNo} />
+                                                        })
+                                                    }
                                                 </Picker>
                                                 <Text style={globalStyles.text}>Age</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.Age && props.errors.Age}</Text>
@@ -274,32 +503,32 @@ export default class FamilyForm extends React.Component {
                                                 <Picker
                                                     selectedValue={props.values.Occupation}
                                                     style={globalStyles.dropDown}
-                                                    onValueChange={props.handleChange('Occupation')}
+                                                    onValueChange={value => {
+                                                        props.setFieldValue('Occupation', value);
+                                                    }}
                                                 >
-                                                    <Picker.Item label="Occupation" value="" />
-                                                    <Picker.Item label="Abroad" value="Abroad" />
-                                                    <Picker.Item label="Achari" value="Achari" />
-                                                    <Picker.Item label="Actor" value="Actor" />
-                                                    <Picker.Item label="Agriculture Labor" value="Agriculture Labor" />
-                                                    <Picker.Item label="Artist" value="Artist" />
-                                                    <Picker.Item label="Attender" value="Attender" />
-                                                    <Picker.Item label="Any Other" value="Any Other" />
-                                                    <Picker.Item label="Banker" value="Banker" />
-                                                    <Picker.Item label="Barber" value="Barber" />
+                                                    <Picker.Item label="Select Occupation" value="" />
+                                                    {
+                                                        this.state.occupations.map((item) => {
+                                                            return <Picker.Item key={item.occupationNo} label={item.occupation} value={item.occupationNo} />
+                                                        })
+                                                    }
                                                 </Picker>
                                                 <Text style={globalStyles.text}>Present</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.Present && props.errors.Present}</Text>
                                                 <Picker
                                                     selectedValue={props.values.Present}
                                                     style={globalStyles.dropDown}
-                                                    onValueChange={props.handleChange('Present')}
+                                                    onValueChange={value => {
+                                                        props.setFieldValue('Present', value);
+                                                    }}
                                                 >
-                                                    <Picker.Item label="Present" value="" />
-                                                    <Picker.Item label="Alive" value="Alive" />
-                                                    <Picker.Item label="Late" value="Late" />
-                                                    <Picker.Item label="Married" value="Married" />
-                                                    <Picker.Item label="Single" value="Single" />
-                                                    <Picker.Item label="Divorced" value="Divorced" />
+                                                    <Picker.Item label="Select Present Condition" value="" />
+                                                    {
+                                                        this.state.presentConditions.map((item) => {
+                                                            return <Picker.Item key={item.presentId} label={item.present} value={item.presentId} />
+                                                        })
+                                                    }
                                                 </Picker>
                                                 <Text style={globalStyles.text}>Income</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.PresentLocalAddress && props.errors.PresentLocalAddress}</Text>
@@ -323,7 +552,6 @@ export default class FamilyForm extends React.Component {
                                 )}
 
                             </Formik>
-
                         </View>
                     </View>
                 </Modal>
@@ -334,34 +562,42 @@ export default class FamilyForm extends React.Component {
                     style={styles.modalToggle}
                     onPress={() => this.setModalVisible(true)}
                 />
+                <Spinner
+                    //visibility of Overlay Loading Spinner
+                    visible={this.state.loading}
+                    //Text with the Spinner 
+                    textContent={'Loading...'}
+                //Text style of the Spinner Text
+                //  textStyle={styles.spinnerTextStyle}
+                />
                 <FlatList
-                    data={this.reviews}
+                    data={this.state.childFamilyList}
                     renderItem={({ item, index}) => (
                         <View style={{ flex: 1, flexDirection: 'column', margin: 1 }}>
                             <TouchableOpacity style={styles.container} >
                                 {/*react-native-elements Card*/}
                                 <Card>
                                     <CardContent style={styles.paragraph}>
-                                        <Text>Name : {item.Name}</Text>
-                                        <Text>Relation : {item.Relation}</Text>
-                                        <Text>Age : {item.Age}</Text>
-                                        <Text>Occupation : {item.Occupation}</Text>
-                                        <Text>Present : {item.Present}</Text>
-                                        <Text>Income : {item.Income}</Text>
-                                        <Text>Remarks : {item.Remarks}</Text>
+                                        <Text>Name :{`${item.name}`}</Text>
+                                        <Text>Relation : {`${item.relationType}`}</Text>
+                                        <Text>Age : {`${item.age}`}</Text>
+                                        <Text>Occupation : {`${item.occupationType}`}</Text>
+                                        <Text>Present :{`${item.presentcondition}`}</Text>
+                                        <Text>Income : {`${item.income}`}</Text>
+                                        <Text>Remarks :{`${item.remarks}`}</Text>
                  
                                     </CardContent>
                                     <MaterialIcons
                                         name='edit'
                                         size={18}
                                         style={styles.Icons}
-                                        onPress={() => this.setModalVisible(true)}
+                                        onPress={() => this.onPressForEdit(item.familyNo)}
                                     />
                                     <MaterialIcons
                                         name='delete'
                                         size={18}
                                         style={styles.Icons}
-                                        onPress={() => this.onPressForDelete(item.Name)}
+                                        onPress={() => this.onPressForDelete(item.familyNo)}
                                     />
                                 </Card>
                             </TouchableOpacity>
@@ -369,7 +605,7 @@ export default class FamilyForm extends React.Component {
                     )}
                     //Setting the number of column
                     numColumns={1}
-                    keyExtractor={(item, index) => index.toString()}
+                    keyExtractor={(item, index) => index.toString()} 
                     //keyExtractor={this.reviews.name}
                 />
 
