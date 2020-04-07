@@ -17,10 +17,10 @@ import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 
 const EducationFormSchema = yup.object({
-    Class: yup.string().required(),
-    Medium: yup.string().required(),
-    SchoolName: yup.string().required(),
-    SchoolPlace: yup.string().required()
+    //Class: yup.string().required(),
+    //Medium: yup.string().required(),
+    // SchoolName: yup.string().required(),
+    // SchoolPlace: yup.string().required()
 })
 
 export default class EducationScreen extends React.Component {
@@ -42,7 +42,7 @@ export default class EducationScreen extends React.Component {
     }
     _pickStartDate = (event, date, handleChange) => {
         console.log(date);
-        let a = moment(date).format('DD/MM/YYYY');
+        let a = moment(date).format('YYYY-MM-DD');
         console.log(a);
         console.log(typeof (a));
         this.setState({
@@ -53,7 +53,7 @@ export default class EducationScreen extends React.Component {
 
     _pickEndDate = (event, date, handleChange) => {
         console.log(date);
-        let a = moment(date).format('DD/MM/YYYY');
+        let a = moment(date).format('YYYY-MM-DD');
         console.log(a);
         console.log(typeof (a));
         this.setState({
@@ -85,7 +85,7 @@ export default class EducationScreen extends React.Component {
             "stayType": values.ChildStayType,
             "bridgeCourse": values.BridgeCourse,
             "classDetails": values.CDetail,
-            "sponsorship": values.ScholarshipSponsorship,
+            "sponsorship": values.ScholarshipSponsorship
             //"spnsorshipFor": values.ScholarshipSponsorship,
 
         });
