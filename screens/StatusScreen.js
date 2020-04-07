@@ -1,14 +1,18 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Formik } from "formik";
 import React from 'react';
-import { Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View, Dimensions } from 'react-native';
 import * as yup from "yup";
 import { globalStyles } from "../styles/global";
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
-
+import UpdateApi from "../constants/UpdateApi";
+import Modal from 'react-native-modal';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
 
 const statusSchema = yup.object({
     childStatus: yup.string().required(),
@@ -29,7 +33,11 @@ export default class StatusScreen extends React.Component {
             actionTakenError: false,
             stayError: false,
             followUpByError: false,
-            child: this.props.navigation.getParam('child')
+            child: this.props.navigation.getParam('child'),
+            isVisible: false,
+            loading: false,
+            errorDisplay: false,
+            sucessDisplay: false
         }
         this.pickDob = this.pickDob.bind(this);
         
@@ -37,7 +45,7 @@ export default class StatusScreen extends React.Component {
 
     pickDob = (event, date, handleChange) => {
         console.log(date);
-        let a = moment(date).format('DD/MM/YYYY');
+        let a = moment(date).format('YYYY-MM-DD');
         console.log(a);
         console.log(typeof (a));
         this.setState({ date: a, show: false });
@@ -48,6 +56,49 @@ export default class StatusScreen extends React.Component {
         this.setState({ show: true });
 
     };
+
+    updateStatus(values) {
+        this.setState({ loading: true });
+        let request_body = JSON.stringify({
+           
+               "childStatusID": values.childStatus,
+               "childStatusDate": values.date,
+               "leavingReasonId": values.leavingReason,
+               "reason": values.reasonDescription,
+               "childLeftPlaceId": values.leftPlace,
+               "actionTakenId": values.actionTaken,
+               "childStayPlace": values.stay,
+               "followedBy": values.followUpBy,
+               "approvedBy": values.approvedBy
+            
+        });
+        console.log(values);
+        const path = `child-status/${this.state.child.childNo}`;
+        UpdateApi.updateData(request_body, path).then((response) => {
+            this.setState({ loading: false, isVisible: true });
+            if (response.ok) {
+                response.json().then((res) => {
+                    console.log(res);
+                });
+                this.setState({ successDisplay: true });
+              
+            } else {
+                throw Error(response.status);
+            }
+        }).catch(error => {
+            console.log(error, 'ffff');
+            this.setState({ errorDisplay: true });
+        
+        });
+      
+    }
+
+   
+    componentWillUnmount() {
+        const { params } = this.props.navigation.state;
+        params.refreshChildList();
+        
+    }
 
 
     render() {
@@ -97,30 +148,32 @@ export default class StatusScreen extends React.Component {
                             this.setState({ followUpByError: true });
                         }
                         if (!(this.state.leavingReasonError || this.state.reasonDescriptionError || this.state.leftPlaceError || this.state.actionTakenError || this.state.stayError || this.state.followUpByError)) {
-                            console.log(values);
+                          //  console.log(values);
+                            this.updateStatus(values);
                             actions.resetForm();
                             this.setState({ date: null, showElements: false, leavingReasonError: false, reasonDescriptionError: false, leftPlaceError: false, actionTakenError: false, stayError: false, followUpByError: false, credentialsError: false });
-                            alert("Data submitted Successfully");
+                           
                         }
                     }}
 
                 >
                     {(props) => (
-                        <KeyboardAvoidingView behavior="padding"
+                        <KeyboardAvoidingView behavior="null"
                             enabled style={globalStyles.keyboardavoid}
-                            keyboardVerticalOffset={200}>
+                            keyboardVerticalOffset={0}>
 
                             <ScrollView>
                                 <View>
                                    
                                     <Text style={globalStyles.text}>Child Status:</Text>
                                     <Picker
+                                       
                                         selectedValue={props.values.childStatus}
                                         style={globalStyles.dropDown}
                                         //                                style={{height: 50, width: 100}}
                                         onValueChange={(itemValue, itemIndex) => {
                                             props.setFieldValue('childStatus', itemValue)
-                                            if (itemValue == 'closed') {
+                                            if (itemValue == 4) {
                                                 this.setState({ showElements: true })
                                             } else {
                                                 this.setState({ showElements: false })
@@ -129,10 +182,10 @@ export default class StatusScreen extends React.Component {
 
                                         value={props.values.childStatus}>
                                         <Picker.Item label="Select Status" value="" />
-                                        <Picker.Item label="Observation" value="observation" />
-                                        <Picker.Item label="Present" value="present" />
-                                        <Picker.Item label="Absent" value="absent" />
-                                        <Picker.Item label="Closed" value="closed" />
+                                        {global.status.map((item) => {
+                                            return <Picker.Item key={item.childStatusId} label={item.childStatus} value={item.childStatusId} />
+                                        })}
+
                                     </Picker>
                                         <Text style={globalStyles.errormsg}>{props.touched.childStatus && props.errors.childStatus}</Text>
                                     
@@ -169,14 +222,15 @@ export default class StatusScreen extends React.Component {
                                         selectedValue={props.values.approvedBy}
                                         style={globalStyles.dropDown}
                                         //                                style={{height: 50, width: 100}}
-                                        onValueChange={props.handleChange('approvedBy')}
+                                        onValueChange={(approvedBy) => props.setFieldValue('approvedBy', approvedBy)}
 
                                         value={props.values.approvedBy}>
+                                       
                                         <Picker.Item label="Select Staff " value="" />
-                                        <Picker.Item label="Ratna" value="Ratna" />
-                                        <Picker.Item label="Babu" value="Babu" />
-                                        <Picker.Item label="Swapna" value="Swapna" />
-                                        <Picker.Item label="Raju" value="Raju" />
+
+                                        {global.staff.map((item) => {
+                                            return <Picker.Item key={item.staffNo} label={item.firstName} value={item.staffNo} />
+                                        })}
                                     </Picker>
                                     <Text style={globalStyles.errormsg}>{props.touched.approvedBy && props.errors.approvedBy}</Text>
 
@@ -186,14 +240,12 @@ export default class StatusScreen extends React.Component {
                                             <Picker
                                                 selectedValue={props.values.leavingReason}
                                                 style={globalStyles.dropDown}
-
                                                 onValueChange={(leavingReason) => { this.setState({ leavingReasonError: false}); props.setFieldValue('leavingReason', leavingReason) }}
                                                 value={props.values.leavingReason}>
                                                 <Picker.Item label="Select Reason " value="" />
-                                                <Picker.Item label="Future Program" value="Future Program" />
-                                                <Picker.Item label="Parents are able to take care of child" value="Parents are able to take care of child" />
-                                                <Picker.Item label="Family bonds strengthen and became responsible" value="Family bonds strengthen and became responsible" />
-                                                <Picker.Item label="Child is doing higher studies" value="Child is doing higher studies" />
+                                                {global.leavingReason.map((item) => {
+                                                        return <Picker.Item key={item.leavingReasonId} label={item.leavingReason} value={item.leavingReasonId} />
+                                                })}
 
                                             </Picker>
                                             { this.state.leavingReasonError ? < Text style={globalStyles.errormsg}> Leaving Reason cannot be empty</Text> : null}
@@ -219,10 +271,9 @@ export default class StatusScreen extends React.Component {
                                                 onValueChange={(leftPlace) => { this.setState({ leftPlaceError: false }); props.setFieldValue('leftPlace', leftPlace) }}
                                                 value={props.values.leftPlace}>
                                                 <Picker.Item label="Select Left Place " value="" />
-                                                <Picker.Item label="School" value="School" />
-                                                <Picker.Item label="Park" value="Park" />
-                                                <Picker.Item label="Market" value="Market" />
-                                                <Picker.Item label="RH/SG" value="RH/SG" />
+                                                {global.leftPlaces.map((item) => {
+                                                    return <Picker.Item key={item.leftPlaceId} label={item.leftPlace} value={item.leftPlaceId} />
+                                                })}
                                             </Picker>
                                             {this.state.leftPlaceError ? < Text style={globalStyles.errormsg}>Left Place cannot be empty</Text> : null }
 
@@ -234,10 +285,9 @@ export default class StatusScreen extends React.Component {
                                                 onValueChange={(actionTaken) => { this.setState({ actionTakenError: false }); props.setFieldValue('actionTaken', actionTaken) }}
                                                 value={props.values.actionTaken}>
                                                 <Picker.Item label="Select Action Taken " value="" />
-                                                <Picker.Item label="Complained To Police" value="Complained To Police" />
-                                                <Picker.Item label="Informed to Peers" value="Informed to Peers" />
-                                                <Picker.Item label="Informed to CWC in Written" value="Informed to CWC in Written" />
-                                                <Picker.Item label="Informed to Parents or Guardians" value="Informed to Parents or Guardians" />
+                                                {global.actionTaken.map((item) => {
+                                                    return <Picker.Item key={item.actionId} label={item.actionTaken} value={item.actionId} />
+                                                })}
                                             </Picker>
                                             {this.state.actionTakenError ? < Text style={globalStyles.errormsg}>Action Taken is required</Text> : null}
 
@@ -256,10 +306,10 @@ export default class StatusScreen extends React.Component {
                                                 onValueChange={(follwUpBy) => { this.setState({ followUpByError: false }); props.setFieldValue('followUpBy', follwUpBy) }}
                                                 value={props.values.followUpBy}>
                                                 <Picker.Item label="Select Staff " value="" />
-                                                <Picker.Item label="Ratna" value="Ratna" />
-                                                <Picker.Item label="Babu" value="Babu" />
-                                                <Picker.Item label="Swapna" value="Swapna" />
-                                                <Picker.Item label="Raju" value="Raju" />
+
+                                                {global.staff.map((item) => {
+                                                    return <Picker.Item key={item.staffNo} label={item.firstName} value={item.staffNo} />
+                                                })}
                                             </Picker>
                                             {this.state.followUpByError ? < Text style={globalStyles.errormsg}>FollowUpBy is required:</Text> : null}
 
@@ -284,7 +334,13 @@ export default class StatusScreen extends React.Component {
                         </KeyboardAvoidingView>
                     )}
                 </Formik>
-               
+                <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={styles.MainContainer}>
+                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName}/ >
+                    </View>
+                </Modal>
+                <LoadingDisplay loading={this.state.loading} />
             </View>
         );
     }
@@ -292,5 +348,24 @@ export default class StatusScreen extends React.Component {
 const styles = StyleSheet.create({
     FontStyle: {
         fontSize: 15
+    },
+    MainContainer: {
+        justifyContent: 'space-between',
+        flex: 1,
+    //    paddingTop: 10,
+
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',   
+        alignSelf: 'center',
+        backgroundColor: 'white',
+        width: Dimensions.get('window').width /2 + 50,
+        maxHeight: Dimensions.get('window').height / 4,
+        top: 150,
+        borderRadius: 30
+      //  margin: 90,
+
     }
 });

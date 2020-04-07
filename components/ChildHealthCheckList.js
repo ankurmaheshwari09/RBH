@@ -7,6 +7,7 @@ import {TouchableHighlight} from 'react-native-gesture-handler';
 import moment from 'moment';
 import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
+import {base_url} from '../constants/Base';
 
 const HealthCheckListSchema = yup.object({
     HIVTest: yup.string().required("HIV Test is a required field"),
@@ -24,6 +25,7 @@ export default class ChildHealthCheckList extends React.Component{
     constructor(props){
         super(props);
         this.state={
+            child: this.props.navigation.getParam('child'),
             DewormingDate: '',
             GynecologyDate: '',
             showHIVTestResult: false,
@@ -55,7 +57,7 @@ export default class ChildHealthCheckList extends React.Component{
 
     _pickDewormingDate = (event, date, handleChange) => {
         console.log(date);
-        let a = moment(date).format('DD/MM/YYYY');
+        let a = moment(date).format('YYYY-MM-DD');
         console.log(a);
         console.log(typeof (a));
         this.setState({
@@ -66,7 +68,7 @@ export default class ChildHealthCheckList extends React.Component{
 
     _pickGynecologyDate = (event, date, handleChange) => {
         console.log(date);
-        let a = moment(date).format('DD/MM/YYYY');
+        let a = moment(date).format('YYYY-MM-DD');
         console.log(a);
         console.log(typeof (a));
         this.setState({
@@ -87,6 +89,42 @@ export default class ChildHealthCheckList extends React.Component{
         console.log("change called");
     };
 
+    submitChildHealthCheckListForm(values) {
+        let res = true;
+        let request_body = JSON.stringify({
+            "childNo": this.state.child.childNo,
+            "hivTestDone":values.HIVTest,
+            "hivTestResult":values.HIVTestResult,
+            "tbTestDone":values.TBTest,
+            "tbTestResult":values.TBTestResult,
+            "dewormingDone":values.Deworming,
+            "dewormingDate":values.DewormingDate,
+            "campsCheckupNotes":values.CampsCheckUps,
+            "gynecologyCheckupDone":values.Gynecology,
+            "gynecologyCheckupDate":values.GynecologyDate,
+        });
+        let result = {};
+        fetch(base_url+"/health-checklist", {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: request_body,
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson);
+            this.setState({submitAlertMessage: 'Successfully added child health checklist details'});
+            alert(this.state.submitAlertMessage);
+        })
+        .catch((error) => {
+            this.setState({submitAlertMessage: 'Unable to add child health checklist details. Please contact the Admin.'});
+            alert(this.state.submitAlertMessage);
+            console.log(error);
+        });
+    }
+
     render() {
         return (
             <View style = {globalStyles.container}>
@@ -106,7 +144,7 @@ export default class ChildHealthCheckList extends React.Component{
                         }
                     }
                     validationSchema = {HealthCheckListSchema}
-                    onSubmit = {(values, actions) => {
+                    onSubmit = { async (values, actions) => {
                         console.log(values);
                         if(values.HIVTestResult == '' && this.state.showHIVTestResult == true) {
                             this.setState({ HIVTestResultError: true});
@@ -118,12 +156,12 @@ export default class ChildHealthCheckList extends React.Component{
                             this.setState({ GynecologyDateError: true});
                         }
                         if(!this.state.HIVTestResultError && !this.state.TBTestResultError && !this.state.DewormingDateError && !this.state.GynecologyDateError) {
+                            this.submitChildHealthCheckListForm(values);
                             actions.resetForm();
                             this.setState({DewormingDate:'', GynecologyDate:'', HIVTestResultError:false, TBTestResultError:false,
                                            showHIVTestResult:false, showTBTestResult:false, showDewormingDate:false,
                                            showGynecologyDate:false, showElementDewormingDate:false, showElementGynecologyDate:false,
                                            DewormingDateError:false, GynecologyDateError:false});
-                            alert("Data has been submitted")
                         }
                     }}
                 >
@@ -138,7 +176,7 @@ export default class ChildHealthCheckList extends React.Component{
 
                                     onValueChange={(itemValue, itemIndex) => {
                                         props.setFieldValue('HIVTest', itemValue)
-                                        if(itemValue == 'Yes'){
+                                        if(itemValue == 'true'){
                                         this.setState({showHIVTestResult : true})
                                         } else{
                                         this.setState({showHIVTestResult : false})}
@@ -146,8 +184,8 @@ export default class ChildHealthCheckList extends React.Component{
                                     value = {props.values.HIVTest}
                                 >
                                     <Picker.Item label='Select HIV Test' value = ''/>
-                                    <Picker.Item label='Taken' value = 'Yes'/>
-                                    <Picker.Item label='Not Taken' value = 'No'/>
+                                    <Picker.Item label='Taken' value = 'true'/>
+                                    <Picker.Item label='Not Taken' value = 'false'/>
                                 </Picker>
 
                                 {this.state.showHIVTestResult ?
@@ -168,8 +206,8 @@ export default class ChildHealthCheckList extends React.Component{
                                         value = {props.values.HIVTestResult}
                                     >
                                         <Picker.Item label='Select HIV Test Result' value = ''/>
-                                        <Picker.Item label='Positive' value = 'Positive'/>
-                                        <Picker.Item label='Negative' value = 'Negative'/>
+                                        <Picker.Item label='Positive' value = 'true'/>
+                                        <Picker.Item label='Negative' value = 'false'/>
                                     </Picker>
                                     </View>
                                 :null}
@@ -183,7 +221,7 @@ export default class ChildHealthCheckList extends React.Component{
 
                                     onValueChange={(itemValue, itemIndex) => {
                                         props.setFieldValue('TBTest', itemValue)
-                                        if(itemValue == 'Yes'){
+                                        if(itemValue == 'true'){
                                         this.setState({showTBTestResult : true})
                                         } else{
                                         this.setState({showTBTestResult : false}) }
@@ -191,8 +229,8 @@ export default class ChildHealthCheckList extends React.Component{
                                     value = {props.values.TBTest}
                                 >
                                     <Picker.Item label='Select TB Test' value = ''/>
-                                    <Picker.Item label='Taken' value = 'Yes'/>
-                                    <Picker.Item label='Not Taken' value = 'No'/>
+                                    <Picker.Item label='Taken' value = 'true'/>
+                                    <Picker.Item label='Not Taken' value = 'false'/>
                                 </Picker>
 
                                 {this.state.showTBTestResult ?
@@ -213,8 +251,8 @@ export default class ChildHealthCheckList extends React.Component{
                                         value = {props.values.TBTestResult}
                                     >
                                         <Picker.Item label='Select TB Test Result' value = ''/>
-                                        <Picker.Item label='Positive' value = 'Positive'/>
-                                        <Picker.Item label='Negative' value = 'Negative'/>
+                                        <Picker.Item label='Positive' value = 'true'/>
+                                        <Picker.Item label='Negative' value = 'false'/>
                                     </Picker>
                                     </View>
                                 :null}
@@ -229,7 +267,7 @@ export default class ChildHealthCheckList extends React.Component{
 
                                     onValueChange={(itemValue, itemIndex) => {
                                         props.setFieldValue('Deworming', itemValue)
-                                        if(itemValue == 'Yes'){
+                                        if(itemValue == 'true'){
                                         this.setState({showDewormingDate : true})
                                         } else{
                                         this.setState({showDewormingDate : false})}
@@ -237,8 +275,8 @@ export default class ChildHealthCheckList extends React.Component{
                                     value = {props.values.Deworming}
                                 >
                                     <Picker.Item label='Select Deworming' value = ''/>
-                                    <Picker.Item label='Yes' value = 'Yes'/>
-                                    <Picker.Item label='No' value = 'No'/>
+                                    <Picker.Item label='Yes' value = 'true'/>
+                                    <Picker.Item label='No' value = 'false'/>
                                 </Picker>
 
                                 {this.state.showDewormingDate ?
@@ -285,7 +323,7 @@ export default class ChildHealthCheckList extends React.Component{
 
                                     onValueChange={(itemValue, itemIndex) => {
                                         props.setFieldValue('Gynecology', itemValue)
-                                        if(itemValue == 'Yes'){
+                                        if(itemValue == 'true'){
                                         this.setState({showGynecologyDate : true})
                                         } else{
                                         this.setState({showGynecologyDate : false})}
@@ -293,8 +331,8 @@ export default class ChildHealthCheckList extends React.Component{
                                     value = {props.values.Gynecology}
                                 >
                                     <Picker.Item label='Select Gynecology' value = ''/>
-                                    <Picker.Item label='Yes' value = 'Yes'/>
-                                    <Picker.Item label='No' value = 'No'/>
+                                    <Picker.Item label='Yes' value = 'true'/>
+                                    <Picker.Item label='No' value = 'false'/>
                                 </Picker>
 
                                 {this.state.showGynecologyDate ?
