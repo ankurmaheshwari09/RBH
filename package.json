@@ -16,7 +16,7 @@
     "expo-image-picker": "~8.0.1",
     "formik": "^2.1.4",
     "moment": "^2.24.0",
-    "native-base": "^2.13.8",
+    "native-base": "2.13.8",
     "react": "~16.9.0",
     "react-datepicker": "^2.13.0",
     "react-dom": "~16.9.0",

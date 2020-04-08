@@ -1,7 +1,6 @@
 import React from 'react';
 import {
-    Button, Text, TextInput, View, Picker, ScrollView,
-    KeyboardAvoidingView, Field,
+    Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView, Field, StyleSheet, Dimensions
 } from 'react-native';
 import { Formik } from 'formik';
 import { globalStyles } from '../styles/samplestyles';
@@ -10,7 +9,13 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
-import CheckBox from 'react-native-check-box'
+import CheckBox from 'react-native-check-box';
+import UpdateApi from "../constants/UpdateApi";
+import Modal from 'react-native-modal';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
+
 const EducationFormSchema = yup.object({
     Class: yup.string().required(),
     Medium: yup.string().required(),
@@ -19,27 +24,25 @@ const EducationFormSchema = yup.object({
 })
 
 export default class EducationScreen extends React.Component {
-    state = {
-        showSD: false,
-        showED: false,
-        startingdate: '',
-        endingdate: '',
-    };
-    ChildResult = () => {
-        this.props.navigation.navigate('childresult');
-
-    }
     constructor(props) {
         super(props);
         this.state = {
             date: null,
             showElements: false,
-            showSSElements: false
+            showSSElements: false,
+            child: this.props.navigation.getParam('child'),
+            showSD: false,
+            showED: false,
+            startingdate: '',
+            endingdate: '',
+            studyingclass: [],
+            medium: [],
+            studyingtype: [],
         }
     }
     _pickStartDate = (event, date, handleChange) => {
         console.log(date);
-        let a = moment(date).format('DD/MM/YYYY');
+        let a = moment(date).format('YYYY-MM-DD');
         console.log(a);
         console.log(typeof (a));
         this.setState({
@@ -50,7 +53,7 @@ export default class EducationScreen extends React.Component {
 
     _pickEndDate = (event, date, handleChange) => {
         console.log(date);
-        let a = moment(date).format('DD/MM/YYYY');
+        let a = moment(date).format('YYYY-MM-DD');
         console.log(a);
         console.log(typeof (a));
         this.setState({
@@ -69,15 +72,58 @@ export default class EducationScreen extends React.Component {
         console.log("change called");
     }
 
+    updateEducationDetails(values) {
+        this.setState({ loading: true });
+        let request_body = JSON.stringify({
+            "childNo": this.state.child.childNo,
+            "schoolName": values.SchoolName,
+            "schooltype": values.SchoolType,
+            "studyingclass": values.Class,
+            "medium": values.Medium,
+            "date_from": values.StartingDate,
+            "date_to": values.EndingDate,
+            "stayType": values.ChildStayType,
+            "bridgeCourse": values.BridgeCourse,
+            "classDetails": values.CDetail,
+            "sponsorship": values.ScholarshipSponsorship
+            //"spnsorshipFor": values.ScholarshipSponsorship,
+
+        });
+        console.log(values);
+        const path = `child-education`;
+        UpdateApi.addData(request_body, path).then((response) => {
+            this.setState({ loading: false, isVisible: true });
+            if (response.ok) {
+                response.json().then((res) => {
+                    console.log(res + "res");
+                });
+                this.setState({ successDisplay: true });
+
+            } else {
+                throw Error(response.status);
+            }
+        }).catch(error => {
+            console.log(error, 'ffff');
+            this.setState({ errorDisplay: true });
+
+        });
+
+    }
+    componentWillUnmount() {
+        const { params } = this.props.navigation.state;
+        // params.refreshChildList();
+
+    }
     render() {
         return (<View style={globalStyles.container1}>
+            <Text> Child Name: {this.state.child.firstName}</Text>
             <View style={globalStyles.container}>
                 <Formik
                     initialValues={
                         {
                             Class: '',
                             Medium: '',
-                            SchoolName: '',
+                            SchoolName: 'name',
                             SchoolType: '',
                             SchoolPlace: '',
                             StartingDate: this.state.startingdate,
@@ -90,15 +136,14 @@ export default class EducationScreen extends React.Component {
                         }
                     }
                     validationSchema={EducationFormSchema}
-                    onSubmit={(values, actions) => {
-                        actions.resetForm();
+                    onSubmit={async (values, actions) => {
                         console.log(values);
-                        this.setState({
-                            date: null, showElements: false, showSSElements: false
-                        });
-                        alert("Data Has been submitted")
-                        this.props.navigation.push('EducationScreen', values)
-
+                        console.log("Submit method called here ");
+                        this.setState({ showLoader: true, loaderIndex: 10 });
+                        let result = this.updateEducationDetails(values);
+                        let alertMessage = this.state.submitAlertMessage;
+                        console.log(result);
+                        actions.resetForm();
                     }}
                 >
                     {props => (
@@ -113,24 +158,13 @@ export default class EducationScreen extends React.Component {
                                     <Picker
                                         selectedValue={props.values.Class}
                                         style={globalStyles.dropDown}
-                                        onValueChange={props.handleChange('Class')}
+                                        onValueChange={(Class) => props.setFieldValue('Class', Class)}
                                         value={props.values.Class}
                                     >
                                         <Picker.Item label="Select Class" value="" />
-                                        <Picker.Item label="I" value="I" />
-                                        <Picker.Item label="II" value="II" />
-                                        <Picker.Item label="III" value="III" />
-                                        <Picker.Item label="VI" value="VI" />
-                                        <Picker.Item label="V" value="V" />
-                                        <Picker.Item label="VI" value="VI" />
-                                        <Picker.Item label="VII" value="VII" />
-                                        <Picker.Item label="Post Graduate" value="Post Graduate" />
-                                        <Picker.Item label="Under Graduate" value="Under Graduate" />
-                                        <Picker.Item label="Diploma" value="Diploma" />
-                                        <Picker.Item label="Vocational" value="Vocational" />
-                                        <Picker.Item label="Working/Job" value="Working/Job" />
-                                        <Picker.Item label="Professional Course" value="Professional course" />
-                                        <Picker.Item label="Child doing nothing" value="nothing" />
+                                        {global.studyingclass.map((item) => {
+                                            return <Picker.Item key={item.studyingclass} label={item.studyingclass} value={item.studyingclassID} />
+                                        })}
 
                                     </Picker>
                                     <Text style={globalStyles.text}>Medium:</Text>
@@ -138,17 +172,13 @@ export default class EducationScreen extends React.Component {
                                     <Picker
                                         selectedValue={props.values.Medium}
                                         style={globalStyles.dropDown}
-                                        onValueChange={props.handleChange('Medium')}
+                                        onValueChange={(Medium) => props.setFieldValue('Medium', Medium)}
+                                        value={props.values.Medium}
                                     >
                                         <Picker.Item label="Select Medium" value="" />
-                                        <Picker.Item label="Assamee" value="Assamee" />
-                                        <Picker.Item label="Bengali" value="Bengali" />
-                                        <Picker.Item label="Hindi" value="Hindi" />
-                                        <Picker.Item label="Kannada" value="Kannada" />
-                                        <Picker.Item label="English" value="English" />
-                                        <Picker.Item label="Punjabi" value="Punjabi" />
-                                        <Picker.Item label="Telugu" value="Telugu" />
-                                        <Picker.Item label="Malayalam" value="Malayalam" />
+                                        {global.medium.map((item) => {
+                                            return <Picker.Item key={item.motherTongueId} label={item.motherTongue} value={item.motherTongueId} />
+                                        })}
 
                                     </Picker>
                                     <Text style={globalStyles.text}>School Name:</Text>
@@ -162,17 +192,12 @@ export default class EducationScreen extends React.Component {
                                     <Picker
                                         selectedValue={props.values.SchoolType}
                                         style={globalStyles.dropDown}
-                                        onValueChange={props.handleChange('SchoolType')}
+                                        onValueChange={(SchoolType) => props.setFieldValue('SchoolType', SchoolType)}
                                     >
                                         <Picker.Item label="Select SchoolType" value="" />
-                                        <Picker.Item label="RSTC/Bridge Course" value="RSTC/Bridge Course" />
-                                        <Picker.Item label="Govt" value="Govt" />
-                                        <Picker.Item label="GovtAided" value="GovtAided" />
-                                        <Picker.Item label="Private" value="Private" />
-                                        <Picker.Item label="Convent" value="Convent" />
-                                        <Picker.Item label="Special Education" value="Special Education" />
-                                        <Picker.Item label="Govt Residential" value="Govt Residential" />
-                                        <Picker.Item label="NIOS" value="NIOS" />
+                                        {global.schooltype.map((item) => {
+                                            return <Picker.Item key={item.schoolTypeID} label={item.schoolType} value={item.schoolTypeID} />
+                                        })}
 
                                     </Picker>
                                     <Text style={globalStyles.text}>School Place:</Text>
@@ -336,10 +361,6 @@ export default class EducationScreen extends React.Component {
 
                                     <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
 
-                                    <Text style={globalStyles.padding}></Text>
-                                    <View>
-                                        <Button style={globalStyles.button1} title="Exam results" onPress={this.ChildResult} />
-                                    </View>
                                 </View>
                             </ScrollView>
                         </KeyboardAvoidingView>
@@ -347,8 +368,17 @@ export default class EducationScreen extends React.Component {
                     )}
 
                 </Formik>
+                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={globalStyles.MainContainer}>
+                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName} />
+                    </View>
+                </Modal>
+                <LoadingDisplay loading={this.state.loading} />
             </View >
         </View >
         );
     }
 }
+
+

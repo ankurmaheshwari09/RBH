@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 export const globalStyles = StyleSheet.create({
     container1: {
@@ -94,5 +94,27 @@ export const globalStyles = StyleSheet.create({
         marginLeft: 2,
         flex: 2,
         fontSize: 40,
+    },
+    FontStyle: {
+        fontSize: 15
+    },
+    MainContainer: {
+        justifyContent: 'space-between',
+        flex: 1,
+        //    paddingTop: 10,
+
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+        backgroundColor: 'white',
+        width: Dimensions.get('window').width / 2 + 50,
+        maxHeight: Dimensions.get('window').height / 4,
+        top: 150,
+        borderRadius: 30
+        //  margin: 90,
+
     }
 });
