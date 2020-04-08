@@ -6,6 +6,7 @@ import {
 import { Formik } from 'formik';
 import { globalStyles } from '../styles/global';
 import * as yup from 'yup';
+import {base_url} from '../constants/Base';
 
 const CommunicationFormSchema = yup.object({
     PresentLocalAddress: yup.string().required(),
@@ -17,9 +18,44 @@ const CommunicationFormSchema = yup.object({
     Phone: yup.string().matches(/^[0-9]{10}$/, 'Phone number is not valid'),
     Mobile: yup.string().matches(/^[0-9]{10}$/, 'Mobile number is not valid'),
     PermanentAddress: yup.string(),
-})
+});
 
 export default class CommunicationForm extends React.Component {
+    submitChildCommunicationForm(values) {
+        let res = true;
+        let request_body = JSON.stringify({
+            "PhoneNo":values.Phone,
+            "MobileNo":values.Mobile,
+            "presentAddress1":values.PresentLocalAddress,
+            "Area":values.Area,
+            "presentCountry":values.Country,
+            "presentStateRH":values.State,
+            "presentDistrict":values.District,
+            "PresentPincode":values.Pincode,
+            "permtAddress1":values.PermanentAddress,
+        });
+        let result = {};
+        fetch(base_url+"/child-communication", {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: request_body,
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson);
+            this.setState({submitAlertMessage: 'Successfully added child communication details'});
+            alert(this.state.submitAlertMessage);
+        })
+        .catch((error) => {
+            this.setState({submitAlertMessage: 'Unable to add child communication details. Please contact the Admin.'});
+            alert(this.state.submitAlertMessage);
+            console.log(error);
+        });
+    }
+
     render() {
         return (
             <View style={globalStyles.container}>
@@ -36,11 +72,12 @@ export default class CommunicationForm extends React.Component {
                             Country: '',
                             State: '',
                             District: '',
-                // CWCStayReason: ''
-            }
-        }
+                            // CWCStayReason: ''
+                        }
+                    }
                     validationSchema={CommunicationFormSchema}
                     onSubmit={(values, actions) => {
+                        this.submitChildCommunicationForm(values);
                         actions.resetForm();
                         console.log(values);
                         alert("Data Has been submitted")
@@ -49,9 +86,9 @@ export default class CommunicationForm extends React.Component {
                     }}
                 >
                     {props => (
-                        <KeyboardAvoidingView behavior="padding"
-                            enabled style={globalStyles.keyboardavoid}
-                            keyboardVerticalOffset={200}>
+//                        <KeyboardAvoidingView behavior="padding"
+//                            enabled style={globalStyles.keyboardavoid}
+//                            keyboardVerticalOffset={200}>
                             <ScrollView>
 
                                 <View>
@@ -148,8 +185,7 @@ export default class CommunicationForm extends React.Component {
                                     <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                                 </View>
                             </ScrollView>
-                        </KeyboardAvoidingView>
-
+//                        </KeyboardAvoidingView>
                     )}
 
                 </Formik>
