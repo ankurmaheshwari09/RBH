@@ -276,9 +276,9 @@ export default class AddChild extends React.Component{
                 }}
                 >
                     {props => (
-                        <KeyboardAvoidingView behavior="padding" 
-                            enabled style={globalStyles.keyboardavoid} 
-                            keyboardVerticalOffset={150}>
+                        <KeyboardAvoidingView behavior="null"
+                                                    enabled style={globalStyles.keyboardavoid}
+                                                    keyboardVerticalOffset={0}>
                         <View style={{ position: 'absolute', top:"45%",right: 0, left: 0, zIndex: this.state.loaderIndex }}>
                             <ActivityIndicator animating={this.state.showLoader} size="large" color="red" />
                         </View>
