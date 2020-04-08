@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet,Dimensions} from 'react-native';
 
 export const globalStyles = StyleSheet.create({
     container: {
@@ -160,5 +160,23 @@ export const globalStyles = StyleSheet.create({
     },
     segView: {
         height: 50
-    }
+    },
+    spinnerTextStyle:{
+        color: '#FF0000'
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',   
+        alignSelf: 'center',
+        backgroundColor: 'white',
+        width: Dimensions.get('window').width /2 + 50,
+        maxHeight: Dimensions.get('window').height / 4,
+        top: 150,
+        borderRadius: 30
+    },
+    MainContainer: {
+        justifyContent: 'space-between',
+        flex: 1,
+    },
 });
