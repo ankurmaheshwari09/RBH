@@ -11,6 +11,7 @@ import moment from 'moment';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import {base_url,getDataAsync} from '../constants/Base';
 import { ActivityIndicator } from 'react-native';
+import { getOrgId } from '../constants/LoginConstant';
 
 const AddChildSchema = yup.object({
     // ChildPhoto: yup.object(),
@@ -121,6 +122,7 @@ export default class AddChild extends React.Component{
         referralSourcesList: [],
         childStatusList: [],
         submitAlertMessage: '',
+        orgid: '',
     };
 
     async _pickImage (handleChange) {
@@ -187,25 +189,30 @@ export default class AddChild extends React.Component{
 
     componentDidMount() {
         this.addChildConstants();
+        let orgId = getOrgId();
+        this.setState({orgid: orgId});
     }
 
     _submitAddChildForm(values) {
         let request_body = JSON.stringify({
             "firstName": values.FirstName,
-                "lastName": values.LastName,
-                "gender": values.Gender,
-                "dateOfBirth": values.DOB,
-                "religion": values.Religion,
-                "community": values.Community,
-                "motherTongue": values.MotherTongue,
-                "parentalStatus": values.ParentalStatus,
-                "reasonForAdmission": values.ReasonForAdmission,
-                "educationStatus": values.PreviousEducationStatus,
-                "admittedBy": values.AdmittedBy,
-                "referredBy": values.ReferredBy,
-                "referredSource": values.ReferredSource,
-                "childStatus": values.ChildStatus
+            "lastName": values.LastName,
+            "gender": values.Gender,
+            "dateOfBirth": values.DOB,
+            "religion": values.Religion,
+            "community": values.Community,
+            "motherTongue": values.MotherTongue,
+            "parentalStatus": values.ParentalStatus,
+            "reasonForAdmission": values.ReasonForAdmission,
+            "educationStatus": values.PreviousEducationStatus,
+            "admissionDate":values.DOA,
+            "admittedBy": values.AdmittedBy,
+            "referredBy": values.ReferredBy,
+            "referredSource": values.ReferredSource,
+            "childStatus": values.ChildStatus,
+            "rainbowHomeNumber": 45
         });
+        console.log(request_body);
         let result = {};
         fetch(base_url+"/child", {
             method: 'POST',
@@ -260,7 +267,6 @@ export default class AddChild extends React.Component{
                 }
                 validationSchema = {AddChildSchema}
                 onSubmit = {async (values, actions) => {
-                    console.log(values);
                     console.log("Submit method called here ");
                     this.setState({showLoader: true,loaderIndex:10});
                     let result = this._submitAddChildForm(values);
@@ -270,9 +276,9 @@ export default class AddChild extends React.Component{
                 }}
                 >
                     {props => (
-                        <KeyboardAvoidingView behavior="padding" 
-                            enabled style={globalStyles.keyboardavoid} 
-                            keyboardVerticalOffset={150}>
+                        <KeyboardAvoidingView behavior="null"
+                                                    enabled style={globalStyles.keyboardavoid}
+                                                    keyboardVerticalOffset={0}>
                         <View style={{ position: 'absolute', top:"45%",right: 0, left: 0, zIndex: this.state.loaderIndex }}>
                             <ActivityIndicator animating={this.state.showLoader} size="large" color="red" />
                         </View>
@@ -289,12 +295,12 @@ export default class AddChild extends React.Component{
 
                                 
                                 {/* Child Id */}
-                                <Text style = {addChildStyles.label}>Child Id :</Text>
+                                {/* <Text style = {addChildStyles.label}>Child Id :</Text>
                                 <TextInput
                                     style = {addChildStyles.inputText}
                                     onChangeText = {props.handleChange('ChildID')} 
                                     value = {props.values.ChildID}
-                                />
+                                /> */}
 
                                 {/* First Name */}
                                 <Text style = {addChildStyles.label}>FirstName :</Text>
