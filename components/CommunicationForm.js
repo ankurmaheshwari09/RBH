@@ -6,7 +6,8 @@ import {
 import { Formik } from 'formik';
 import { globalStyles } from '../styles/global';
 import * as yup from 'yup';
-import {base_url} from '../constants/Base';
+import {base_url,getDataAsync} from '../constants/Base';
+//import communicationConstants from '../constants/CommunicationConstants';
 
 const CommunicationFormSchema = yup.object({
     PresentLocalAddress: yup.string().required(),
@@ -21,8 +22,26 @@ const CommunicationFormSchema = yup.object({
 });
 
 export default class CommunicationForm extends React.Component {
+
+    state = {
+        countries: [],
+        states: [],
+        districts: [],
+    };
+
+    async addChildCommunicationConstants(){
+        getDataAsync(base_url + '/countries').then(data => { console.log(data); this.setState({countries: data}) });
+
+        getDataAsync(base_url + '/states').then(data => { console.log(data); this.setState({states: data}) });
+
+        getDataAsync(base_url + '/districts').then(data => { console.log(data); this.setState({districts: data}) });
+    }
+
+    componentDidMount() {
+        this.addChildCommunicationConstants();
+    }
+
     submitChildCommunicationForm(values) {
-        let res = true;
         let request_body = JSON.stringify({
             "PhoneNo":values.Phone,
             "MobileNo":values.Mobile,
@@ -34,7 +53,6 @@ export default class CommunicationForm extends React.Component {
             "PresentPincode":values.Pincode,
             "permtAddress1":values.PermanentAddress,
         });
-        let result = {};
         fetch(base_url+"/child-communication", {
             method: 'POST',
             headers: {
@@ -50,9 +68,9 @@ export default class CommunicationForm extends React.Component {
             alert(this.state.submitAlertMessage);
         })
         .catch((error) => {
+            console.log(error);
             this.setState({submitAlertMessage: 'Unable to add child communication details. Please contact the Admin.'});
             alert(this.state.submitAlertMessage);
-            console.log(error);
         });
     }
 
@@ -77,9 +95,9 @@ export default class CommunicationForm extends React.Component {
                     }
                     validationSchema={CommunicationFormSchema}
                     onSubmit={(values, actions) => {
+                        console.log(values);
                         this.submitChildCommunicationForm(values);
                         actions.resetForm();
-                        console.log(values);
                         alert("Data Has been submitted")
                         this.props.navigation.push('CommunicationScreen', values)
 
@@ -96,32 +114,31 @@ export default class CommunicationForm extends React.Component {
                                     <Text style={globalStyles.errormsg}>{props.touched.PresentLocalAddress && props.errors.PresentLocalAddress}</Text>
                                     <TextInput
                                         style={globalStyles.input}
-                                        onChangeText={props.handleChange('PresentLocalAddress')} //This will update the IdentificationMArk value in 'values'
-                                        value={props.values.PresentLocalAddress} //value updated in 'values' is reflected here
+                                        onChangeText={props.handleChange('PresentLocalAddress')}
+                                        value={props.values.PresentLocalAddress}
                                     />
                                     <Text style={globalStyles.text}>Area/Town/City</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Area && props.errors.Area}</Text>
                                     <TextInput
                                         style={globalStyles.input}
-                                        onChangeText={props.handleChange('Area')} //This will update the IdentificationMArk value in 'values'
-                                        value={props.values.Area} //value updated in 'values' is reflected here
+                                        onChangeText={props.handleChange('Area')}
+                                        value={props.values.Area}
                                     />
                                     <Text style={globalStyles.text}>Country</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Country && props.errors.Country}</Text>
                                     <Picker
                                         selectedValue={props.values.Country}
                                         style={globalStyles.dropDown}
-                                        onValueChange={props.handleChange('Country')}
+                                        onValueChange={value => {
+                                           props.setFieldValue('Country', value)}}
                                         value={props.values.Country}
                                     >
-                                        <Picker.Item label="Select Country" value="" />
-                                        <Picker.Item label="India" value="India" />
-                                        <Picker.Item label="Bangladesh" value="Bangladesh" />
-                                        <Picker.Item label="Bhutan" value="Bhutan" />
-                                        <Picker.Item label="Maldives" value="Maldives" />
-                                        <Picker.Item label="Nepal" value="Nepal" />
-                                        <Picker.Item label="Pakistan" value="Pakistan" />
-                                        <Picker.Item label="Srilanka" value="Srilanka" />
+                                        <Picker.Item key = '' label="Select Country" value="" />
+                                        {
+                                           this.state.countries.map((item) => {
+                                               return <Picker.Item key = {item.countryId} label = {item.country} value = {item.countryId}/>
+                                           })
+                                         }
                                     </Picker>
 
                                     <Text style={globalStyles.text}>State</Text>
@@ -129,58 +146,60 @@ export default class CommunicationForm extends React.Component {
                                     <Picker
                                         selectedValue={props.values.State}
                                         style={globalStyles.dropDown}
-                                        onValueChange={props.handleChange('State')}
+                                        onValueChange={value => {
+                                           props.setFieldValue('State', value)
+                                        }}
                                     >
                                         <Picker.Item label="Select State" value="" />
-                                        <Picker.Item label="Delhi" value="Delhi" />
-                                        <Picker.Item label="Goa" value="Goa" />
-                                        <Picker.Item label="Gujarat" value="Gujarat" />
-                                        <Picker.Item label="Haryana" value="Haryana" />
-                                        <Picker.Item label="Andhra Pradesh" value="Andhra Pradesh" />
-                                    </Picker>
+                                        {
+                                           this.state.states.map((item) => {
+                                               return <Picker.Item key = {item.stateID} label = {item.state} value = {item.stateID}/>
+                                           })
+                                         }
+                                     </Picker>
                                     <Text style={globalStyles.text}>District</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.District && props.errors.District}</Text>
                                     <Picker
                                         selectedValue={props.values.District}
                                         style={globalStyles.dropDown}
-                                        onValueChange={props.handleChange('District')}
+                                        onValueChange={value => {
+                                           props.setFieldValue('District', value)}}
                                         value={props.values.District}
                                     >
-                                        <Picker.Item label="Select District" value="" />
-                                        <Picker.Item label="Guntur" value="Guntur" />
-                                        <Picker.Item label="Krishna" value="Krishna" />
-                                        <Picker.Item label="Kurnool" value="Kurnool" />
-                                        <Picker.Item label="Visakhapatnam" value="Visakhapatnam" />
-                                        <Picker.Item label="Krishna" value="Krishna" />
-                                        <Picker.Item label="Prakasam" value="Prakasam" />
+                                        <Picker.Item label="Select District" value="0" />
+                                        {
+                                           this.state.districts.map((item) => {
+                                              return <Picker.Item key = {item.districtID} label = {item.district} value = {item.districtID}/>
+                                          })
+                                         }
                                     </Picker>
                                     <Text style={globalStyles.text}>Pin Code</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Pincode && props.errors.Pincode}</Text>
                                     <TextInput
                                         style={globalStyles.input}
-                                        onChangeText={props.handleChange('Pincode')} //This will update the IdentificationMArk value in 'values'
-                                        value={props.values.Pincode} //value updated in 'values' is reflected here
+                                        onChangeText={props.handleChange('Pincode')}
+                                        value={props.values.Pincode}
                                     />
                                     <Text style={globalStyles.text}>Mobile</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Mobile && props.errors.Mobile}</Text>
                                     <TextInput
                                         style={globalStyles.input}
-                                        onChangeText={props.handleChange('Mobile')} //This will update the IdentificationMArk value in 'values'
-                                        value={props.values.Mobile} //value updated in 'values' is reflected here
+                                        onChangeText={props.handleChange('Mobile')}
+                                        value={props.values.Mobile}
                                     />
                                     <Text style={globalStyles.text}>Phone</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Phone && props.errors.Phone}</Text>
                                     <TextInput
                                         style={globalStyles.input}
-                                        onChangeText={props.handleChange('Phone')} //This will update the IdentificationMArk value in 'values'
-                                        value={props.values.Phone} //value updated in 'values' is reflected here
+                                        onChangeText={props.handleChange('Phone')}
+                                        value={props.values.Phone}
                                     />
                                     <Text style={globalStyles.text}>Permanent(Native) Address</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.PermanentAddress && props.errors.PermanentAddress}</Text>
                                     <TextInput
                                         style={globalStyles.input}
-                                        onChangeText={props.handleChange('PermanentAddress')} //This will update the IdentificationMArk value in 'values'
-                                        value={props.values.PermanentAddress} //value updated in 'values' is reflected here
+                                        onChangeText={props.handleChange('PermanentAddress')}
+                                        value={props.values.PermanentAddress}
                                     />
                                     <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                                 </View>
