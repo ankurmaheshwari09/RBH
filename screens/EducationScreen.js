@@ -17,10 +17,10 @@ import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 
 const EducationFormSchema = yup.object({
-    Class: yup.string().required(),
-    Medium: yup.string().required(),
-    SchoolName: yup.string().required(),
-    SchoolPlace: yup.string().required()
+    //Class: yup.string().required(),
+    ///Medium: yup.string().required(),
+    //SchoolName: yup.string().required(),
+    //SchoolPlace: yup.string().required()
 })
 
 export default class EducationScreen extends React.Component {
