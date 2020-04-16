@@ -196,8 +196,8 @@ export default class ViewProfile extends React.Component {
                         {/* <Text style={globalStyles.text}>Entered  :{props.values.Description} </Text> */}
                         <TextInput
                             style={globalStyles.input}
-                            value={props.values.Description}
                             onChangeText={props.handleChange('Description')}
+                            value={props.values.Description}
                         //    onChangeText={text => props.setFieldValue('Description', text)}
                         //   value={props.values.Description} 
                         />
