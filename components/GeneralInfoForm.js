@@ -49,7 +49,7 @@ export default class GeneralInfoForm extends React.Component{
         child.organisationName = values.psoName
         child.cWCRefNo =  values.cwcRefNo
         child.stayReason = values.cwcStayReason
-        
+        console.log(child)
         let path = `child/${child.childNo}`
         UpdateApi.updateData(JSON.stringify(child), path).then((response) => {
             this.setState({ loading: false, isVisible: true });

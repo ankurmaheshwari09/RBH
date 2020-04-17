@@ -8,6 +8,7 @@ import {
 import GeneralInfoForm from './GeneralInfoForm';
 import HealtDuringAdd from './HealthDuringAddForm'
 import PrevEduForm from './PrevEduForm';
+import EditChild from './EditChildForm';
 import { globalStyles } from '../styles/global';
 import {base_url, getDataAsync} from '../constants/Base';
 import {LoadingDisplay} from '../utils/LoadingDisplay';
@@ -93,7 +94,7 @@ export default class GeneralInfoSegControl extends Component {
               {formIndex === 0 && <GeneralInfoForm navigation = {this.props.navigation} childData = {this.state.childData}/>}
               {formIndex === 1 && <PrevEduForm navigation = {this.props.navigation} prevEducation = {this.state.prevEducation}/>}
               {formIndex === 2 && <HealtDuringAdd navigation = {this.props.navigation} childHealth = {this.state.childHealth}/>}
-              {formIndex === 3 && <Text>Child Addmission Form goes here</Text>}
+              {formIndex === 3 && <EditChild navigation = {this.props.navigation} childData = {this.state.childData}/>}
             </View>
         </View>
       )
