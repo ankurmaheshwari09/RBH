@@ -210,7 +210,7 @@ export default class AddChild extends React.Component{
             "referredBy": values.ReferredBy,
             "referredSource": values.ReferredSource,
             "childStatus": values.ChildStatus,
-            "rainbowHomeNumber": 45
+            "rainbowHomeNumber": this.state.orgid
         });
         console.log(request_body);
         let result = {};
