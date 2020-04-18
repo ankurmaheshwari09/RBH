@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Login from './screens/Login';
 import MainScreen from './screens/MainScreen';
 import AppNavigator from './navigation/AppNavigator';
-
+import { EventRegister } from 'react-native-event-listeners';
 
 
 export default class App extends Component {
@@ -11,6 +11,12 @@ export default class App extends Component {
         username: "username",
         password: "password",
         message: "",
+    }
+
+    componentDidMount() {
+        this.listener = EventRegister.addEventListener('logoutEvent', (data)=> {
+            this.setState({isLoggedIn: false});
+        });
     }
 
     render ()  {

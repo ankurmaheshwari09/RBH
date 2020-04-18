@@ -1,7 +1,8 @@
 import  React, { Component } from 'react';
-import { View, Text,StyleSheet, SafeAreaView, TouchableOpacity, BackHandler } from 'react-native';
+import { View, Text,StyleSheet, SafeAreaView, TouchableOpacity, Button } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import {Feather} from '@expo/vector-icons';
+import { logOut } from '../constants/LoginConstant';
 
 const styles = StyleSheet.create({
     header: {
@@ -33,7 +34,7 @@ const styles = StyleSheet.create({
 export default class CustomHeader extends Component {
 
     Logout() {
-        BackHandler.exitApp();
+        logOut();
     }
 
     render () {
@@ -45,16 +46,11 @@ export default class CustomHeader extends Component {
                         <FontAwesome5 name="bars" size={24} color="#ffffff" />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>{this.props.title}</Text>
-                    {/* <TouchableOpacity onPress={this.Logout} >
-                    <View style={styles.logout}>
-                        <Feather name="power" size={20} color={"white"}/>
-                    </View>
-                    </TouchableOpacity> */}
-                    {/* <Button icon={
-                            <Feather name="log-out" size={20}/>
-                        } 
-                        title="Sample"
-                    /> */}
+                        <TouchableOpacity onPress={this.Logout} >
+                            <View style={styles.logout}>
+                                <Feather name="power" size={20} color={"white"}/>
+                            </View>
+                        </TouchableOpacity>
                 </View>
         );
     }
