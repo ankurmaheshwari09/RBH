@@ -188,8 +188,6 @@ export default class EditChild extends React.Component{
         child.admittedBy = values.AdmittedBy,
         child.referredBy = values.ReferredBy,
         child.referredSource = values.ReferredSource,
-        //child.childStatus = values.ChildStatus,
-        child.rainbowHomeNumber = 45
         console.log(child)
         let path = `child/${child.childNo}`
         UpdateApi.updateData(JSON.stringify(child), path).then((response) => {
