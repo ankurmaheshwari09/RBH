@@ -1,7 +1,7 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Formik } from "formik";
 import React from 'react';
-import { Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View, Dimensions } from 'react-native';
+import { SafeAreaView, Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View, Dimensions } from 'react-native';
 import * as yup from "yup";
 import { globalStyles } from "../styles/global";
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -13,6 +13,7 @@ import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
+import Select from 'react-select';
 
 const statusSchema = yup.object({
     childStatus: yup.string().required(),
@@ -37,10 +38,45 @@ export default class StatusScreen extends React.Component {
             isVisible: false,
             loading: false,
             errorDisplay: false,
-            sucessDisplay: false
+            sucessDisplay: false,
+            statusOptions: global.status,
+            selectedOption: null
         }
         this.pickDob = this.pickDob.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        if (state.child.childStatus.childStatusId == 1) {
+            
+            return {
+                statusOptions: global.status.filter((item)  => {
+                    return item.childStatusId == 2 || item.childStatusId == 3;
+            })
+            }
+        }  else if (state.child.childStatus.childStatusId == 2) {
+            
+            return {
+                statusOptions: global.status.filter((item) => {
+                    return (item.childStatusId == 4) || (item.childStatusId == 3) ;
+                })
+            }
+        } else if (state.child.childStatus.childStatusId == 3) {
+            
+            return {
+                statusOptions: global.status.filter((item) => {
+                    return item.childStatusId == 2 || item.childStatusId == 4;
+                })
+            }
+        } else if (state.child.childStatus.childStatusId == 4) {
+            return {
+                statusOptions: global.status.filter((item) => {
+                    return item.childStatusId == 3;
+                })
+            }
+        }
+        else return state;
     }
 
     pickDob = (event, date, handleChange) => {
@@ -100,6 +136,10 @@ export default class StatusScreen extends React.Component {
         
     }
 
+    handleChange = selectedOption => {
+        this.setState({ selectedOption });
+        console.log(`Option selected:`, selectedOption);
+    };
 
     render() {
         const radio_props = [
@@ -112,8 +152,13 @@ export default class StatusScreen extends React.Component {
                 value: 'futureProgram'
             }
         ];
+        const options = [
+            { value: 'chocolate', label: 'Chocolate' },
+            { value: 'strawberry', label: 'Strawberry' },
+            { value: 'vanilla', label: 'Vanilla' },
+        ];
         return (
-            <View style={globalStyles.container}>
+            <SafeAreaView style={globalStyles.container}>
                 <View >
                      
                     <Text> Child Name: {this.state.child.firstName}</Text>
@@ -182,9 +227,12 @@ export default class StatusScreen extends React.Component {
 
                                         value={props.values.childStatus}>
                                         <Picker.Item label="Select Status" value="" />
-                                        {global.status.map((item) => {
-                                            return <Picker.Item key={item.childStatusId} label={item.childStatus} value={item.childStatusId} />
-                                        })}
+                                        {this.state.statusOptions.map((item) => {
+                                            if (item.childStatusId == 4) {
+                                                return <Picker.Item key={item.childStatusId} label={'Exit'} value={item.childStatusId} />
+                                            } else {
+                                                return <Picker.Item key={item.childStatusId} label={item.childStatus} value={item.childStatusId} />
+                                            }})}
 
                                     </Picker>
                                         <Text style={globalStyles.errormsg}>{props.touched.childStatus && props.errors.childStatus}</Text>
@@ -289,6 +337,13 @@ export default class StatusScreen extends React.Component {
                                                     return <Picker.Item key={item.actionId} label={item.actionTaken} value={item.actionId} />
                                                 })}
                                             </Picker>
+                                            <Select
+                                                value={this.state.selectedOption}
+                                                onChange={this.handleChange}
+                                                options={options}
+                                            />
+                                            
+                                            
                                             {this.state.actionTakenError ? < Text style={globalStyles.errormsg}>Action Taken is required</Text> : null}
 
                                             <Text style={globalStyles.text}>Place of Stay After Leaving RH:</Text>
@@ -341,10 +396,11 @@ export default class StatusScreen extends React.Component {
                     </View>
                 </Modal>
                 <LoadingDisplay loading={this.state.loading} />
-            </View>
+            </SafeAreaView>
         );
     }
 }
+
 const styles = StyleSheet.create({
     FontStyle: {
         fontSize: 15

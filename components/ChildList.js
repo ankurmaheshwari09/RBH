@@ -58,7 +58,7 @@ export default class ChildList extends Component {
             loading: false,
             search: null,
             errorDisplay: false
-        }, () => { this.getData() });
+        });
     }
     getData() {
         console.log('inside get');
@@ -200,7 +200,8 @@ export default class ChildList extends Component {
                                             </View>
                                             <View style={{ flexDirection: 'row' }}>
                                                 <Text style={styles.heading}>Status:</Text >
-                                                <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>
+                                                {item.childStatus.childStatus == 'Closed' ? <Text style={styles.cardContent}>Exit</Text> :
+                                                    <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>}
                                             </View>
                                         </CardContent>
                                     </Card>
