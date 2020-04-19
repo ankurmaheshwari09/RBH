@@ -5,6 +5,7 @@ import { globalStyles } from '../styles/global';
 import { generalInfoConstants } from '../constants/GeneralInfoConstants';
 import { statusConstants } from '../constants/StatusConstants';
 import { educationConstants } from '../constants/EducationConstants';
+import {childConstants} from '../constants/ChildConstants';
 
 
 export default class HomeScreen extends Component {
@@ -28,6 +29,7 @@ export default class HomeScreen extends Component {
     }
 
     componentDidMount() {
+        childConstants()
         generalInfoConstants()
         statusConstants()
         educationConstants()

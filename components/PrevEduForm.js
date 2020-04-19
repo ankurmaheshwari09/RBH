@@ -62,7 +62,7 @@ export default class PrevEduForm extends React.Component{
         prevEducation.address = values.schoolPlace,
         prevEducation.modified_on = new Date()
 
-        this.getApiMethod(JSON.stringify(prevEducation), '/child-education').then((response) => {
+        this.getApiMethod(JSON.stringify(prevEducation), 'child-education').then((response) => {
             this.setState({ loading: false, isVisible: true });
             if(response.ok){
                 response.json().then((res) => {

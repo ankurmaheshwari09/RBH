@@ -25,6 +25,7 @@
     "react-native-check-box": "^2.1.7",
     "react-native-datepicker": "^1.7.2",
     "react-native-elements": "^1.2.7",
+    "react-native-event-listeners": "^1.0.7",
     "react-native-fs": "^2.16.6",
     "react-native-gesture-handler": "~1.5.0",
     "react-native-image-picker": "^2.3.1",
