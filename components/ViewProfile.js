@@ -9,6 +9,11 @@ import * as yup from 'yup';
 import moment from 'moment';
 import {base_url,getDataAsync} from '../constants/Base';
 import { ActivityIndicator } from 'react-native';
+import UpdateApi from "../constants/UpdateApi";
+import Modal from 'react-native-modal';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
 const ViewProfileSchema = yup.object({
     Description: yup.string().required(),
 })
@@ -26,6 +31,11 @@ export default class ViewProfile extends React.Component {
             updateProfile: false,
             profileDescriptionNo: '',
             editText:false,
+            changeDescription: false,
+            sucessDisplay: false,
+            errorDisplay: false,
+            loading: false,
+            isVisible: false,
         }
         this._submitProfile =this._submitProfile.bind(this);
         this._updateProfile =this._updateProfile.bind(this);
@@ -73,13 +83,15 @@ export default class ViewProfile extends React.Component {
             let daysTillToday = Math.floor(diffInDate/ (1000 * 60 * 60 * 24));
             console.log(daysTillToday,'daysTillToday');
             if(daysTillToday>=365){
-                alert('Alert: Update Profile!!!');
+                alert('Alert: Profile Description needs to be updated!!!');
+                this.setState({changeDescription: true});
             }
         }
     });
 }
 
     _submitProfile(values) {
+        this.setState({ loading: true });
         let request_body = JSON.stringify({
                 "description": values.Description,
                 "childNo": this.state.child.childNo,
@@ -96,20 +108,32 @@ export default class ViewProfile extends React.Component {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            console.log(responseJson);
-            this.setState({submitAlertMessage: 'Successfully added profile description for \n'
-            +'Child Number:'+responseJson.childNo+'\nProfile Description Number:'+responseJson.profileDescriptionNo});
-            
-            alert(this.state.submitAlertMessage);
+            this.setState({ loading: false, isVisible: true });
+            if(responseJson.ok) {
+
+                console.log(responseJson);
+                this.setState({submitAlertMessage: 'Successfully added profile description for \n'
+                +'Child Number:'+responseJson.childNo+'\nProfile Description Number:'+responseJson.profileDescriptionNo,
+                changeDescription:false});   
+                alert(this.state.submitAlertMessage);
+
+                this.setState({ successDisplay: true });
+            }
+            else{
+                throw Error(responseJson.status);
+            }
         })
         .catch((error) => {
             this.setState({submitAlertMessage: 'Unable to add Details. Plesae contact the Admin.'});
             alert(this.state.submitAlertMessage);
             console.log(error);
+
+            this.setState({ errorDisplay: true });
         });
     }
 
     _updateProfile(values) {
+        this.setState({ loading: true });
         let request_body = JSON.stringify({
                 "description": values.Description,
                 "childNo": this.state.child.childNo,
@@ -127,27 +151,25 @@ export default class ViewProfile extends React.Component {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            console.log(responseJson);
-            this.setState({submitAlertMessage: 'Successfully updated profile description for \n'
-            +'Child Number:'+responseJson.childNo+'\nProfile Description Number:'+responseJson.profileDescriptionNo});           
-            alert(this.state.submitAlertMessage);
-            fetch(base_url+"/child-profile-all-description/"+this.state.child.childNo,{
-                method: 'GET',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then((response)=>response.json())
-            .then((responseJson2)=>{
-                console.log(responseJson2,'222');
-                this.setState({description: responseJson2.description});
-            })
+            this.setState({ loading: false, isVisible: true });
+            if(responseJson.ok) {
+                console.log(responseJson);
+                this.setState({submitAlertMessage: 'Successfully updated profile description for \n'
+                +'Child Number:'+responseJson.childNo+'\nProfile Description Number:'+responseJson.profileDescriptionNo,
+                changeDescription:true});           
+                alert(this.state.submitAlertMessage);
+                this.setState({ successDisplay: true });
+            }
+            else{
+                throw Error(responseJson.status);
+            }
         })
         .catch((error) => {
             this.setState({submitAlertMessage: 'Unable to update details. Plesae contact the Admin.'});
             alert(this.state.submitAlertMessage);
             console.log(error);
+
+            this.setState({ errorDisplay: true });
         });
     }
 
@@ -201,7 +223,7 @@ export default class ViewProfile extends React.Component {
                         //    onChangeText={text => props.setFieldValue('Description', text)}
                         //   value={props.values.Description} 
                         />
-                        <Text style={globalStyles.errormsg}>{props.touched.Description && props.errors.Description}</Text>
+                        {/* <Text style={globalStyles.errormsg}>{props.touched.Description && props.errors.Description}</Text> */}
                          <Text style={globalStyles.padding}></Text>
                         <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
 
@@ -213,6 +235,13 @@ export default class ViewProfile extends React.Component {
                     )}
 
                 </Formik>
+                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={globalStyles.MainContainer}>
+                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Profile' childNo={this.state.child.firstName} />
+                    </View>
+                </Modal>
+                <LoadingDisplay loading={this.state.loading} />
             </View >
         </View >
         );

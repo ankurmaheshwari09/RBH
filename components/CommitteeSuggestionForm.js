@@ -13,6 +13,12 @@ import moment from 'moment';
 import CheckBox from 'react-native-check-box';
 import { ActivityIndicator } from 'react-native';
 import {base_url,getDataAsync} from '../constants/Base';
+import UpdateApi from "../constants/UpdateApi";
+import Modal from 'react-native-modal';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
+
 const CommitteeFormSchema = yup.object({
     Suggestion: yup.string().required(),
     StartingDate: yup.string().required(),
@@ -30,6 +36,10 @@ export default class CommitteeScreen extends React.Component {
             selectedStaff: [],
             committeeSuggestionNo: '',
             child: this.props.navigation.getParam('child'),
+            sucessDisplay: false,
+            errorDisplay: false,
+            loading: false,
+            isVisible: false,
         }
         this.getStaffMembers =this.getStaffMembers.bind(this);
         this.populateSelectedStaff = this.populateSelectedStaff.bind(this);
@@ -120,6 +130,7 @@ export default class CommitteeScreen extends React.Component {
     }
 
     _submitCommitteeSuggestionForm(values) {
+        this.setState({ loading: true });
         let request_body = JSON.stringify({
                 "committeeSuggestionText": values.Suggestion,
                 "committeeSuggestionDate": values.StartingDate,
@@ -137,20 +148,29 @@ export default class CommitteeScreen extends React.Component {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            console.log(responseJson);
-            this.setState({submitAlertMessage: 'Successfully added suggestions given by committee for '+responseJson.childNo});
-            alert(this.state.submitAlertMessage);
-            this.setState({ showElements: false, showSSElements: false});
+            this.setState({ loading: false, isVisible: true });
+            if(responseJson.ok) {
+                console.log(responseJson);
+                this.setState({submitAlertMessage: 'Successfully added suggestions given by committee for '+responseJson.childNo});
+                alert(this.state.submitAlertMessage);
+                this.setState({ showElements: false, showSSElements: false});
+                this.setState({ successDisplay: true });
+                }
+            else{
+                throw Error(responseJson.status);
+            }
         })
         .catch((error) => {
             this.setState({submitAlertMessage: 'Unable to add Details. Plesae contact the Admin.'});
             alert(this.state.submitAlertMessage);
             console.log(error);
             this.setState({showElements: false, showSSElements: false});
+            this.setState({ errorDisplay: true });
         });
     }
 
     _updateCommitteeSuggestionForm(values) {
+        this.setState({ loading: true });
         let request_body = JSON.stringify({
                 "committeeSuggestionNo": this.state.committeeSuggestionNo,
                 "committeeSuggestionText": values.Suggestion,
@@ -169,16 +189,25 @@ export default class CommitteeScreen extends React.Component {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            console.log(responseJson);
-            this.setState({submitAlertMessage: 'Successfully updated suggestions given by committee for '+responseJson.childNo});
-            alert(this.state.submitAlertMessage);
-            this.setState({ showElements: false, showSSElements: false});
+            this.setState({ loading: false, isVisible: true });
+            if(responseJson.ok) {
+                console.log(responseJson);
+                this.setState({submitAlertMessage: 'Successfully updated suggestions given by committee for '+responseJson.childNo});
+                alert(this.state.submitAlertMessage);
+                this.setState({ showElements: false, showSSElements: false});
+                this.setState({ successDisplay: true });
+            }
+            else{
+                throw Error(responseJson.status);
+            }
         })
         .catch((error) => {
             this.setState({submitAlertMessage: 'Unable to update Details. Plesae contact the Admin.'});
             alert(this.state.submitAlertMessage);
             console.log(error);
             this.setState({date: null, showElements: false, showSSElements: false});
+
+            this.setState({ errorDisplay: true });
         });
     }
 
@@ -292,6 +321,13 @@ export default class CommitteeScreen extends React.Component {
                     )}
 
                 </Formik>
+                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={globalStyles.MainContainer}>
+                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Suggestions given by committee' childNo={this.state.child.firstName} />
+                    </View>
+                </Modal>
+                <LoadingDisplay loading={this.state.loading} />
             </View >
         </View >
         );
