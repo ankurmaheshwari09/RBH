@@ -8,6 +8,7 @@ import {
 import GeneralInfoForm from './GeneralInfoForm';
 import HealtDuringAdd from './HealthDuringAddForm'
 import PrevEduForm from './PrevEduForm';
+import EditChild from './EditChildForm';
 import { globalStyles } from '../styles/global';
 import {base_url, getDataAsync} from '../constants/Base';
 import {LoadingDisplay} from '../utils/LoadingDisplay';
@@ -15,42 +16,42 @@ import {LoadingDisplay} from '../utils/LoadingDisplay';
 export default class GeneralInfoSegControl extends Component {
   constructor(props) {
     super(props)
-    this.state = {
-      formIndex: 0,
-      loading: false,
-      child: this.props.navigation.getParam('child'),
-      childHealth: {
-        "bloodGroup": '',
-        "generalHealth": '',
-        "height": '',
-        "weight": '',
-        "comments": '',
-        "newChild": true
-      },
-      prevEducation: {
-        "dropoutReason": '',
-        "date_to": '',
-        "yearOfStudied": '',
-        "medium": '',
-        "schoolName": '',
-        "schooltype": '',
-        "studyingclass": '',
-        "address": '',
-        "newChild": true
-      },
-      childData: []
-    }
+  }
+  state = {
+    formIndex: 0,
+    loading: false,
+    child: this.props.navigation.getParam('child'),
+    childHealth: {
+      "bloodGroup": '',
+      "generalHealth": '',
+      "height": '',
+      "weight": '',
+      "comments": '',
+      "newChild": true
+    },
+    prevEducation: {
+      "dropoutReason": '',
+      "date_to": '',
+      "yearOfStudied": '',
+      "medium": '',
+      "schoolName": '',
+      "schooltype": '',
+      "studyingclass": '',
+      "address": '',
+      "newChild": true
+    },
+    childData: []
   }
 
     componentDidMount(){
       this.setState({ search: null, loading: true });
       getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => this.setState({childData: data}))
       getDataAsync(base_url + '/child-health-all-records/' + this.state.child.childNo).then(data => {
-        if(data !== [] && data !== null)
+        if(JSON.stringify(data) !== JSON.stringify([]) && data !== null)
           this.setState({childHealth: data[0]})
         })
       getDataAsync(base_url + '/child-education/' + this.state.child.childNo).then(data => {
-        if(data !== null && data !== [])
+        if(data !== null && JSON.stringify(data) !== JSON.stringify([]))
           this.setState({prevEducation: data[0]})
         this.setState({loading: false})
       })
@@ -93,7 +94,7 @@ export default class GeneralInfoSegControl extends Component {
               {formIndex === 0 && <GeneralInfoForm navigation = {this.props.navigation} childData = {this.state.childData}/>}
               {formIndex === 1 && <PrevEduForm navigation = {this.props.navigation} prevEducation = {this.state.prevEducation}/>}
               {formIndex === 2 && <HealtDuringAdd navigation = {this.props.navigation} childHealth = {this.state.childHealth}/>}
-              {formIndex === 3 && <Text>Child Addmission Form goes here</Text>}
+              {formIndex === 3 && <EditChild navigation = {this.props.navigation} childData = {this.state.childData}/>}
             </View>
         </View>
       )
