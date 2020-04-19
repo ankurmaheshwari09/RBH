@@ -12,8 +12,13 @@ import { TouchableHighlight } from 'react-native-gesture-handler';
 import {base_url,getDataAsync} from '../constants/Base';
 import { ActivityIndicator } from 'react-native';
 import { getOrgId } from '../constants/LoginConstant';
+import UpdateApi from "../constants/UpdateApi";
+import Modal from 'react-native-modal';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
 
-const AddChildSchema = yup.object({
+const EditChildSchema = yup.object({
     // ChildPhoto: yup.object(),
     ChildID: yup.string(),
     FirstName: yup.string().required(),
@@ -30,10 +35,9 @@ const AddChildSchema = yup.object({
     DOA: yup.string().required(),
     ReferredSource: yup.string().required(),
     ReferredBy: yup.string().required(),
-    ChildStatus: yup.string().required(),
 });
 
-const addChildStyles = StyleSheet.create({
+const editChildStyles = StyleSheet.create({
     container: {
       flex: 1,
       padding: 20,
@@ -101,28 +105,19 @@ const addChildStyles = StyleSheet.create({
 
 const defaultImg = require('../assets/person.png');
 
-export default class AddChild extends React.Component{
+export default class EditChild extends React.Component{
 
     
     state = {
+        child: this.props.childData,
         image : null,
         showdob: false,
         showdoa: false,
-        showLoader: false,
-        loaderIndex: 0,
-        dob: '',
-        doa: '',
-        religions: [],
-        communities: [],
-        motherTongues: [],
-        parentalStatusList: [],
-        admissionReasons: [],
-        educationStatusList: [],
-        homeStaffList: [],
-        referralSourcesList: [],
-        childStatusList: [],
-        submitAlertMessage: '',
         orgid: '',
+        sucessDisplay: false,
+        errorDisplay: false,
+        loading: false,
+        isVisible: false,
     };
 
     async _pickImage (handleChange) {
@@ -135,26 +130,6 @@ export default class AddChild extends React.Component{
             this.setState({ image: result.uri });
             handleChange(result.uri)
         }
-    }
-
-    async addChildConstants(){
-        getDataAsync(base_url + '/religions').then(data => {console.log(data); this.setState({religions: data})});
-    
-        getDataAsync(base_url + '/communities').then(data => {console.log(data);this.setState({communities: data})});
-    
-        getDataAsync(base_url + '/mother-tongues').then(data => {console.log(data);this.setState({motherTongues: data})});
-    
-        getDataAsync(base_url + '/parental-statuses').then(data => {console.log(data);this.setState({parentalStatusList: data})});
-    
-        getDataAsync(base_url + '/admission-reasons').then(data => {console.log(data);this.setState({admissionReasons: data})});
-    
-        getDataAsync(base_url + '/education-statuses').then(data => {console.log(data);this.setState({educationStatusList: data})});
-    
-        getDataAsync(base_url + '/home-staff-list').then(data => {console.log(data);this.setState({homeStaffList: data})});
-        
-        getDataAsync(base_url + '/referral-sources').then(data => {console.log(data);this.setState({referralSourcesList: data})});
-    
-        getDataAsync(base_url + '/child-statuses').then(data => {console.log(data);this.setState({childStatusList: data})});
     }
 
     _pickDob = (event,date,handleChange) => {
@@ -187,60 +162,57 @@ export default class AddChild extends React.Component{
         console.log("change called");
     }
 
+    getDate(date){
+        return moment(date).format('YYYY-MM-DD');
+    }
+
     componentDidMount() {
-        this.addChildConstants();
         let orgId = getOrgId();
         this.setState({orgid: orgId});
     }
 
-    _submitAddChildForm(values) {
-        let request_body = JSON.stringify({
-            "firstName": values.FirstName,
-            "lastName": values.LastName,
-            "gender": values.Gender,
-            "dateOfBirth": values.DOB,
-            "religion": values.Religion,
-            "community": values.Community,
-            "motherTongue": values.MotherTongue,
-            "parentalStatus": values.ParentalStatus,
-            "reasonForAdmission": values.ReasonForAdmission,
-            "educationStatus": values.PreviousEducationStatus,
-            "admissionDate":values.DOA,
-            "admittedBy": values.AdmittedBy,
-            "referredBy": values.ReferredBy,
-            "referredSource": values.ReferredSource,
-            "childStatus": values.ChildStatus,
-            "rainbowHomeNumber": this.state.orgid
-        });
-        console.log(request_body);
-        let result = {};
-        fetch(base_url+"/child", {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: request_body,
-        })
-        .then((response) => response.json())
-        .then((responseJson) => {
-            console.log(responseJson);
-            this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo});
-            alert(this.state.submitAlertMessage);
-            this.setState({showLoader: false,loaderIndex:0});
-        })
-        .catch((error) => {
-            this.setState({submitAlertMessage: 'Unable to add child. Plesae contact the Admin.'});
-            alert(this.state.submitAlertMessage);
-            console.log(error);
-            this.setState({showLoader: false,loaderIndex:0});
+    _submitEditChildForm(values) {
+        this.setState({ loading: true });
+        let child = this.props.childData
+        child.firstName = values.FirstName,
+        child.lastName = values.LastName,
+        child.gender = values.Gender,
+        child.dateOfBirth = values.DOB,
+        child.religion = values.Religion,
+        child.community = values.Community,
+        child.motherTongue = values.MotherTongue,
+        child.parentalStatus = values.ParentalStatus,
+        child.reasonForAdmission = values.ReasonForAdmission,
+        child.educationStatus = values.PreviousEducationStatus,
+        child.admissionDate = values.DOA,
+        child.admittedBy = values.AdmittedBy,
+        child.referredBy = values.ReferredBy,
+        child.referredSource = values.ReferredSource,
+        //child.childStatus = values.ChildStatus,
+        child.rainbowHomeNumber = 45
+        console.log(child)
+        let path = `child/${child.childNo}`
+        UpdateApi.updateData(JSON.stringify(child), path).then((response) => {
+            this.setState({ loading: false, isVisible: true });
+            if(response.ok){
+                response.json().then((res) => {
+                    console.log(res)
+                })
+                this.setState({ successDisplay: true });
+            }
+            else{
+                throw Error(response.status);
+            }
+        }).catch(error => {
+            console.log(error, 'ffff');
+            this.setState({ errorDisplay: true });
         });
     }
 
     render() {
         
         return (
-            <View style = {addChildStyles.container}>
+            <View style = {editChildStyles.container}>
                 
 
                 <Formik
@@ -248,47 +220,42 @@ export default class AddChild extends React.Component{
                     {
                         ChildPhoto: '',
                         ChildID: '',
-                        FirstName: '',
-                        LastName: '',
-                        Gender: '',
-                        DOB: this.state.dob,
-                        DOA: this.state.doa,
-                        Religion: '',
-                        Community: '',
-                        MotherTongue: '',
-                        ParentalStatus: '',
-                        ReasonForAdmission:'',
-                        PreviousEducationStatus: '',
-                        AdmittedBy: '',
-                        ReferredSource: '',
-                        ReferredBy: '',
-                        ChildStatus: '',
+                        FirstName: this.state.child.firstName ? this.state.child.firstName : '',
+                        LastName: this.state.child.lastName ? this.state.child.lastName : '',
+                        Gender: this.state.child.gender ? this.state.child.gender.toString() : '',
+                        DOB: this.getDate(this.state.child.dateOfBirth),
+                        DOA: this.getDate(this.state.child.admissionDate),
+                        Religion: this.state.child.religion ? this.state.child.religion : '',
+                        Community: this.state.child.community ? this.state.child.community : '',
+                        MotherTongue: this.state.child.motherTongue ? this.state.child.motherTongue : '',
+                        ParentalStatus: this.state.child.parentalStatus ? this.state.child.parentalStatus : '',
+                        ReasonForAdmission: this.state.child.reasonForAdmission ? this.state.child.reasonForAdmission : '',
+                        PreviousEducationStatus: this.state.child.educationStatus ? this.state.child.educationStatus : '',
+                        AdmittedBy: this.state.child.admittedBy ? this.state.child.admittedBy : '',
+                        ReferredSource: this.state.child.referredSource ? this.state.child.referredSource : '',
+                        ReferredBy: this.state.child.referredBy ? this.state.child.referredBy : '',
+                        //ChildStatus: this.state.child.childStatus ? this.state.child.childStatus : '',
                     }
                 }
-                validationSchema = {AddChildSchema}
+                validationSchema = {EditChildSchema}
                 onSubmit = {async (values, actions) => {
                     console.log("Submit method called here ");
-                    this.setState({showLoader: true,loaderIndex:10});
-                    let result = this._submitAddChildForm(values);
-                    let alertMessage = this.state.submitAlertMessage;
-                    console.log(result);
-                    actions.resetForm();
+                    let result = this._submitEditChildForm(values);
+                    //console.log(result);
+                    //actions.resetForm();
                 }}
                 >
                     {props => (
                         <KeyboardAvoidingView behavior="null"
                                                     enabled style={globalStyles.keyboardavoid}
                                                     keyboardVerticalOffset={0}>
-                        <View style={{ position: 'absolute', top:"45%",right: 0, left: 0, zIndex: this.state.loaderIndex }}>
-                            <ActivityIndicator animating={this.state.showLoader} size="large" color="red" />
-                        </View>
                         <ScrollView>
                             
                             <View>
                                 {/* Child Photo */}
-                                <Text style = {addChildStyles.label}>Child Image :</Text>
+                                <Text style = {editChildStyles.label}>Child Image :</Text>
                                 {
-                                    <Image source={{ uri: this.state.image }} style={addChildStyles.image} />
+                                    <Image source={{ uri: this.state.image }} style={editChildStyles.image} />
                                 }
                                 <Text style = {globalStyles.errormsg}>{props.touched.ChildPhoto && props.errors.ChildPhoto}</Text>
                                 <Button title="Upload Photo" onPress={() => this._pickImage(props.handleChange('ChildPhoto'))} />
@@ -303,9 +270,9 @@ export default class AddChild extends React.Component{
                                 /> */}
 
                                 {/* First Name */}
-                                <Text style = {addChildStyles.label}>FirstName :</Text>
+                                <Text style = {editChildStyles.label}>FirstName :</Text>
                                 <TextInput
-                                    style = {addChildStyles.inputText}
+                                    style = {editChildStyles.inputText}
                                     onChangeText = {props.handleChange('FirstName')}
                                     value = {props.values.FirstName}
                                     // onBlur = {props.handleBlur('PSOName')} this can be used for real-time validation
@@ -313,21 +280,21 @@ export default class AddChild extends React.Component{
                                 <Text style = {globalStyles.errormsg}>{props.touched.FirstName && props.errors.FirstName}</Text>
 
                                 {/* Last Name */}
-                                <Text style = {addChildStyles.label}>LastName :</Text>
+                                <Text style = {editChildStyles.label}>LastName :</Text>
                                 <TextInput
-                                    style = {addChildStyles.inputText}
+                                    style = {editChildStyles.inputText}
                                     onChangeText = {props.handleChange('LastName')}
                                     value = {props.values.LastName}
                                 />
                                 <Text style = {globalStyles.errormsg}>{props.touched.LastName && props.errors.LastName}</Text>
 
                                 {/* Gender */}
-                                <Text style = {addChildStyles.label}>Gender :</Text>
+                                <Text style = {editChildStyles.label}>Gender :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.Gender && props.errors.Gender}</Text>
                                 <Picker
                                     selectedValue = {props.values.Gender}
                                     onValueChange = {props.handleChange('Gender')}
-                                    style = {addChildStyles.dropDown}
+                                    style = {editChildStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Gender' value = ''/>
                                     <Picker.Item label='Male' value = '1'/>
@@ -335,17 +302,17 @@ export default class AddChild extends React.Component{
                                 </Picker>
 
                                 {/* DOB */}
-                                <Text style = {addChildStyles.label}>Date Of Birth :</Text>
-                                <View style={addChildStyles.dobView}>
+                                <Text style = {editChildStyles.label}>Date Of Birth :</Text>
+                                <View style={editChildStyles.dobView}>
                                     <TextInput
-                                        style = {addChildStyles.inputText, addChildStyles.dobValue}
-                                        value = {this.state.dob}
+                                        style = {editChildStyles.inputText, editChildStyles.dobValue}
+                                        value = {props.values.DOB}
                                         editable = {false}
                                         onValueChange = {props.handleChange('DOB')}
                                     />
                                     <TouchableHighlight onPress={this.showDatepickerDOB}>
                                         <View>
-                                            <Feather style={addChildStyles.dobBtn}  name="calendar"/>
+                                            <Feather style={editChildStyles.dobBtn}  name="calendar"/>
                                         </View>
                                     </TouchableHighlight>
                                     {/* <Button style= {addChildStyles.dobBtn} onPress={this.showDatepicker} title="Select DOB" /> */}
@@ -363,25 +330,25 @@ export default class AddChild extends React.Component{
                                 
 
                                 {/* Religion */}
-                                <Text style = {addChildStyles.label}>Religion :</Text>
+                                <Text style = {editChildStyles.label}>Religion :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.Religion && props.errors.Religion}</Text>
                                 <Picker
                                     selectedValue = {props.values.Religion}
                                     onValueChange = {value => {
                                         props.setFieldValue('Religion', value);
                                     }}
-                                    style = {addChildStyles.dropDown}
+                                    style = {editChildStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Religion' value = ''/>
                                     { 
-                                        this.state.religions.map((item) => {
+                                        global.religions.map((item) => {
                                             return <Picker.Item key = {item.religionId} label = {item.religion} value = {item.religionId}/>
                                         })
                                     }
                                 </Picker>
 
                                 {/* Community */}
-                                <Text style = {addChildStyles.label}>Community :</Text>
+                                <Text style = {editChildStyles.label}>Community :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.Community && props.errors.Community}</Text>
                                 <Picker
                                     selectedValue = {props.values.Community}
@@ -392,14 +359,14 @@ export default class AddChild extends React.Component{
                                 >
                                     <Picker.Item label='Select Community' value = ''/>
                                     {
-                                        this.state.communities.map((item) => {
+                                        global.communities.map((item) => {
                                             return <Picker.Item key = {item.communityId} label = {item.community} value = {item.communityId}/>
                                         })
                                     }
                                 </Picker>
 
                                 {/* Mother Tongue */}
-                                <Text style = {addChildStyles.label}>Mother Tongue :</Text>
+                                <Text style = {editChildStyles.label}>Mother Tongue :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.MotherTongue && props.errors.MotherTongue}</Text>
                                 <Picker
                                     selectedValue = {props.values.MotherTongue}
@@ -410,14 +377,14 @@ export default class AddChild extends React.Component{
                                 >
                                     <Picker.Item label='Select Mother Tongue' value = ''/>
                                     {
-                                        this.state.motherTongues.map((item) => {
+                                        global.motherTongues.map((item) => {
                                             return <Picker.Item key = {item.motherTongueId} label = {item.motherTongue} value = {item.motherTongueId}/>
                                         })
                                     }
                                 </Picker>
 
                                 {/* Parental Status */}
-                                <Text style = {addChildStyles.label}>Parental Status :</Text>
+                                <Text style = {editChildStyles.label}>Parental Status :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.ParentalStatus && props.errors.ParentalStatus}</Text>
                                 <Picker
                                     selectedValue = {props.values.ParentalStatus}
@@ -428,14 +395,14 @@ export default class AddChild extends React.Component{
                                 >
                                     <Picker.Item label='Select Parental Status' value = ''/>
                                     {
-                                        this.state.parentalStatusList.map((item) => {
+                                        global.parentalStatusList.map((item) => {
                                             return <Picker.Item key = {item.parentalStatusId} label = {item.parentalStatus} value = {item.parentalStatusId}/>
                                         })
                                     }
                                 </Picker>
 
                                 {/* Reason For Admission */}
-                                <Text style = {addChildStyles.label}>Reason For Admission :</Text>
+                                <Text style = {editChildStyles.label}>Reason For Admission :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.ReasonForAdmission && props.errors.ReasonForAdmission}</Text>
                                 <Picker
                                     selectedValue = {props.values.ReasonForAdmission}
@@ -446,14 +413,14 @@ export default class AddChild extends React.Component{
                                 >
                                     <Picker.Item label='Select Reason For Admission' value = ''/>
                                     {
-                                        this.state.admissionReasons.map((item) => {
+                                        global.admissionReasons.map((item) => {
                                             return <Picker.Item key = {item.reasonForAdmissionId} label = {item.reasonForAdmission} value = {item.reasonForAdmissionId}/>
                                         })
                                     }
                                 </Picker>
 
                                 {/* Previous Education Status */}
-                                <Text style = {addChildStyles.label}>Previous Education Status :</Text>
+                                <Text style = {editChildStyles.label}>Previous Education Status :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.PreviousEducationStatus && props.errors.PreviousEducationStatus}</Text>
                                 <Picker
                                     selectedValue = {props.values.PreviousEducationStatus}
@@ -464,14 +431,14 @@ export default class AddChild extends React.Component{
                                 >
                                     <Picker.Item label='Select Previous Education Status' value = ''/>
                                     {
-                                        this.state.educationStatusList.map((item) => {
+                                        global.educationStatusList.map((item) => {
                                             return <Picker.Item key = {item.educationStatusId} label = {item.educationStatus} value = {item.educationStatusId}/>
                                         })
                                     }
                                 </Picker>
 
                                 {/* Admitted By */}
-                                <Text style = {addChildStyles.label}>Admitted By :</Text>
+                                <Text style = {editChildStyles.label}>Admitted By :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.AdmittedBy && props.errors.AdmittedBy}</Text>
                                 <Picker
                                     selectedValue = {props.values.AdmittedBy}
@@ -482,24 +449,24 @@ export default class AddChild extends React.Component{
                                 >
                                     <Picker.Item label='Select Admitted By' value = ''/>
                                     {
-                                        this.state.homeStaffList.map((item) => {
+                                        global.homeStaffList.map((item) => {
                                             return <Picker.Item key = {item.staffNo} label = {item.firstName + ' ' + item.lastName} value = {item.staffNo}/>
                                         })
                                     }
                                 </Picker>
 
                                 {/* DOA */}
-                                <Text style = {addChildStyles.label}>Date Of Admission :</Text>
-                                <View style={addChildStyles.dobView}>
+                                <Text style = {editChildStyles.label}>Date Of Admission :</Text>
+                                <View style={editChildStyles.dobView}>
                                     <TextInput
-                                        style = {addChildStyles.inputText, addChildStyles.dobValue}
-                                        value = {this.state.doa}
+                                        style = {editChildStyles.inputText, editChildStyles.dobValue}
+                                        value = {props.values.DOA}
                                         editable = {false}
                                         onValueChange = {props.handleChange('DOA')}
                                     />
                                     <TouchableHighlight onPress={this.showDatepickerDOA}>
                                         <View>
-                                            <Feather style={addChildStyles.dobBtn}  name="calendar"/>
+                                            <Feather style={editChildStyles.dobBtn}  name="calendar"/>
                                         </View>
                                     </TouchableHighlight>
                                     {/* <Button style= {addChildStyles.dobBtn} onPress={this.showDatepicker} title="Select DOB" /> */}
@@ -516,7 +483,7 @@ export default class AddChild extends React.Component{
                                 </View>
 
                                 {/* Referred Source */}
-                                <Text style = {addChildStyles.label}>Referred Source :</Text>
+                                <Text style = {editChildStyles.label}>Referred Source :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.ReferredSource && props.errors.ReferredSource}</Text>
                                 <Picker
                                     selectedValue = {props.values.ReferredSource}
@@ -527,41 +494,23 @@ export default class AddChild extends React.Component{
                                 >
                                     <Picker.Item label='Select Referred Source' value = ''/>
                                     {
-                                        this.state.referralSourcesList.map((item) => {
+                                        global.referralSourcesList.map((item) => {
                                             return <Picker.Item key = {item.referralSourceId} label = {item.referralSource} value = {item.referralSourceId}/>
                                         })
                                     }
                                 </Picker>
 
                                 {/* Referred By */}
-                                <Text style = {addChildStyles.label}>Referred By :</Text>
+                                <Text style = {editChildStyles.label}>Referred By :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.ReferredBy && props.errors.ReferredBy}</Text>
                                 <TextInput
-                                    style = {addChildStyles.inputText}
+                                    style = {editChildStyles.inputText}
                                     onChangeText = {props.handleChange('ReferredBy')}
                                     value = {props.values.ReferredBy}
                                     // onBlur = {props.handleBlur('PSOName')} this can be used for real-time validation
                                 />
 
-                                {/* Child Status */}
-                                <Text style = {addChildStyles.label}>Child Status :</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.ChildStatus && props.errors.ChildStatus}</Text>
-                                <Picker
-                                    selectedValue = {props.values.ChildStatus}
-                                    onValueChange = {value => {
-                                        props.setFieldValue('ChildStatus', value);
-                                    }}
-                                    style = {globalStyles.dropDown}
-                                >
-                                    <Picker.Item label='Select Child Status' value = ''/>
-                                    {
-                                        this.state.childStatusList.map((item) => {
-                                            return <Picker.Item key = {item.childStatusId} label = {item.childStatus} value = {item.childStatusId}/>
-                                        })
-                                    }
-                                </Picker>
-
-                                <Button style = {addChildStyles.button} title="Submit" onPress={props.handleSubmit} />
+                                <Button style = {editChildStyles.button} title="Submit" onPress={props.handleSubmit} />
                             </View>
                         </ScrollView>  
                         </KeyboardAvoidingView>
@@ -569,7 +518,13 @@ export default class AddChild extends React.Component{
                     )}
 
                 </Formik>
-
+                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={globalStyles.MainContainer}>
+                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Child Info' childNo={this.state.child.firstName} />
+                    </View>
+                </Modal>
+                <LoadingDisplay loading={this.state.loading} />
             </View>
         );
     }

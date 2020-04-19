@@ -1,8 +1,11 @@
-import  React, { Component } from 'react';
-import { Alert, View, StyleSheet, Button, Text} from 'react-native';
+import React, { Component } from 'react';
+import { Alert, View, StyleSheet, Button, Text } from 'react-native';
 import { CustomHeader } from '../components/CustomHeader';
-import {globalStyles} from '../styles/global';
-import {generalInfoConstants} from '../constants/GeneralInfoConstants';
+import { globalStyles } from '../styles/global';
+import { generalInfoConstants } from '../constants/GeneralInfoConstants';
+import { statusConstants } from '../constants/StatusConstants';
+import { educationConstants } from '../constants/EducationConstants';
+import {childConstants} from '../constants/ChildConstants';
 
 
 export default class HomeScreen extends Component {
@@ -25,15 +28,18 @@ displayHealthRemainder = () => {
       }
 }
 
-    componentDidMount(){
-      generalInfoConstants();
-      this.displayHealthRemainder();
+    componentDidMount() {
+        childConstants()
+        generalInfoConstants()
+        statusConstants()
+        educationConstants()
+        this.displayHealthRemainder();
     }
 
-    render () {
+    render() {
         return (
             <View style={globalStyles.homeView}>
-                <Button style={globalStyles.addChildBtn} title='Add Child' onPress = {() => this.props.navigation.navigate('AddChild')}></Button>
+                <Button style={globalStyles.addChildBtn} title='Add Child' onPress={() => this.props.navigation.navigate('AddChild')}></Button>
                 <View>
                     <Text style={globalStyles.homeScreenText}>Rainbow Homes Child Reporting Tool</Text>
                 </View>
