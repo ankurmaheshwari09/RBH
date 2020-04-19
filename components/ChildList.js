@@ -46,6 +46,7 @@ export default class ChildList extends Component {
         this.getStyles = this.getStyles.bind(this);
         this.getData = this.getData.bind(this);
         this.getModalItems = this.getModalItems.bind(this);
+        this.checkStatusDateExpired = this.checkStatusDateExpired.bind(this);
         // this.show =this.show.bind(this);
     }
     componentDidMount() {
@@ -145,19 +146,49 @@ export default class ChildList extends Component {
         );
     };
 
-    getStyles(status) {
+    getStyles(status, childMap) {
 
         if (status == 'Observation') {
-            return styles.blue;
+            return this.checkStatusDateExpired(childMap, status) ?  styles.red : styles.blue;
         } else if (status == 'Present') {
             return styles.green;
         } else if (status == 'Closed') {
-            return styles.red;
+            return styles.pink;
         } else if (status == 'Absent') {
-            return styles.yellow;
+           return  this.checkStatusDateExpired(childMap, status) ? styles.red : styles.yellow;
         }
     }
 
+    checkStatusDateExpired(childMap, status) {
+        console.log("-----------enterd------");
+        let date = childMap.map((item) => {
+            if (item.childStatusID.childStatus == status) {
+                console.log(item.csmid, 'id');
+                return moment(item.childStatusDate).format('YYYY-MM-DD');
+            } else {
+                return '';
+            }
+        });
+        date.sort();
+        date.reverse();
+        console.log(date, 'kkkkkkkkkkkkk');
+        let diff = this.getDiffBetweenDates(new Date(date[0]), new Date());
+        console.log(diff.toFixed(0));
+       return diff >= 30 ? true : false;
+    }
+    getDiffBetweenDates(date1, date2) {
+        console.log("--------cal-----------");
+        console.log(date1, date2);
+        // To calculate the time difference of two dates 
+        var Difference_In_Time = date2.getTime() - date1.getTime();
+
+        // To calculate the no. of days between two dates 
+        var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24); 
+
+        console.log(Difference_In_Days);
+
+        return Difference_In_Days;
+    }
     getModalItems(item) {
         console.log('modal items');
         let updatedList = this.state.modalItems;
@@ -183,7 +214,7 @@ export default class ChildList extends Component {
                             }}>
                                 <TouchableOpacity style={styles.container} onPress={(event) => { this.onPress(item) }}>
                                     {/*react-native-elements Card*/}
-                                    <Card style={this.getStyles(item.childStatus.childStatus)}>
+                                    <Card style={this.getStyles(item.childStatus.childStatus,item.childMaps)}>
                                         <CardImage resizeMode="cover" resizeMethod="resize" source={{ uri: "https://picsum.photos/id/1/300/300" }} />
                                         <CardContent style={styles.paragraph}>
                                             <View style={{ flexDirection: 'row' }}>
@@ -287,7 +318,7 @@ const styles = StyleSheet.create({
         paddingLeft: 3,
         fontFamily: 'sans-serif',
     },
-    red: {
+    pink: {
         backgroundColor: '#ff80b3',
         //  borderWidth: 5
     },
@@ -302,5 +333,10 @@ const styles = StyleSheet.create({
     yellow: {
         backgroundColor: '#ffff99',
         //  borderWidth: 5
+    },
+    red: {
+        backgroundColor: '#ffcccc',
+        borderColor: '#ff0000',
+        borderWidth: 3
     }
 });
