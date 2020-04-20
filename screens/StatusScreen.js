@@ -1,7 +1,7 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Formik } from "formik";
 import React from 'react';
-import { SafeAreaView, Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View, Dimensions } from 'react-native';
+import {  Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View, Dimensions } from 'react-native';
 import * as yup from "yup";
 import { globalStyles } from "../styles/global";
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -158,7 +158,7 @@ export default class StatusScreen extends React.Component {
             { value: 'vanilla', label: 'Vanilla' },
         ];
         return (
-            <SafeAreaView style={globalStyles.container}>
+            <View style={globalStyles.container}>
                 <View >
                      
                     <Text> Child Name: {this.state.child.firstName}</Text>
@@ -396,7 +396,7 @@ export default class StatusScreen extends React.Component {
                     </View>
                 </Modal>
                 <LoadingDisplay loading={this.state.loading} />
-            </SafeAreaView>
+            </View>
         );
     }
 }
