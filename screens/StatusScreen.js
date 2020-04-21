@@ -1,7 +1,7 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Formik } from "formik";
 import React from 'react';
-import { Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View, Dimensions } from 'react-native';
+import {  Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View, Dimensions } from 'react-native';
 import * as yup from "yup";
 import { globalStyles } from "../styles/global";
 import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
@@ -41,16 +41,48 @@ export default class StatusScreen extends React.Component {
             sucessDisplay: false,
             actionsTaken: [],
             actionItemsModal: false,
+            statusOptions: global.status,
+            selectedOption: null
         }
         this.pickDob = this.pickDob.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         
     }
 
+    static getDerivedStateFromProps(props, state) {
+        if (state.child.childStatus.childStatusId == 1) {
+            
+            return {
+                statusOptions: global.status.filter((item)  => {
+                    return item.childStatusId == 2 || item.childStatusId == 3;
+            })
+            }
+        }  else if (state.child.childStatus.childStatusId == 2) {
+            
+            return {
+                statusOptions: global.status.filter((item) => {
+                    return (item.childStatusId == 4) || (item.childStatusId == 3) ;
+                })
+            }
+        } else if (state.child.childStatus.childStatusId == 3) {
+            
+            return {
+                statusOptions: global.status.filter((item) => {
+                    return item.childStatusId == 2 || item.childStatusId == 4;
+                })
+            }
+        } else if (state.child.childStatus.childStatusId == 4) {
+            return {
+                statusOptions: global.status.filter((item) => {
+                    return item.childStatusId == 3;
+                })
+            }
+        }
+        else return state;
+    }
+
     pickDob = (event, date, handleChange) => {
-        console.log(date);
         let a = moment(date).format('YYYY-MM-DD');
-        console.log(a);
-        console.log(typeof (a));
         this.setState({ date: a, show: false });
         handleChange(a);
     }
@@ -77,22 +109,22 @@ export default class StatusScreen extends React.Component {
         });
         console.log(request_body);
         const path = `child-status/${this.state.child.childNo}`;
-        // UpdateApi.updateData(request_body, path).then((response) => {
-        //     this.setState({ loading: false, isVisible: true });
-        //     if (response.ok) {
-        //         response.json().then((res) => {
-        //             console.log(res);
-        //         });
-        //         this.setState({ successDisplay: true });
+        UpdateApi.updateData(request_body, path).then((response) => {
+            this.setState({ loading: false, isVisible: true });
+            if (response.ok) {
+                response.json().then((res) => {
+                    console.log(res);
+                });
+                this.setState({ successDisplay: true });
               
-        //     } else {
-        //         throw Error(response.status);
-        //     }
-        // }).catch(error => {
-        //     console.log(error, 'ffff');
-        //     this.setState({ errorDisplay: true });
+            } else {
+                throw Error(response.status);
+            }
+        }).catch(error => {
+            console.log(error, 'ffff');
+            this.setState({ errorDisplay: true });
         
-        // });
+        });
       
     }
 
@@ -103,6 +135,9 @@ export default class StatusScreen extends React.Component {
         
     }
 
+    handleChange = selectedOption => {
+        this.setState({ selectedOption });
+    };
 
     render() {
         const radio_props = [
@@ -114,6 +149,11 @@ export default class StatusScreen extends React.Component {
                 label: 'Child Moves To Future Program',
                 value: 'futureProgram'
             }
+        ];
+        const options = [
+            { value: 'chocolate', label: 'Chocolate' },
+            { value: 'strawberry', label: 'Strawberry' },
+            { value: 'vanilla', label: 'Vanilla' },
         ];
         return (
             <View style={globalStyles.container}>
@@ -135,7 +175,6 @@ export default class StatusScreen extends React.Component {
                     }}
                     validationSchema={statusSchema}
                     onSubmit={(values, actions) => {
-                        console.log(values.leavingReason);
                         if (values.leavingReason == '' && this.state.showElements == true) {
                             this.setState({ leavingReasonError: true });
                         } if (values.reasonDescription == '' && this.state.showElements == true) {
@@ -150,7 +189,6 @@ export default class StatusScreen extends React.Component {
                             this.setState({ followUpByError: true });
                         }
                         if (!(this.state.leavingReasonError || this.state.reasonDescriptionError || this.state.leftPlaceError || this.state.actionTakenError || this.state.stayError || this.state.followUpByError)) {
-                          //  console.log(values);
                             this.updateStatus(values);
                             actions.resetForm();
                             this.setState({ date: null, showElements: false, leavingReasonError: false, reasonDescriptionError: false, leftPlaceError: false, actionTakenError: false, stayError: false, followUpByError: false, credentialsError: false });
@@ -184,9 +222,12 @@ export default class StatusScreen extends React.Component {
 
                                         value={props.values.childStatus}>
                                         <Picker.Item label="Select Status" value="" />
-                                        {global.status.map((item) => {
-                                            return <Picker.Item key={item.childStatusId} label={item.childStatus} value={item.childStatusId} />
-                                        })}
+                                        {this.state.statusOptions.map((item) => {
+                                            if (item.childStatusId == 4) {
+                                                return <Picker.Item key={item.childStatusId} label={'Exit'} value={item.childStatusId} />
+                                            } else {
+                                                return <Picker.Item key={item.childStatusId} label={item.childStatus} value={item.childStatusId} />
+                                            }})}
 
                                     </Picker>
                                         <Text style={globalStyles.errormsg}>{props.touched.childStatus && props.errors.childStatus}</Text>
@@ -278,60 +319,34 @@ export default class StatusScreen extends React.Component {
                                                 })}
                                             </Picker>
                                             {this.state.leftPlaceError ? < Text style={globalStyles.errormsg}>Left Place cannot be empty</Text> : null }
-
-                                            {/* <Text style={globalStyles.text}>Action Taken:</Text>
-                                            {global.actionTaken.map((item) => {
-                                                    return <CheckBox 
-                                                                style={{ flex: 1, padding: 10 }}
-                                                                onClick = {() => {
-                                                                    console.log(this.state.actionsTaken)
-                                                                    let arr = this.state.actionsTaken
-                                                                    if(arr.indexOf(item.actionId) == -1){
-                                                                        arr.push(item.actionId)
-                                                                    } else{
-                                                                        arr.splice(arr.indexOf(item.actionId), 1)
-                                                                    }
-                                                                    this.setState({actionsTaken: arr})
-                                                                    console.log(this.state.actionsTaken)
-                                                                    console.log(this.state.actionsTaken.indexOf(item.actionId) !== -1 ? false: true)
-                                                                    console.log(item.actionId)
-                                                                }}
-                                                                key = {item.actionId}
-                                                                leftText={item.actionTaken}
-                                                                isChecked = {this.state.actionsTaken.indexOf(item.actionId) !== -1}
-                                                                />
-                                                })} */}
-                                                <Text style={globalStyles.text}>Action Taken:</Text>
+                                            
+                                            <Text style={globalStyles.text}>Action Taken:</Text>
                                             <TouchableOpacity onPress = {() => {
                                                 this.setState({
                                                     actionItemsModal: true
                                                 })
                                             }}>
-                                                <Text style={globalStyles.dropDown}>Select Action</Text>
+                                            <Text style={globalStyles.dropDown}>Select Action</Text>
                                             </TouchableOpacity>
                                             <Modal style={styles.actionItemsModal} isVisible={this.state.actionItemsModal} onBackdropPress={() => this.setState({ actionItemsModal: false })}>
                                                 <View style = {{ flex: 1,justifyContent:'center'}}>
-                                            {global.actionTaken.map((item) => {
-                                                    return <CheckBox 
-                                                                style={{ flex: 1, padding: 10 }}
-                                                                onClick = {() => {
-                                                                    console.log(this.state.actionsTaken)
-                                                                    let arr = this.state.actionsTaken
-                                                                    if(arr.indexOf(item.actionId) == -1){
-                                                                        arr.push(item.actionId)
-                                                                    } else{
-                                                                        arr.splice(arr.indexOf(item.actionId), 1)
-                                                                    }
-                                                                    this.setState({actionsTaken: arr})
-                                                                    console.log(this.state.actionsTaken)
-                                                                    console.log(this.state.actionsTaken.indexOf(item.actionId) !== -1 ? false: true)
-                                                                    console.log(item.actionId)
-                                                                }}
-                                                                key = {item.actionId}
-                                                                leftText={item.actionTaken}
-                                                                isChecked = {this.state.actionsTaken.indexOf(item.actionId) !== -1}
-                                                                />
-                                                })}
+                                                    {global.actionTaken.map((item) => {
+                                                        return <CheckBox 
+                                                                    style={{ flex: 1, padding: 10 }}
+                                                                    onClick = {() => {
+                                                                        let arr = this.state.actionsTaken
+                                                                        if(arr.indexOf(item.actionId) == -1){
+                                                                            arr.push(item.actionId)
+                                                                        } else{
+                                                                            arr.splice(arr.indexOf(item.actionId), 1)
+                                                                        }
+                                                                        this.setState({actionsTaken: arr})
+                                                                    }}
+                                                                    key = {item.actionId}
+                                                                    leftText={item.actionTaken}
+                                                                    isChecked = {this.state.actionsTaken.indexOf(item.actionId) !== -1}
+                                                                    />
+                                                    })}
                                                 </View>
                                             </Modal>
                                             {this.state.actionTakenError ? < Text style={globalStyles.errormsg}>Action Taken is required</Text> : null}
@@ -382,7 +397,7 @@ export default class StatusScreen extends React.Component {
                 <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
                     <View style={styles.MainContainer}>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName}/ >
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName} />
                     </View>
                 </Modal>
                 <LoadingDisplay loading={this.state.loading} />
@@ -390,6 +405,7 @@ export default class StatusScreen extends React.Component {
         );
     }
 }
+
 const styles = StyleSheet.create({
     FontStyle: {
         fontSize: 15
