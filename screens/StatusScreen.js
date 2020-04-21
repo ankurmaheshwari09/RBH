@@ -4,7 +4,7 @@ import React from 'react';
 import { Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View, Dimensions } from 'react-native';
 import * as yup from "yup";
 import { globalStyles } from "../styles/global";
-import { TouchableHighlight } from 'react-native-gesture-handler';
+import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
@@ -13,6 +13,7 @@ import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
+import CheckBox from "react-native-check-box";
 
 const statusSchema = yup.object({
     childStatus: yup.string().required(),
@@ -37,7 +38,9 @@ export default class StatusScreen extends React.Component {
             isVisible: false,
             loading: false,
             errorDisplay: false,
-            sucessDisplay: false
+            sucessDisplay: false,
+            actionsTaken: [],
+            actionItemsModal: false,
         }
         this.pickDob = this.pickDob.bind(this);
         
@@ -66,30 +69,30 @@ export default class StatusScreen extends React.Component {
                "leavingReasonId": values.leavingReason,
                "reason": values.reasonDescription,
                "childLeftPlaceId": values.leftPlace,
-               "actionTakenId": values.actionTaken,
+               "actionTakenId": this.state.actionsTaken.sort().join(','),
                "childStayPlace": values.stay,
                "followedBy": values.followUpBy,
                "approvedBy": values.approvedBy
             
         });
-        console.log(values);
+        console.log(request_body);
         const path = `child-status/${this.state.child.childNo}`;
-        UpdateApi.updateData(request_body, path).then((response) => {
-            this.setState({ loading: false, isVisible: true });
-            if (response.ok) {
-                response.json().then((res) => {
-                    console.log(res);
-                });
-                this.setState({ successDisplay: true });
+        // UpdateApi.updateData(request_body, path).then((response) => {
+        //     this.setState({ loading: false, isVisible: true });
+        //     if (response.ok) {
+        //         response.json().then((res) => {
+        //             console.log(res);
+        //         });
+        //         this.setState({ successDisplay: true });
               
-            } else {
-                throw Error(response.status);
-            }
-        }).catch(error => {
-            console.log(error, 'ffff');
-            this.setState({ errorDisplay: true });
+        //     } else {
+        //         throw Error(response.status);
+        //     }
+        // }).catch(error => {
+        //     console.log(error, 'ffff');
+        //     this.setState({ errorDisplay: true });
         
-        });
+        // });
       
     }
 
@@ -126,7 +129,6 @@ export default class StatusScreen extends React.Component {
                         leavingReason: '',
                         reasonDescription: '',
                         leftPlace: '',
-                        actionTaken: '',
                         stay: '',
                         followUpBy: '',
                         credentials: ''
@@ -140,7 +142,7 @@ export default class StatusScreen extends React.Component {
                             this.setState({ reasonDescriptionError: true });
                         } if (values.leftPlace == '' && this.state.showElements == true) {
                             this.setState({ leftPlaceError: true });
-                        } if (values.actionTaken == '' && this.state.showElements == true) {
+                        } if (JSON.stringify(values.actionsTaken) == '[]' && this.state.showElements == true) {
                             this.setState({ actionTakenError: true });
                         } if (values.stay == '' && this.state.showElements == true) {
                             this.setState({ stayError: true });
@@ -277,18 +279,61 @@ export default class StatusScreen extends React.Component {
                                             </Picker>
                                             {this.state.leftPlaceError ? < Text style={globalStyles.errormsg}>Left Place cannot be empty</Text> : null }
 
-                                            <Text style={globalStyles.text}>Action Taken:</Text>
-                                            <Picker
-                                                selectedValue={props.values.actionTaken}
-                                                style={globalStyles.dropDown}
-                                                //                                style={{height: 50, width: 100}}
-                                                onValueChange={(actionTaken) => { this.setState({ actionTakenError: false }); props.setFieldValue('actionTaken', actionTaken) }}
-                                                value={props.values.actionTaken}>
-                                                <Picker.Item label="Select Action Taken " value="" />
-                                                {global.actionTaken.map((item) => {
-                                                    return <Picker.Item key={item.actionId} label={item.actionTaken} value={item.actionId} />
+                                            {/* <Text style={globalStyles.text}>Action Taken:</Text>
+                                            {global.actionTaken.map((item) => {
+                                                    return <CheckBox 
+                                                                style={{ flex: 1, padding: 10 }}
+                                                                onClick = {() => {
+                                                                    console.log(this.state.actionsTaken)
+                                                                    let arr = this.state.actionsTaken
+                                                                    if(arr.indexOf(item.actionId) == -1){
+                                                                        arr.push(item.actionId)
+                                                                    } else{
+                                                                        arr.splice(arr.indexOf(item.actionId), 1)
+                                                                    }
+                                                                    this.setState({actionsTaken: arr})
+                                                                    console.log(this.state.actionsTaken)
+                                                                    console.log(this.state.actionsTaken.indexOf(item.actionId) !== -1 ? false: true)
+                                                                    console.log(item.actionId)
+                                                                }}
+                                                                key = {item.actionId}
+                                                                leftText={item.actionTaken}
+                                                                isChecked = {this.state.actionsTaken.indexOf(item.actionId) !== -1}
+                                                                />
+                                                })} */}
+                                                <Text style={globalStyles.text}>Action Taken:</Text>
+                                            <TouchableOpacity onPress = {() => {
+                                                this.setState({
+                                                    actionItemsModal: true
+                                                })
+                                            }}>
+                                                <Text style={globalStyles.dropDown}>Select Action</Text>
+                                            </TouchableOpacity>
+                                            <Modal style={styles.actionItemsModal} isVisible={this.state.actionItemsModal} onBackdropPress={() => this.setState({ actionItemsModal: false })}>
+                                                <View style = {{ flex: 1,justifyContent:'center'}}>
+                                            {global.actionTaken.map((item) => {
+                                                    return <CheckBox 
+                                                                style={{ flex: 1, padding: 10 }}
+                                                                onClick = {() => {
+                                                                    console.log(this.state.actionsTaken)
+                                                                    let arr = this.state.actionsTaken
+                                                                    if(arr.indexOf(item.actionId) == -1){
+                                                                        arr.push(item.actionId)
+                                                                    } else{
+                                                                        arr.splice(arr.indexOf(item.actionId), 1)
+                                                                    }
+                                                                    this.setState({actionsTaken: arr})
+                                                                    console.log(this.state.actionsTaken)
+                                                                    console.log(this.state.actionsTaken.indexOf(item.actionId) !== -1 ? false: true)
+                                                                    console.log(item.actionId)
+                                                                }}
+                                                                key = {item.actionId}
+                                                                leftText={item.actionTaken}
+                                                                isChecked = {this.state.actionsTaken.indexOf(item.actionId) !== -1}
+                                                                />
                                                 })}
-                                            </Picker>
+                                                </View>
+                                            </Modal>
                                             {this.state.actionTakenError ? < Text style={globalStyles.errormsg}>Action Taken is required</Text> : null}
 
                                             <Text style={globalStyles.text}>Place of Stay After Leaving RH:</Text>
@@ -366,6 +411,16 @@ const styles = StyleSheet.create({
         top: 150,
         borderRadius: 30
       //  margin: 90,
-
+    },
+    actionItemsModal:{
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        // width: Dimensions.get('window').width /2 + 50,
+        maxHeight: Dimensions.get('window').height / 2,
+        marginTop: 150,
+        //top: 150,
+        borderColor: 'black',
+        borderRadius: 30
     }
 });
