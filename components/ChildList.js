@@ -4,6 +4,7 @@ import { Card, CardImage, CardContent } from 'react-native-cards'
 import Modal from 'react-native-modal';
 import { SearchBar } from 'react-native-elements';
 import moment from 'moment';
+import {base_url,getDataAsync} from '../constants/Base';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
@@ -19,6 +20,7 @@ export default class ChildList extends Component {
             selectedChild: null,
             loading: false,
             data: [],
+            checkProfileAlert: false,
             error: null,
             search: null,
             errorDisplay: false,
@@ -46,10 +48,11 @@ export default class ChildList extends Component {
         this.getStyles = this.getStyles.bind(this);
         this.getData = this.getData.bind(this);
         this.getModalItems = this.getModalItems.bind(this);
+        this.getAddedData = this.getAddedData.bind(this);
         // this.show =this.show.bind(this);
     }
-    componentDidMount() {
-        this.getData();
+     async componentDidMount() {
+        await this.getData();
     }
 
 
@@ -60,33 +63,84 @@ export default class ChildList extends Component {
             errorDisplay: false
         }, () => { this.getData() });
     }
-    getData() {
+
+    
+     // This function adds a new property to object
+      async getAddedData(data){  
+            
+            let result = data.map(async childData => {
+            let res  = await fetch(base_url+"/child-profile-all-description/"+childData.childNo,{
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            }
+            })
+            let responseJson = await res.json();
+            if(res.ok){
+               
+                if(responseJson == null){
+                    childData.changeProfile = true;   
+                    this.setState({checkProfileAlert: true});
+                }
+                else{  
+                let date_modified = responseJson[0].modified_ON;        
+                let dm = moment(date_modified).format("YYYY-MM-DD");          
+                let dm1 = moment(new Date()).format("YYYY-MM-DD");			
+                let a = new Date(dm);         
+                let b = new Date(dm1);        
+                let diffInDate = b-a ;                 
+                let daysTillToday = Math.floor(diffInDate/ (1000 * 60 * 60 * 24));
+                console.log(daysTillToday,childData.childNo,'daysTillToday');
+                    if(daysTillToday>=365){
+                        childData.changeProfile = true;   
+                        this.setState({checkProfileAlert: true});     
+                    }else{                              
+                        this.setState({checkProfileAlert: false});
+                        childData.changeProfile = false;               
+                    }
+                }
+            }
+            else{
+                console.log(res.status);
+                throw Error(res.status);
+            }
+            return childData; 
+            });  
+            
+            let final_result = await Promise.all(result)
+            //console.log(final_result,'finished adding data');
+            this.setState({data: final_result,loading: false});
+            
+    };
+
+    async getData() {
         console.log('inside get');
         this.setState({ search: null, loading: true });
-        fetch('https://rest-service.azurewebsites.net/api/v1/children/45', {
+        try{
+        let const1 = await fetch('https://rest-service.azurewebsites.net/api/v1/children/45', {
             method: 'GET',
         })
-
-            .then(res => {
-                if (res.ok) {
-
-                    res.json().then((data) => {
-                        this.setState({
-                            data: data,
-                            loading: false,
-                        });
-
-                        this.arrayholder = data;
-                    });
+        let response = await const1.json();
+                 if (const1.ok) {
+                        await this.getAddedData(response);
+                        //console.log(this.state.data,'final');
+                        if(this.state.checkProfileAlert){
+                            console.log('alert');
+                            alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
+                        }
+                        this.arrayholder = response;
                 } else {
-                    console.log(res.status);
-                    throw Error(res.status);
+                    console.log(response.status);
+                    throw Error(response.status);
                 }
-            })
-            .catch(error => {
+            }
+            catch(error){
+                console.log(error,'error in getting data');
                 this.setState({ loading: false, errorDisplay: true });
-            });
+            }
     }
+    
     onPress(item) {
         let list = this.getModalItems(item);
         this.setState({
@@ -175,38 +229,86 @@ export default class ChildList extends Component {
                 {this.state.errorDisplay ?
                     <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                     :
-                    <FlatList
-                        data={this.state.data}
-                        renderItem={({ item }) => (
-                            <View style={{
-                                flex: 1 / 2, flexDirection: 'column', margin: 1, justifyContent: 'space-evenly'
-                            }}>
-                                <TouchableOpacity style={styles.container} onPress={(event) => { this.onPress(item) }}>
-                                    {/*react-native-elements Card*/}
-                                    <Card style={this.getStyles(item.childStatus.childStatus)}>
-                                        <CardImage resizeMode="cover" resizeMethod="resize" source={{ uri: "https://picsum.photos/id/1/300/300" }} />
-                                        <CardContent style={styles.paragraph}>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text style={styles.heading}>Name:</Text >
-                                                <Text style={styles.cardContent}>{`${item.firstName} ${item.lastName}`}  </Text>
-                                            </View>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text style={styles.heading}>Adm Date:</Text >
-                                                <Text style={styles.cardContent}>{moment(item.admissionDate).format('DD/MM/YYYY')}</Text>
-                                            </View>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text style={styles.heading}>DOB:</Text >
-                                                <Text style={styles.cardContent}>{moment(item.dateOfBirth).format('DD/MM/YYYY')}</Text>
-                                            </View>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text style={styles.heading}>Status:</Text >
-                                                <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>
-                                            </View>
-                                        </CardContent>
-                                    </Card>
-                                </TouchableOpacity>
-                            </View>
+                <FlatList
+                    data={this.state.data}
+                    renderItem={({ item }) => {
+                        if (item.changeProfile)
+                        {  
+                           //console.log(item.childNo,'flatlist if');
+                           return ( 
+                        <View style={{
+                            flex: 1 / 2, flexDirection: 'column', margin: 1, justifyContent: 'space-evenly'
+                        }} >
+                            <TouchableOpacity style={styles.container} onPress={(event) => { this.onPress(item) }}>
+                                
+                                {/*react-native-elements Card*/}
+                                <Card style={this.getStyles(item.childStatus.childStatus)}>
+                                    <CardImage resizeMode="cover" resizeMethod="resize" source={{ uri: "https://picsum.photos/id/1/300/300" }} />
+                                    <CardContent style={styles.paragraph}>
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <Text style={styles.heading}>Name:</Text >
+                                            <Text style={styles.cardContent}>{`${item.firstName} ${item.lastName}`}  </Text>
+                                        </View>
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <Text style={styles.heading}>Adm Date:</Text >
+                                            <Text style={styles.cardContent}>{moment(item.admissionDate).format('DD/MM/YYYY')}</Text>
+                                        </View>
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <Text style={styles.heading}>DOB:</Text >
+                                            <Text style={styles.cardContent}>{moment(item.dateOfBirth).format('DD/MM/YYYY')}</Text>
+                                        </View>
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <Text style={styles.heading}>Status:</Text >
+                                            <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>
+                                        </View>
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <Text style={styles.heading}>Profile Update: </Text >
+                                            <Text style={styles.cardContent}>Yes</Text>
+                                        </View>
+                                    </CardContent>
+                                </Card>
+                            </TouchableOpacity>
+                        </View>
                         )}
+                        else{
+                            //console.log(item.childNo,'flatlist else');
+                            return(
+                                <View style={{
+                                    flex: 1 / 2, flexDirection: 'column', margin: 1, justifyContent: 'space-evenly'
+                                }} >
+                                   
+                                    <TouchableOpacity style={styles.container} onPress={(event) => { this.onPress(item) }}>
+                                        
+                                        {/*react-native-elements Card*/}
+                                        <Card style={this.getStyles(item.childStatus.childStatus)}>
+                                            <CardImage resizeMode="cover" resizeMethod="resize" source={{ uri: "https://picsum.photos/id/1/300/300" }} />
+                                            <CardContent style={styles.paragraph}>
+                                                <View style={{ flexDirection: 'row' }}>
+                                                    <Text style={styles.heading}>Name:</Text >
+                                                    <Text style={styles.cardContent}>{`${item.firstName} ${item.lastName}`}  </Text>
+                                                </View>
+                                                <View style={{ flexDirection: 'row' }}>
+                                                    <Text style={styles.heading}>Adm Date:</Text >
+                                                    <Text style={styles.cardContent}>{moment(item.admissionDate).format('DD/MM/YYYY')}</Text>
+                                                </View>
+                                                <View style={{ flexDirection: 'row' }}>
+                                                    <Text style={styles.heading}>DOB:</Text >
+                                                    <Text style={styles.cardContent}>{moment(item.dateOfBirth).format('DD/MM/YYYY')}</Text>
+                                                </View>
+                                                <View style={{ flexDirection: 'row' }}>
+                                                    <Text style={styles.heading}>Status:</Text >
+                                                    <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>
+                                                </View>
+                                                <View style={{ flexDirection: 'row' }}>
+                                                    <Text style={styles.heading}>Profile Update:</Text >
+                                                    <Text style={styles.cardContent}>No</Text>
+                                                </View>
+                                            </CardContent>
+                                        </Card>
+                                    </TouchableOpacity>
+                                </View>         
+                        )}
+                     }}
                         //Setting the number of column
                         numColumns={2}
                         keyExtractor={item => item.childNo}

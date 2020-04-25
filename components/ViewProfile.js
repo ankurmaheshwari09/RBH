@@ -30,7 +30,6 @@ export default class ViewProfile extends React.Component {
             child: this.props.navigation.getParam('child'),
             updateProfile: false,
             profileDescriptionNo: '',
-            editText:false,
             changeDescription: false,
             sucessDisplay: false,
             errorDisplay: false,
@@ -39,16 +38,11 @@ export default class ViewProfile extends React.Component {
         }
         this._submitProfile =this._submitProfile.bind(this);
         this._updateProfile =this._updateProfile.bind(this);
-        //this.handleChange=this.handleChange.bind(this);
     }
 
-    // handleChange = (value) => {  
-    //     this.setState({ description: value })  
-    //   }  
-
-    componentDidMount() {
+    async componentDidMount() {
         console.log(this.state.child.childNo);
-        fetch(base_url+"/child-profile-all-description/"+this.state.child.childNo,{
+        await fetch(base_url+"/child-profile-all-description/"+this.state.child.childNo,{
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -57,7 +51,7 @@ export default class ViewProfile extends React.Component {
         })
         .then((response)=>response.json())
         .then((responseJson)=>{
-            console.log(responseJson,'111');
+            //console.log(responseJson,'111');
 
             if(responseJson == null){
                 this.state.updateProfile=false;
@@ -71,26 +65,26 @@ export default class ViewProfile extends React.Component {
             
             let date_modified = responseJson[0].modified_ON;        
             let dm = moment(date_modified).format("YYYY-MM-DD");
-             console.log(dm,'formatted');
+            // console.log(dm,'formatted');
             let dm1 = moment(new Date()).format("YYYY-MM-DD");
-			 console.log(dm1,'formatted new date');
+			// console.log(dm1,'formatted new date');
             let a = new Date(dm);
-            console.log(a);
+            //console.log(a);
             let b = new Date(dm1);
-            console.log(b);          
+            //console.log(b);          
             let diffInDate = b-a ;          
-             console.log(diffInDate,'difference');   //Future date - current date
+            // console.log(diffInDate,'difference');   //Future date - current date
             let daysTillToday = Math.floor(diffInDate/ (1000 * 60 * 60 * 24));
             console.log(daysTillToday,'daysTillToday');
             if(daysTillToday>=365){
                 alert('Alert: Profile Description needs to be updated!!!');
-                this.setState({changeDescription: true});
+                //this.setState({changeDescription: true});
             }
         }
     });
 }
 
-    _submitProfile(values) {
+    async _submitProfile(values) {
         this.setState({ loading: true });
         let request_body = JSON.stringify({
                 "description": values.Description,
@@ -98,7 +92,7 @@ export default class ViewProfile extends React.Component {
                 "modified_ON": new Date()
         });
         let result = {};
-        fetch(base_url+"/child-profile-description", {
+        await fetch(base_url+"/child-profile-description", {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -109,30 +103,16 @@ export default class ViewProfile extends React.Component {
         .then((response) => response.json())
         .then((responseJson) => {
             this.setState({ loading: false, isVisible: true });
-            if(responseJson.ok) {
-
-                console.log(responseJson);
-                this.setState({submitAlertMessage: 'Successfully added profile description for \n'
-                +'Child Number:'+responseJson.childNo+'\nProfile Description Number:'+responseJson.profileDescriptionNo,
-                changeDescription:false});   
-                alert(this.state.submitAlertMessage);
-
-                this.setState({ successDisplay: true });
-            }
-            else{
-                throw Error(responseJson.status);
-            }
+            console.log(responseJson);
+            this.setState({ successDisplay: true });
         })
         .catch((error) => {
-            this.setState({submitAlertMessage: 'Unable to add Details. Plesae contact the Admin.'});
-            alert(this.state.submitAlertMessage);
             console.log(error);
-
             this.setState({ errorDisplay: true });
         });
     }
 
-    _updateProfile(values) {
+    async _updateProfile(values) {
         this.setState({ loading: true });
         let request_body = JSON.stringify({
                 "description": values.Description,
@@ -141,7 +121,7 @@ export default class ViewProfile extends React.Component {
                 "profileDescriptionNo": this.state.profileDescriptionNo
         });
         let result = {};
-        fetch(base_url+"/child-profile-description/"+this.state.profileDescriptionNo, {
+        await fetch(base_url+"/child-profile-description/"+this.state.profileDescriptionNo, {
             method: 'PUT',
             headers: {
                 Accept: 'application/json',
@@ -152,37 +132,29 @@ export default class ViewProfile extends React.Component {
         .then((response) => response.json())
         .then((responseJson) => {
             this.setState({ loading: false, isVisible: true });
-            if(responseJson.ok) {
                 console.log(responseJson);
-                this.setState({submitAlertMessage: 'Successfully updated profile description for \n'
-                +'Child Number:'+responseJson.childNo+'\nProfile Description Number:'+responseJson.profileDescriptionNo,
-                changeDescription:true});           
-                alert(this.state.submitAlertMessage);
                 this.setState({ successDisplay: true });
-            }
-            else{
-                throw Error(responseJson.status);
-            }
         })
         .catch((error) => {
-            this.setState({submitAlertMessage: 'Unable to update details. Plesae contact the Admin.'});
-            alert(this.state.submitAlertMessage);
-            console.log(error);
-
+            console.log(error,'error');
             this.setState({ errorDisplay: true });
         });
     }
 
-   
+    // componentWillUnmount() {
+    //     const { params } = this.props.navigation.state;
+    //     params.refreshChildList();
+        
+    // }
 
     render() {
         return (<View style={globalStyles.container1}>
             <View style={globalStyles.container}>
                 <Formik
+                enableReinitialize
                     initialValues={
                         {
-                            Description: '',
-                          
+                            Description: this.state.description,
                         }
                     }
                     validationSchema={ViewProfileSchema}
@@ -206,42 +178,39 @@ export default class ViewProfile extends React.Component {
                 >
         {props => (
             <KeyboardAvoidingView behavior="padding"
-                enabled style={globalStyles.keyboardavoid}
-                keyboardVerticalOffset={200}>
-                <ScrollView>
+            enabled style={globalStyles.keyboardavoid}
+            keyboardVerticalOffset={200}>
+            <ScrollView>
 
-                    <View>
-                      
-                        <Text style={globalStyles.text}>Child Name : {this.state.child.firstName}</Text>
-                        <Text style={globalStyles.text}>Previously Entered Description is : {this.state.description}</Text>
-                        <Text style={globalStyles.text}>Enter/Update Description about child:</Text>
-                        {/* <Text style={globalStyles.text}>Entered  :{props.values.Description} </Text> */}
-                        <TextInput
-                            style={globalStyles.input}
-                            onChangeText={props.handleChange('Description')}
-                            value={props.values.Description}
-                        //    onChangeText={text => props.setFieldValue('Description', text)}
-                        //   value={props.values.Description} 
-                        />
-                        {/* <Text style={globalStyles.errormsg}>{props.touched.Description && props.errors.Description}</Text> */}
-                         <Text style={globalStyles.padding}></Text>
-                        <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
+                <View>
+                    
+                    <Text style={globalStyles.text}>Child Name : {this.state.child.firstName}</Text>
+                    <Text style={globalStyles.text}>Enter/Update Description about child:</Text>
+                    <TextInput
+                        style={globalStyles.input}
+                        onChangeText={props.handleChange('Description')}
+                        value={props.values.Description}
+                        multiline={true}
+                        numberOfLines={6}
+                    />
+                        <Text style={globalStyles.padding}></Text>
+                    <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
 
-                                                        
-                    </View>
-                </ScrollView>
+                                                    
+                </View>
+            </ScrollView>
             </KeyboardAvoidingView>
 
                     )}
 
-                </Formik>
-                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={globalStyles.MainContainer}>
-                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Profile' childNo={this.state.child.firstName} />
-                    </View>
-                </Modal>
-                <LoadingDisplay loading={this.state.loading} />
+        </Formik>
+            <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                <View style={globalStyles.MainContainer}>
+                    <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                    <SuccessDisplay successDisplay={this.state.successDisplay} type='Profile' childNo={this.state.child.firstName} />
+                </View>
+            </Modal>
+            <LoadingDisplay loading={this.state.loading} />
             </View >
         </View >
         );
