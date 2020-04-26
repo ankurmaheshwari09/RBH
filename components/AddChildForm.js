@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Text, TextInput, View, Picker, ScrollView,
-    KeyboardAvoidingView , Image, StyleSheet} from 'react-native';
+    KeyboardAvoidingView , Image, StyleSheet, Alert} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Feather} from '@expo/vector-icons';
 import {Formik} from 'formik';
@@ -123,6 +123,9 @@ export default class AddChild extends React.Component{
         childStatusList: [],
         submitAlertMessage: '',
         orgid: '',
+        isVisible: false,
+        sucessDisplay: false,
+        errorDisplay: false,
     };
 
     async _pickImage (handleChange) {
@@ -226,12 +229,32 @@ export default class AddChild extends React.Component{
         .then((responseJson) => {
             console.log(responseJson);
             this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo});
-            alert(this.state.submitAlertMessage);
+            // alert(this.state.submitAlertMessage);
+            Alert.alert(
+                'Added Child',
+                this.state.submitAlertMessage,
+                [
+                    { text: 'OK', onPress: () => this.props.navigation.goBack() },
+                ],
+                { cancelable: false },
+            );
+            // this.setState({isVisible: true});
+            // this.setState({ successDisplay: true });
             this.setState({showLoader: false,loaderIndex:0});
         })
         .catch((error) => {
             this.setState({submitAlertMessage: 'Unable to add child. Plesae contact the Admin.'});
-            alert(this.state.submitAlertMessage);
+            // alert(this.state.submitAlertMessage);
+            Alert.alert(
+                'Failed To Add Child',
+                this.state.submitAlertMessage,
+                [
+                    { text: 'OK', onPress: () => console.log("Failed to add child") },
+                ],
+                { cancelable: false },
+            );
+            // this.setState({isVisible: true});
+            // this.setState({ errorDisplay: true });
             console.log(error);
             this.setState({showLoader: false,loaderIndex:0});
         });
@@ -569,7 +592,12 @@ export default class AddChild extends React.Component{
                     )}
 
                 </Formik>
-
+                {/* <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={globalStyles.MainContainer}>
+                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='General Info' />
+                    </View>
+                </Modal> */}
             </View>
         );
     }
