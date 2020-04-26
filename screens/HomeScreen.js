@@ -39,7 +39,7 @@ export default class HomeScreen extends Component {
     render() {
         return (
             <View style={globalStyles.homeView}>
-                <Button style={globalStyles.addChildBtn} title='Add Child' onPress={() => this.props.navigation.navigate('AddChild')}></Button>
+                <Button style={globalStyles.addChildBtn} title='Add Child' onPress={() => this.props.navigation.navigate('AddChild',{navigation: this.props.navigation})}></Button>
                 <View>
                     <Text style={globalStyles.homeScreenText}>Rainbow Homes Child Reporting Tool</Text>
                 </View>
