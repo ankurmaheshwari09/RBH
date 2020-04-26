@@ -1,12 +1,16 @@
 import React from 'react';
 import {
     Button, Text, TextInput, View, Picker, ScrollView,
-    KeyboardAvoidingView
+    KeyboardAvoidingView, StyleSheet, Dimensions
 } from 'react-native';
 import { Formik } from 'formik';
-import { globalStyles } from '../styles/global';
+import {globalStyles} from '../styles/global';
 import * as yup from 'yup';
 import {base_url,getDataAsync} from '../constants/Base';
+import Modal from 'react-native-modal';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
 //import communicationConstants from '../constants/CommunicationConstants';
 
 const CommunicationFormSchema = yup.object({
@@ -15,7 +19,8 @@ const CommunicationFormSchema = yup.object({
     Country: yup.string().required(),
     State: yup.string().required(),
     District: yup.string().required(),
-    Pincode: yup.string().matches(/^[0-9]{6}$/, 'Pincode is not valid'),
+    Pincode: yup.string().required().matches(/^[0-9]{6}$/, 'Pincode is not valid'),
+//    Pincode: yup.string().matches(/^[0-9]{6}$/, 'Pincode is not valid'),
     Phone: yup.string().matches(/^[0-9]{10}$/, 'Phone number is not valid'),
     Mobile: yup.string().matches(/^[0-9]{10}$/, 'Mobile number is not valid'),
     PermanentAddress: yup.string(),
@@ -23,11 +28,19 @@ const CommunicationFormSchema = yup.object({
 
 export default class CommunicationForm extends React.Component {
 
-    state = {
-        countries: [],
-        states: [],
-        districts: [],
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            child: this.props.navigation.getParam('child'),
+            isVisible: false,
+            loading: false,
+            errorDisplay: false,
+            successDisplay: false,
+            countries: [],
+            states: [],
+            districts: [],
+        }
+    }
 
     async addChildCommunicationConstants(){
         getDataAsync(base_url + '/countries').then(data => { console.log(data); this.setState({countries: data}) });
@@ -43,16 +56,17 @@ export default class CommunicationForm extends React.Component {
 
     submitChildCommunicationForm(values) {
         let request_body = JSON.stringify({
-            "PhoneNo":values.Phone,
-            "MobileNo":values.Mobile,
+            "phoneNo":values.Phone,
+            "mobileNo":values.Mobile,
             "presentAddress1":values.PresentLocalAddress,
-            "Area":values.Area,
+            "presentCity":values.Area,
             "presentCountry":values.Country,
             "presentStateRH":values.State,
             "presentDistrict":values.District,
-            "PresentPincode":values.Pincode,
+            "presentPincode":values.Pincode,
             "permtAddress1":values.PermanentAddress,
         });
+        this.setState({ loading: true });
         fetch(base_url+"/child-communication", {
             method: 'POST',
             headers: {
@@ -61,16 +75,30 @@ export default class CommunicationForm extends React.Component {
             },
             body: request_body,
         })
-        .then((response) => response.json())
-        .then((responseJson) => {
-            console.log(responseJson);
-            this.setState({submitAlertMessage: 'Successfully added child communication details'});
-            alert(this.state.submitAlertMessage);
+        .then((response) => {
+               //response.json();
+               console.log('Communication Form Status and Response are', response.status, 'and', response.ok);
+               this.setState({ loading: false, isVisible: true, });
+               if (response.ok) {
+                   response.json().then((res) => {
+                       console.log(res);
+                   });
+                   this.setState({ successDisplay: true });
+//                   this.setState({submitAlertMessage: 'Successfully added child communication details'});
+//                   alert(this.state.submitAlertMessage);
+               } else {
+                   throw Error(response.status);
+               }
         })
+//        .then((responseJson) => {
+//            console.log(responseJson);
+//            this.setState({ successDisplay: true });
+//        })
         .catch((error) => {
             console.log(error);
-            this.setState({submitAlertMessage: 'Unable to add child communication details. Please contact the Admin.'});
-            alert(this.state.submitAlertMessage);
+            this.setState({ errorDisplay: true });
+//            this.setState({submitAlertMessage: 'Unable to add child communication details. Please contact the Admin.'});
+//            alert(this.state.submitAlertMessage);
         });
     }
 
@@ -98,8 +126,8 @@ export default class CommunicationForm extends React.Component {
                         console.log(values);
                         this.submitChildCommunicationForm(values);
                         actions.resetForm();
-                        alert("Data Has been submitted")
-                        this.props.navigation.push('CommunicationScreen', values)
+                        //alert("Data Has been submitted")
+                        //this.props.navigation.push('CommunicationScreen', values)
 
                     }}
                 >
@@ -110,14 +138,14 @@ export default class CommunicationForm extends React.Component {
                             <ScrollView>
 
                                 <View>
-                                    <Text style={globalStyles.text}>Present(Local)Address(Street No/Name,Village Name)</Text>
+                                    <Text style={globalStyles.text}>Present(Local)Address Details(Street No/Name,Village Name)</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.PresentLocalAddress && props.errors.PresentLocalAddress}</Text>
                                     <TextInput
                                         style={globalStyles.input}
                                         onChangeText={props.handleChange('PresentLocalAddress')}
                                         value={props.values.PresentLocalAddress}
                                     />
-                                    <Text style={globalStyles.text}>Area/Town/City</Text>
+                                    <Text style={globalStyles.text}>Area/Town/City Name</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Area && props.errors.Area}</Text>
                                     <TextInput
                                         style={globalStyles.input}
@@ -180,14 +208,14 @@ export default class CommunicationForm extends React.Component {
                                         onChangeText={props.handleChange('Pincode')}
                                         value={props.values.Pincode}
                                     />
-                                    <Text style={globalStyles.text}>Mobile</Text>
+                                    <Text style={globalStyles.text}>Mobile Number</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Mobile && props.errors.Mobile}</Text>
                                     <TextInput
                                         style={globalStyles.input}
                                         onChangeText={props.handleChange('Mobile')}
                                         value={props.values.Mobile}
                                     />
-                                    <Text style={globalStyles.text}>Phone</Text>
+                                    <Text style={globalStyles.text}>Phone Number</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Phone && props.errors.Phone}</Text>
                                     <TextInput
                                         style={globalStyles.input}
@@ -208,8 +236,32 @@ export default class CommunicationForm extends React.Component {
                     )}
 
                 </Formik>
-
+                <Modal style={Styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={Styles.MainContainer}>
+                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Communication Status' childNo={this.state.child.firstName} />
+                    </View>
+                </Modal>
+                <LoadingDisplay loading={this.state.loading} />
             </View>
         );
     }
 }
+
+const Styles = StyleSheet.create({
+    MainContainer: {
+        justifyContent: 'space-between',
+        flex: 1,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+        backgroundColor: 'white',
+        width: Dimensions.get('window').width / 2 + 50,
+        maxHeight: Dimensions.get('window').height / 4,
+        top: 150,
+        borderRadius: 30
+    }
+});
