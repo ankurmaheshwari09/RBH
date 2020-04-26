@@ -6,22 +6,26 @@ import { generalInfoConstants } from '../constants/GeneralInfoConstants';
 import { statusConstants } from '../constants/StatusConstants';
 import { educationConstants } from '../constants/EducationConstants';
 import {childConstants} from '../constants/ChildConstants';
+import {SegmentedHealthView} from '../components/SegmentedHealthView';
+import {
+  createStackNavigator
+} from 'react-navigation-stack';
+import {HealthScreen} from '../screens/HealthScreen';
 
 
 export default class HomeScreen extends Component {
-
 displayHealthRemainder = () => {
     var month = new Date().getMonth() + 1; //Current Month
-    if(month == 1 || month == 4 || month == 7 || month == 10){
+    var Ignore = 0;
+    if((month == 1 || month == 4 || month == 7 || month == 10 ) && Ignore < 4){
+
         Alert.alert(
           'Health Assessment Remainder',
           ' Do the Health-Checkup',
           [
-            {
-              text: 'Cancel',
-              onPress: () => console.log('Cancel Pressed'),
-            },
-            {text: 'OK', onPress: () => console.log('OK Pressed')},
+            {text: 'Ignore',onPress: () => {Ignore++;console.log('Ignore Pressed');}},
+            {text: 'Update Later', onPress: () => console.log('UpdateLater Pressed')},
+            {text: 'Update Now', onPress: () => this.props.navigation.navigate('HealthScreen')},
           ],
           {cancelable: false},
         );
