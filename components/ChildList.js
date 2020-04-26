@@ -7,6 +7,7 @@ import moment from 'moment';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { getOrgId } from '../constants/LoginConstant';
 
 export default class ChildList extends Component {
     constructor(props) {
@@ -62,15 +63,23 @@ export default class ChildList extends Component {
         });
     }
     getData() {
-        console.log('inside get');
+
         this.setState({ search: null, loading: true });
-        fetch('https://rest-service.azurewebsites.net/api/v1/children/45', {
+        let orgId = getOrgId();
+        console.log(orgId, 'kkkkk');
+        const path = 'https://rest-service.azurewebsites.net/api/v1/children/' + orgId;
+        console.log(path, 'lllll');
+        fetch(path , {
             method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
         })
 
             .then(res => {
+                
                 if (res.ok) {
-
+                  //  console.log(res);
                     res.json().then((data) => {
                         this.setState({
                             data: data,
@@ -171,7 +180,7 @@ export default class ChildList extends Component {
         });
         date.sort();
         date.reverse();
-        console.log(date, 'kkkkkkkkkkkkk');
+        console.log(date);
         let diff = this.getDiffBetweenDates(new Date(date[0]), new Date());
         console.log(diff.toFixed(0));
        return diff >= 30 ? true : false;
