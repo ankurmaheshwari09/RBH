@@ -12,11 +12,12 @@ export const globalStyles = StyleSheet.create({
         backgroundColor: '#fafafa'
     },
     input: {
-        borderWidth: 0,
-        backgroundColor: '#DCDCDC',
+        borderWidth: 1,
+        borderColor: '#DCDCDC',
         padding: 10,
-        fontSize: 14,
-        borderRadius: 4
+        marginBottom: 10,
+        fontSize: 18,
+        borderRadius: 6
     },
     dropDown: {
         backgroundColor: '#DCDCDC',
@@ -33,7 +34,6 @@ export const globalStyles = StyleSheet.create({
         fontSize: 15,
         borderBottomColor: '#000000'
     },
-
     errormsg: {
         padding: 1,
         color: 'crimson',
@@ -44,11 +44,6 @@ export const globalStyles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'center'
-    },
-    formheading: {
-        fontSize: 24,
-        alignSelf: 'center',
-        marginBottom: 20
     },
     buttonText: {
         fontSize: 18,
@@ -61,17 +56,6 @@ export const globalStyles = StyleSheet.create({
         backgroundColor: '#48BBEC',
         borderColor: '#48BBEC',
         borderWidth: 1,
-        borderRadius: 8,
-        marginBottom: 10,
-        alignSelf: 'stretch',
-        justifyContent: 'center'
-    },
-    button1: {
-        height: 30,
-        width: 20,
-        backgroundColor: '#f0f0f0',
-        borderColor: '#f0f0f0',
-        borderWidth: 0,
         borderRadius: 8,
         marginBottom: 10,
         alignSelf: 'stretch',
@@ -101,7 +85,6 @@ export const globalStyles = StyleSheet.create({
     MainContainer: {
         justifyContent: 'space-between',
         flex: 1,
-        //    paddingTop: 10,
 
     },
     modalContainer: {
@@ -114,7 +97,13 @@ export const globalStyles = StyleSheet.create({
         maxHeight: Dimensions.get('window').height / 4,
         top: 150,
         borderRadius: 30
-        //  margin: 90,
+    },
+    Header: {
+        padding: 5,
+        textAlign: "center",
+        color: '#000000',
+        fontSize: 25,
+        borderBottomColor: '#000000'
+    },
 
-    }
 });

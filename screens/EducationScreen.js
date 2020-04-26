@@ -6,7 +6,7 @@ import { Formik } from 'formik';
 import { globalStyles } from '../styles/samplestyles';
 import * as yup from 'yup';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { TouchableHighlight } from 'react-native-gesture-handler';
+import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 import CheckBox from 'react-native-check-box';
@@ -17,10 +17,10 @@ import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 
 const EducationFormSchema = yup.object({
-    //Class: yup.string().required(),
-    ///Medium: yup.string().required(),
-    //SchoolName: yup.string().required(),
-    //SchoolPlace: yup.string().required()
+    Class: yup.string().required(),
+    Medium: yup.string().required(),
+    SchoolName: yup.string().required(),
+    SchoolPlace: yup.string().required()
 })
 
 export default class EducationScreen extends React.Component {
@@ -38,6 +38,8 @@ export default class EducationScreen extends React.Component {
             studyingclass: [],
             medium: [],
             studyingtype: [],
+            childstaytype: [],
+            scholoshiptype: [],
         }
     }
     _pickStartDate = (event, date, handleChange) => {
@@ -85,8 +87,8 @@ export default class EducationScreen extends React.Component {
             "stayType": values.ChildStayType,
             "bridgeCourse": values.BridgeCourse,
             "classDetails": values.CDetail,
-            "sponsorship": values.ScholarshipSponsorship
-            //"spnsorshipFor": values.ScholarshipSponsorship,
+            "sponsorship": values.ScholarshipSponsorship,
+            "sponsorshipFor": this.state.scholoshiptype.sort().join(','),
 
         });
         console.log(values);
@@ -103,7 +105,7 @@ export default class EducationScreen extends React.Component {
                 throw Error(response.status);
             }
         }).catch(error => {
-            console.log(error, 'ffff');
+            console.log(error, 'error');
             this.setState({ errorDisplay: true });
 
         });
@@ -111,11 +113,12 @@ export default class EducationScreen extends React.Component {
     }
     componentWillUnmount() {
         const { params } = this.props.navigation.state;
-        // params.refreshChildList();
+        params.refreshChildList();
 
     }
     render() {
         return (<View style={globalStyles.container1}>
+            <Text style={globalStyles.Header}>Child Education:</Text>
             <Text> Child Name: {this.state.child.firstName}</Text>
             <View style={globalStyles.container}>
                 <Formik
@@ -123,7 +126,7 @@ export default class EducationScreen extends React.Component {
                         {
                             Class: '',
                             Medium: '',
-                            SchoolName: 'name',
+                            SchoolName: '',
                             SchoolType: '',
                             SchoolPlace: '',
                             StartingDate: this.state.startingdate,
@@ -133,6 +136,7 @@ export default class EducationScreen extends React.Component {
                             CDetail: '',
                             BridgeCourseSchoolName: '',
                             ScholarshipSponsorship: '',
+                            scholorshiptype: '',
                         }
                     }
                     validationSchema={EducationFormSchema}
@@ -153,6 +157,7 @@ export default class EducationScreen extends React.Component {
                             <ScrollView>
 
                                 <View>
+
                                     <Text style={globalStyles.text}>Class:</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Class && props.errors.Class}</Text>
                                     <Picker
@@ -163,7 +168,7 @@ export default class EducationScreen extends React.Component {
                                     >
                                         <Picker.Item label="Select Class" value="" />
                                         {global.studyingclass.map((item) => {
-                                            return <Picker.Item key={item.studyingclass} label={item.studyingclass} value={item.studyingclassID} />
+                                            return <Picker.Item key={item.studyingclassId} label={item.studyingclass} value={item.studyingclassId} />
                                         })}
 
                                     </Picker>
@@ -259,13 +264,12 @@ export default class EducationScreen extends React.Component {
                                     <Picker
                                         selectedValue={props.values.ChildStayType}
                                         style={globalStyles.dropDown}
-                                        onValueChange={props.handleChange('ChildStayType')}
+                                        onValueChange={(ChildStayType) => props.setFieldValue('ChildStayType', ChildStayType)}
                                     >
                                         <Picker.Item label="Select Child Stay Type" value="" />
-                                        <Picker.Item label="RH/SG" value="RH/SG" />
-                                        <Picker.Item label="Other Residential Hostel" value="Other Residential Hostel" />
-                                        <Picker.Item label="Day Scholar (With parents)" value="Day Scholar (With parents)" />
-
+                                        {global.childstaytype.map((item) => {
+                                            return <Picker.Item key={item.id} label={item.description} value={item.id} />
+                                        })}
                                     </Picker>
 
                                     <Text style={globalStyles.text}>Bridge course after school:</Text>
@@ -333,29 +337,29 @@ export default class EducationScreen extends React.Component {
 
                                     </Picker>
 
-                                    {this.state.showSSElements ?
-                                        <View>
-                                            <CheckBox
-                                                style={{ flex: 1, padding: 10 }}
-                                                onClick={() => {
-                                                    this.setState({
-                                                        isEducation: !this.state.isEducation
-                                                    })
-                                                }}
-                                                isChecked={this.state.isEducation}
-                                                leftText={"Education"}
-                                            />
-                                            <CheckBox
-                                                style={{ flex: 1, padding: 10 }}
-                                                onClick={() => {
-                                                    this.setState({
-                                                        isHealth: !this.state.isHealth
-                                                    })
-                                                }}
-                                                isChecked={this.state.isHealth}
-                                                leftText={"Health"}
-                                            />
+                                    {this.state.showSSElements ? <View>
+                                        <Text style={globalStyles.text}>Scholorship Type:</Text>
+
+                                        <View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
+                                            {global.scholorshiptype.map((item) => {
+                                                return <CheckBox
+                                                    style={{ flex: 1, padding: 10 }}
+                                                    onClick={() => {
+                                                        let arr = this.state.scholoshiptype
+                                                        if (arr.indexOf(item.id) == -1) {
+                                                            arr.push(item.id)
+                                                        } else {
+                                                            arr.splice(arr.indexOf(item.id), 1)
+                                                        }
+                                                        this.setState({ scholorshiptype: arr })
+                                                    }}
+                                                    key={item.id}
+                                                    leftText={item.description}
+                                                    isChecked={this.state.scholoshiptype.indexOf(item.id) !== -1}
+                                                />
+                                            })}
                                         </View>
+                                    </View>
                                         : null}
 
 
