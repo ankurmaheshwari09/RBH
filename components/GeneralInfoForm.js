@@ -49,8 +49,8 @@ export default class GeneralInfoForm extends React.Component{
         child.organisationName = values.psoName
         child.cWCRefNo =  values.cwcRefNo
         child.stayReason = values.cwcStayReason
-        
-        path = `/child/${child.childNo}`
+        console.log(child)
+        let path = `child/${child.childNo}`
         UpdateApi.updateData(JSON.stringify(child), path).then((response) => {
             this.setState({ loading: false, isVisible: true });
             if(response.ok){
@@ -77,16 +77,16 @@ export default class GeneralInfoForm extends React.Component{
                 enableReinitialize
                 initialValues = {
                     {
-                        identificationPlace1 : parseInt(this.state.child.identificationMark1.split(',')[0]), 
-                        markType1: parseInt(this.state.child.identificationMark1.split(',')[1]), 
-                        identificationPlace2 : parseInt(this.state.child.identificationMark2.split(',')[0]), 
-                        markType2: parseInt(this.state.child.identificationMark2.split(',')[1]), 
-                        specialNeed: this.state.child.differentlyAbledGroup,
-                        occupationOnStreet: this.state.child.occupation,
-                        durationOnStreet: this.state.child.duration,
-                        psoName: this.state.child.organisationName,
-                        cwcRefNo: this.state.child.cWCRefNo,
-                        cwcStayReason: this.state.child.stayReason
+                        identificationPlace1 : this.state.child.identificationMark1 ? parseInt(this.state.child.identificationMark1.split(',')[0]) : '', 
+                        markType1: this.state.child.identificationMark1 ? parseInt(this.state.child.identificationMark1.split(',')[1]): '', 
+                        identificationPlace2 : this.state.child.identificationMark2 ? parseInt(this.state.child.identificationMark2.split(',')[0]) : '', 
+                        markType2: this.state.child.identificationMark2 ? parseInt(this.state.child.identificationMark2.split(',')[1]) : '', 
+                        specialNeed: this.state.child.differentlyAbledGroup ? this.state.child.differentlyAbledGroup : '',
+                        occupationOnStreet: this.state.child.occupation ? this.state.child.occupation : '',
+                        durationOnStreet: this.state.child.duration ? this.state.child.duration : '',
+                        psoName: this.state.child.organisationName ? this.state.child.organisationName : '',
+                        cwcRefNo: this.state.child.cWCRefNo ? this.state.child.cWCRefNo : '',
+                        cwcStayReason: this.state.child.stayReason ? this.state.child.stayReason : ''
                     }
                 }
                 validationSchema = {GeneralInfoFormSchema}

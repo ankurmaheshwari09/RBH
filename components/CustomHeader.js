@@ -1,6 +1,8 @@
 import  React, { Component } from 'react';
-import { View, Text,StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text,StyleSheet, SafeAreaView, TouchableOpacity, Button } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import {Feather} from '@expo/vector-icons';
+import { logOut } from '../constants/LoginConstant';
 
 const styles = StyleSheet.create({
     header: {
@@ -23,10 +25,17 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start', 
         margin: 16,
         flex: 2,
+    },
+    logout: {
+        paddingRight: 20,
     }
 });
 
 export default class CustomHeader extends Component {
+
+    Logout() {
+        logOut();
+    }
 
     render () {
         return (
@@ -37,6 +46,11 @@ export default class CustomHeader extends Component {
                         <FontAwesome5 name="bars" size={24} color="#ffffff" />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>{this.props.title}</Text>
+                        <TouchableOpacity onPress={this.Logout} >
+                            <View style={styles.logout}>
+                                <Feather name="power" size={20} color={"white"}/>
+                            </View>
+                        </TouchableOpacity>
                 </View>
         );
     }

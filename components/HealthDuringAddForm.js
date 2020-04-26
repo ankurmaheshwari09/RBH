@@ -37,13 +37,14 @@ export default class HealthDuringAdd extends React.Component{
             loading: false,
             isVisible: false,
         }
+        console.log(this.state.childHealth)
     }
     getApiMethod(data, childHealth){
         if('newChild' in this.props.childHealth){
-            return UpdateApi.addData(data, '/child-health')
+            return UpdateApi.addData(data, 'child-health')
         }
         else{
-            return UpdateApi.updateData(data, `/child-health/${childHealth.healthNo}`)
+            return UpdateApi.updateData(data, `child-health/${childHealth.healthNo}`)
         }
     }
     _submitHealthDuringAdd(values){
@@ -103,11 +104,11 @@ export default class HealthDuringAdd extends React.Component{
                 <Formik
                     initialValues = {
                         {
-                            bloodGroup: this.state.child.bloodGroup.toString(),
-                            generalHealth: this.state.childHealth.generalHealth,
-                            height: this.state.childHealth.height,
-                            weight: this.state.childHealth.weight,
-                            comments: this.state.childHealth.comments
+                            bloodGroup: this.state.child.bloodGroup ? this.state.child.bloodGroup.toString() : '',
+                            generalHealth: this.state.childHealth.generalHealth ? this.state.childHealth.generalHealth : '',
+                            height: this.state.childHealth.height ? this.state.childHealth.height : '',
+                            weight: this.state.childHealth.weight ? this.state.childHealth.weight : '',
+                            comments: this.state.childHealth.comments ? this.state.childHealth.comments : ''
                         }
                     }
                     validationSchema = {HealthDuringAddSchema}

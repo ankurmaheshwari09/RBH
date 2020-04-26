@@ -4,6 +4,7 @@ import { DrawerNavigatorItems } from 'react-navigation-drawer';
 import { Ionicons } from '@expo/vector-icons';
 
 export default class SideBar extends Component {
+
     render () {
         return (
             <ScrollView>

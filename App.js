@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import AppNavigator from './navigation/AppNavigator';
 import Login from './screens/Login';
-
+import MainScreen from './screens/MainScreen';
+import AppNavigator from './navigation/AppNavigator';
+import { EventRegister } from 'react-native-event-listeners';
 
 
 export default class App extends Component {
@@ -12,15 +13,21 @@ export default class App extends Component {
         message: "",
     }
 
+    componentDidMount() {
+        this.listener = EventRegister.addEventListener('logoutEvent', (data)=> {
+            this.setState({isLoggedIn: false});
+        });
+    }
+
     render ()  {
         if (this.state.isLoggedIn == true) {
             return (
-                <AppNavigator/>
+                <AppNavigator />
             )
         }
         else {
             return (
-                <Login onLoginPress={() => this.setState({isLoggedIn: true})} />
+                <Login onLoginPress={() => {this.setState({isLoggedIn: true}); console.log("app.js");}} />
             )
         }
     }

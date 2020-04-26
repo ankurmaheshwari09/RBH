@@ -5,6 +5,7 @@ import { globalStyles } from '../styles/global';
 import { generalInfoConstants } from '../constants/GeneralInfoConstants';
 import { statusConstants } from '../constants/StatusConstants';
 import { educationConstants } from '../constants/EducationConstants';
+import {childConstants} from '../constants/ChildConstants';
 
 
 export default class HomeScreen extends Component {
@@ -28,6 +29,7 @@ export default class HomeScreen extends Component {
     }
 
     componentDidMount() {
+        childConstants()
         generalInfoConstants()
         statusConstants()
         educationConstants()
@@ -37,7 +39,7 @@ export default class HomeScreen extends Component {
     render() {
         return (
             <View style={globalStyles.homeView}>
-                <Button style={globalStyles.addChildBtn} title='Add Child' onPress={() => this.props.navigation.navigate('AddChild')}></Button>
+                <Button style={globalStyles.addChildBtn} title='Add Child' onPress={() => this.props.navigation.navigate('AddChild',{navigation: this.props.navigation})}></Button>
                 <View>
                     <Text style={globalStyles.homeScreenText}>Rainbow Homes Child Reporting Tool</Text>
                 </View>
