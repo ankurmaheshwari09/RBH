@@ -219,13 +219,23 @@ export default class ChildList extends Component {
                         data={this.state.data}
                         renderItem={({ item }) => (
                             <View style={{
-                                flex: 1 / 2, flexDirection: 'column', margin: 1, justifyContent: 'space-evenly'
+                                flex: 1 / 2, flexDirection: 'column', justifyContent: 'space-evenly'
                             }}>
                                 <TouchableOpacity style={styles.container} onPress={(event) => { this.onPress(item) }}>
                                     {/*react-native-elements Card*/}
-                                    <Card style={this.getStyles(item.childStatus.childStatus,item.childMaps)}>
-                                        <CardImage resizeMode="cover" resizeMethod="resize" source={{ uri: "https://picsum.photos/id/1/300/300" }} />
-                                        <CardContent style={styles.paragraph}>
+                                    <Card style={this.getStyles(item.childStatus.childStatus, item.childMaps)}>
+                                    
+                                        <View>
+                                            <Image
+                                                source={{ uri: "http://app.rainbowhome.in/ChildImage/" + item.picture }}
+                                                style={{
+                                                    height: 150,
+                                                    width: 195,
+                                                    resizeMode: 'cover'
+                                                }}
+                                            />
+                                        </View>
+                                        <View style={styles.paragraph}>
                                             <View style={{ flexDirection: 'row' }}>
                                                 <Text style={styles.heading}>Name:</Text >
                                                 <Text style={styles.cardContent}>{`${item.firstName} ${item.lastName}`}  </Text>
@@ -243,7 +253,8 @@ export default class ChildList extends Component {
                                                 {item.childStatus.childStatus == 'Closed' ? <Text style={styles.cardContent}>Exit</Text> :
                                                     <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>}
                                             </View>
-                                        </CardContent>
+                                        </View>
+                                        
                                     </Card>
                                 </TouchableOpacity>
                             </View>
@@ -273,23 +284,24 @@ export default class ChildList extends Component {
 
 const styles = StyleSheet.create({
     MainContainer: {
-        justifyContent: 'space-between',
+        justifyContent: 'space-evenly',
         flex: 1,
         paddingTop: 10,
 
     },
     imageThumbnail: {
-        margin: 20
+        width: 195,
+        height: 500
     },
     paragraph: {
-        padding: 20,
+        padding: 15,
         textAlign: 'left',
         /*borderWidth: 1,
         borderColor: 'red'*/
     },
     container: {
         //  width : 400,
-        height: 250,
+        height: 280,
 
         /*  marginLeft : 10,
           marginTop: 10,
