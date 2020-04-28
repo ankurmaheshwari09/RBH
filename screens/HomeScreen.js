@@ -6,26 +6,28 @@ import { generalInfoConstants } from '../constants/GeneralInfoConstants';
 import { statusConstants } from '../constants/StatusConstants';
 import { educationConstants } from '../constants/EducationConstants';
 import {childConstants} from '../constants/ChildConstants';
+import {NotificationConstants} from '../constants/NotificationConstants';
 import {SegmentedHealthView} from '../components/SegmentedHealthView';
 import {
   createStackNavigator
 } from 'react-navigation-stack';
 import {HealthScreen} from '../screens/HealthScreen';
 
-
 export default class HomeScreen extends Component {
-displayHealthRemainder = () => {
-    var month = new Date().getMonth() + 1; //Current Month
-    var Ignore = 0;
-    if((month == 1 || month == 4 || month == 7 || month == 10 ) && Ignore < 4){
 
+displayHealthRemainder = () => {
+    console.log('Health Ignore Value:'+ global.Ignore)
+    if(global.Ignore == undefined){global.Ignore = 0}
+    var month = new Date().getMonth() + 1; //Current Month
+    var date = new Date().getDate();//current Date
+    if((month == 1 || month == 4 || month == 7 || month == 10 ) && global.Ignore < 4){
         Alert.alert(
           'Health Assessment Remainder',
           ' Do the Health-Checkup',
           [
-            {text: 'Ignore',onPress: () => {Ignore++;console.log('Ignore Pressed');}},
+            {text: 'Ignore',onPress: () => {global.Ignore++;console.log('Ignore Pressed');}},
             {text: 'Update Later', onPress: () => console.log('UpdateLater Pressed')},
-            {text: 'Update Now', onPress: () => this.props.navigation.navigate('HealthScreen')},
+            {text: 'Update Now', onPress: () => this.props.navigation.navigate('SegmentedHealthView')},
           ],
           {cancelable: false},
         );
@@ -33,6 +35,7 @@ displayHealthRemainder = () => {
 }
 
     componentDidMount() {
+        NotificationConstants()
         childConstants()
         generalInfoConstants()
         statusConstants()
