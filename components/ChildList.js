@@ -4,10 +4,10 @@ import { Card, CardImage, CardContent } from 'react-native-cards'
 import Modal from 'react-native-modal';
 import { SearchBar } from 'react-native-elements';
 import moment from 'moment';
-import Spinner from 'react-native-loading-spinner-overlay';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { getOrgId } from '../constants/LoginConstant';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class ChildList extends Component {
     constructor(props) {
@@ -85,7 +85,8 @@ export default class ChildList extends Component {
                             data: data,
                             loading: false,
                         });
-
+                        this.setStyles(data);
+                       
                         this.arrayholder = data;
                     });
                 } else {
@@ -96,6 +97,12 @@ export default class ChildList extends Component {
             .catch(error => {
                 this.setState({ loading: false, errorDisplay: true });
             });
+    }
+    setStyles(data) {
+        data.map((item) => {
+            item.style = this.getStyles(item.childStatus.childStatus, item.childMaps);
+        });
+        
     }
     onPress(item) {
         let list = this.getModalItems(item);
@@ -169,7 +176,7 @@ export default class ChildList extends Component {
     }
 
     checkStatusDateExpired(childMap, status) {
-        console.log("-----------enterd------");
+        
         let date = childMap.map((item) => {
             if (item.childStatusID.childStatus == status) {
                 console.log(item.csmid, 'id');
@@ -180,14 +187,13 @@ export default class ChildList extends Component {
         });
         date.sort();
         date.reverse();
-        console.log(date);
+        
         let diff = this.getDiffBetweenDates(new Date(date[0]), new Date());
-        console.log(diff.toFixed(0));
+     //   console.log(diff.toFixed(0));
        return diff >= 30 ? true : false;
     }
     getDiffBetweenDates(date1, date2) {
-        console.log("--------cal-----------");
-        console.log(date1, date2);
+       
         // To calculate the time difference of two dates 
         var Difference_In_Time = date2.getTime() - date1.getTime();
 
@@ -207,6 +213,27 @@ export default class ChildList extends Component {
         return updatedList;
     }
 
+    getImageUri(picture,gender) {
+       
+        console.log(picture);
+        if (picture === null || picture === "") {
+            if (gender === 1) {
+                return require('../assets/girl.jpg');
+            } else {
+                return require('../assets/boy.jpg');
+            }
+        } else {
+            return { uri: "http://app.rainbowhome.in/ChildImage/" + picture };
+        }
+    }
+    getImageStyle(style) {
+       // console.log(style.backgroundColor,'......................');
+        if (style === styles.red) {
+            return styles.imageWithBorder;
+        } else {
+            return styles.image;
+        }
+    }
     render() {
 
         return (
@@ -223,18 +250,15 @@ export default class ChildList extends Component {
                             }}>
                                 <TouchableOpacity style={styles.container} onPress={(event) => { this.onPress(item) }}>
                                     {/*react-native-elements Card*/}
-                                    <Card style={this.getStyles(item.childStatus.childStatus, item.childMaps)}>
+                                    <Card style={item.style} >
                                     
                                         <View>
                                             <Image
-                                                source={{ uri: "http://app.rainbowhome.in/ChildImage/" + item.picture }}
-                                                style={{
-                                                    height: 150,
-                                                    width: 195,
-                                                    resizeMode: 'cover'
-                                                }}
+                                                source={this.getImageUri(item.picture, item.gender)}
+                                                style={this.getImageStyle(item.style)}
                                             />
                                         </View>
+                                        
                                         <View style={styles.paragraph}>
                                             <View style={{ flexDirection: 'row' }}>
                                                 <Text style={styles.heading}>Name:</Text >
@@ -252,8 +276,9 @@ export default class ChildList extends Component {
                                                 <Text style={styles.heading}>Status:</Text >
                                                 {item.childStatus.childStatus == 'Closed' ? <Text style={styles.cardContent}>Exit</Text> :
                                                     <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>}
+                                                {item.style == styles.red ? < Ionicons name="md-warning" size={20} color="red" /> : null}
                                             </View>
-                                        </View>
+                                            </View>
                                         
                                     </Card>
                                 </TouchableOpacity>
@@ -289,9 +314,15 @@ const styles = StyleSheet.create({
         paddingTop: 10,
 
     },
-    imageThumbnail: {
+    image: {
+        height: 150,
         width: 195,
-        height: 500
+        resizeMode: 'cover'
+    },
+    imageWithBorder: {
+        height: 150,
+        width: 190,
+        resizeMode: 'cover'
     },
     paragraph: {
         padding: 15,
