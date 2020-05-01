@@ -48,6 +48,8 @@ export default class ChildList extends Component {
         this.getData = this.getData.bind(this);
         this.getModalItems = this.getModalItems.bind(this);
         this.checkStatusDateExpired = this.checkStatusDateExpired.bind(this);
+        
+      //  this.setStyles = this.setStyles.bind(this);
         // this.show =this.show.bind(this);
     }
     componentDidMount() {
@@ -66,7 +68,6 @@ export default class ChildList extends Component {
 
         this.setState({ search: null, loading: true });
         let orgId = getOrgId();
-        console.log(orgId, 'kkkkk');
         const path = 'https://rest-service.azurewebsites.net/api/v1/children/' + orgId;
         console.log(path, 'lllll');
         fetch(path , {
@@ -85,8 +86,7 @@ export default class ChildList extends Component {
                             data: data,
                             loading: false,
                         });
-                        this.setStyles(data);
-                       
+                     
                         this.arrayholder = data;
                     });
                 } else {
@@ -98,12 +98,11 @@ export default class ChildList extends Component {
                 this.setState({ loading: false, errorDisplay: true });
             });
     }
-    setStyles(data) {
-        data.map((item) => {
-            item.style = this.getStyles(item.childStatus.childStatus, item.childMaps);
-        });
-        
-    }
+
+   /* static getDerivedStateFromProps(props, state) {
+
+    }*/
+    
     onPress(item) {
         let list = this.getModalItems(item);
         this.setState({
@@ -162,17 +161,34 @@ export default class ChildList extends Component {
         );
     };
 
-    getStyles(status, childMap) {
-
+    getStyles(status, childMap, childNo) {
+       
+        let index = this.state.data.findIndex((item) => item.childNo == childNo);
+        
         if (status == 'Observation') {
-            return this.checkStatusDateExpired(childMap, status) ?  styles.red : styles.blue;
+            if (this.checkStatusDateExpired(childMap, status)) {
+                this.state.data[index].style = styles.red;
+                return styles.red;
+            } else {
+                this.state.data[index].style = styles.blue;
+                return styles.blue;
+            }
         } else if (status == 'Present') {
             return styles.green;
         } else if (status == 'Closed') {
             return styles.pink;
         } else if (status == 'Absent') {
-           return  this.checkStatusDateExpired(childMap, status) ? styles.red : styles.yellow;
+            if (this.checkStatusDateExpired(childMap, status)) {
+                this.state.data[index].style = styles.red;
+                return styles.red;
+            } else {
+                this.state.data[index].style = styles.yellow;
+                return styles.yellow;
+            }
         }
+
+        
+      
     }
 
     checkStatusDateExpired(childMap, status) {
@@ -250,7 +266,7 @@ export default class ChildList extends Component {
                             }}>
                                 <TouchableOpacity style={styles.container} onPress={(event) => { this.onPress(item) }}>
                                     {/*react-native-elements Card*/}
-                                    <Card style={item.style} >
+                                    <Card style={ this.getStyles(item.childStatus.childStatus, item.childMaps, item.childNo)} >
                                     
                                         <View>
                                             <Image
