@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import {View, Text, TouchableOpacity, TextInput, StyleSheet, ToolbarAndroid, Button,FlatList,Image,Dimensions} from 'react-native'
-import {Card,CardImage,CardContent} from 'react-native-cards'
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ToolbarAndroid, Button, FlatList, Image, Dimensions } from 'react-native'
+import { Card, CardImage, CardContent } from 'react-native-cards'
 import Modal from 'react-native-modal';
 import { SearchBar } from 'react-native-elements';
 import moment from 'moment';
@@ -26,6 +26,7 @@ export default class ChildList extends Component {
                 { key: 'Status', page: 'ChildStatus' },
                 { key: 'Health', page: 'Health' },
                 { key: 'Education', page: 'Education' },
+                { key: 'Childresult', page: 'childresult' },
                 { key: 'Family', page: 'Family' },
                 { key: 'Communication', page: 'Communication' },
                 { key: 'General Info', page: 'GeneralInfo' },
@@ -33,22 +34,23 @@ export default class ChildList extends Component {
                 { key: 'Committee', page: 'Committee' },
                 { key: 'Follow Up', page: 'FollowUpBy' },
             ],
-            modalItemsForCurrentItem:null
+            modalItemsForCurrentItem: null
         };
         this.arrayholder = [];
-        this.onPress =this.onPress.bind(this);
-       this.navigateToOtherScreen =this.navigateToOtherScreen.bind(this);
-        this.closeModal =this.closeModal.bind(this);
+        this.onPress = this.onPress.bind(this);
+        this.navigateToOtherScreen = this.navigateToOtherScreen.bind(this);
+        this.closeModal = this.closeModal.bind(this);
         this.onPressForList = this.onPressForList.bind(this);
         this.searchFilterFunction = this.searchFilterFunction.bind(this);
         this.renderHeader = this.renderHeader.bind(this);
         this.getStyles = this.getStyles.bind(this);
         this.getData = this.getData.bind(this);
         this.getModalItems = this.getModalItems.bind(this);
+        this.checkStatusDateExpired = this.checkStatusDateExpired.bind(this);
         // this.show =this.show.bind(this);
     }
     componentDidMount() {
-       this.getData();
+        this.getData();
     }
 
 
@@ -57,7 +59,7 @@ export default class ChildList extends Component {
             loading: false,
             search: null,
             errorDisplay: false
-        }, () => { this.getData() });
+        });
     }
     getData() {
         console.log('inside get');
@@ -84,7 +86,7 @@ export default class ChildList extends Component {
             })
             .catch(error => {
                 this.setState({ loading: false, errorDisplay: true });
-            });  
+            });
     }
     onPress(item) {
         let list = this.getModalItems(item);
@@ -99,20 +101,20 @@ export default class ChildList extends Component {
         // console.log(this.state.navItems);
         this.props.navigation.navigate(screen, { child: this.state.selectedChild, refreshChildList: this.getData.bind(this) });
     }
-    closeModal(){
+    closeModal() {
         this.setState({
             isVisible: false,
         });
     }
-    onPressForList(screen){
+    onPressForList(screen) {
 
         this.closeModal();
-       // this.setState({page: page});
-       this.navigateToOtherScreen(screen);
+        // this.setState({page: page});
+        this.navigateToOtherScreen(screen);
     }
     searchFilterFunction = text => {
 
-       // console.log(text);
+        // console.log(text);
         this.setState({ search: text });
         if ('' == text) {
             this.setState({
@@ -139,24 +141,54 @@ export default class ChildList extends Component {
                 round
                 onChangeText={text => this.searchFilterFunction(text)}
                 value={this.state.search}
-                
+
             />
         );
     };
 
-    getStyles(status) {
-        
+    getStyles(status, childMap) {
+
         if (status == 'Observation') {
-            return styles.blue;
+            return this.checkStatusDateExpired(childMap, status) ?  styles.red : styles.blue;
         } else if (status == 'Present') {
             return styles.green;
-        } else if (status == 'Closed' ) {
-            return styles.red;
+        } else if (status == 'Closed') {
+            return styles.pink;
         } else if (status == 'Absent') {
-            return styles.yellow;
+           return  this.checkStatusDateExpired(childMap, status) ? styles.red : styles.yellow;
         }
     }
 
+    checkStatusDateExpired(childMap, status) {
+        console.log("-----------enterd------");
+        let date = childMap.map((item) => {
+            if (item.childStatusID.childStatus == status) {
+                console.log(item.csmid, 'id');
+                return moment(item.childStatusDate).format('YYYY-MM-DD');
+            } else {
+                return '';
+            }
+        });
+        date.sort();
+        date.reverse();
+        console.log(date, 'kkkkkkkkkkkkk');
+        let diff = this.getDiffBetweenDates(new Date(date[0]), new Date());
+        console.log(diff.toFixed(0));
+       return diff >= 30 ? true : false;
+    }
+    getDiffBetweenDates(date1, date2) {
+        console.log("--------cal-----------");
+        console.log(date1, date2);
+        // To calculate the time difference of two dates 
+        var Difference_In_Time = date2.getTime() - date1.getTime();
+
+        // To calculate the no. of days between two dates 
+        var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24); 
+
+        console.log(Difference_In_Days);
+
+        return Difference_In_Days;
+    }
     getModalItems(item) {
         console.log('modal items');
         let updatedList = this.state.modalItems;
@@ -182,7 +214,7 @@ export default class ChildList extends Component {
                             }}>
                                 <TouchableOpacity style={styles.container} onPress={(event) => { this.onPress(item) }}>
                                     {/*react-native-elements Card*/}
-                                    <Card style={this.getStyles(item.childStatus.childStatus)}>
+                                    <Card style={this.getStyles(item.childStatus.childStatus,item.childMaps)}>
                                         <CardImage resizeMode="cover" resizeMethod="resize" source={{ uri: "https://picsum.photos/id/1/300/300" }} />
                                         <CardContent style={styles.paragraph}>
                                             <View style={{ flexDirection: 'row' }}>
@@ -199,7 +231,8 @@ export default class ChildList extends Component {
                                             </View>
                                             <View style={{ flexDirection: 'row' }}>
                                                 <Text style={styles.heading}>Status:</Text >
-                                                <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>
+                                                {item.childStatus.childStatus == 'Closed' ? <Text style={styles.cardContent}>Exit</Text> :
+                                                    <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>}
                                             </View>
                                         </CardContent>
                                     </Card>
@@ -212,12 +245,12 @@ export default class ChildList extends Component {
                         ListHeaderComponent={this.renderHeader}
                     />
                 }
-                <Modal  style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
                     <View style={styles.MainContainer}>
                         <FlatList data={this.state.modalItemsForCurrentItem} renderItem={({ item }) => (
 
                             < TouchableOpacity style={styles.styleContents} onPress={(event) => this.onPressForList(item.page)}>
-                            <Text style={styles.item}>{item.key}</Text>
+                                <Text style={styles.item}>{item.key}</Text>
                             </TouchableOpacity>
 
                         )}
@@ -239,28 +272,28 @@ const styles = StyleSheet.create({
     imageThumbnail: {
         margin: 20
     },
-    paragraph:{
+    paragraph: {
         padding: 20,
         textAlign: 'left',
         /*borderWidth: 1,
         borderColor: 'red'*/
     },
-    container : {
-      //  width : 400,
+    container: {
+        //  width : 400,
         height: 250,
-        
-      /*  marginLeft : 10,
-        marginTop: 10,
-        marginRight: 10,*/
-      //  borderRadius : 30,
+
+        /*  marginLeft : 10,
+          marginTop: 10,
+          marginRight: 10,*/
+        //  borderRadius : 30,
         // backgroundColor : '#FFFFFF',
     },
     modalContainer: {
-        backgroundColor : '#696969',
+        backgroundColor: '#696969',
         width: Dimensions.get('window').width / 2,
-        maxHeight:Dimensions.get('window').height / 2,
+        maxHeight: Dimensions.get('window').height / 2,
         margin: 90,
-       
+
     },
     item: {
         padding: 10,
@@ -278,27 +311,32 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 15,
         fontFamily: 'sans-serif-medium',
-       // fontWeight: 'bold',
+        // fontWeight: 'bold',
     },
     cardContent: {
         color: 'black',
         paddingLeft: 3,
         fontFamily: 'sans-serif',
     },
-    red: {
+    pink: {
         backgroundColor: '#ff80b3',
-      //  borderWidth: 5
+        //  borderWidth: 5
     },
     blue: {
         backgroundColor: '#AED6F1',
-      //  borderWidth: 5
+        //  borderWidth: 5
     },
     green: {
         backgroundColor: '#ABEBC6',
-      //  borderWidth: 5,
+        //  borderWidth: 5,
     },
     yellow: {
         backgroundColor: '#ffff99',
-      //  borderWidth: 5
+        //  borderWidth: 5
+    },
+    red: {
+        backgroundColor: '#ffcccc',
+        borderColor: '#ff0000',
+        borderWidth: 3
     }
 });

@@ -4,7 +4,13 @@ import {Text, View, KeyboardAvoidingView, ScrollView, Picker,
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
-
+import {base_url} from '../constants/Base'
+import { ActivityIndicator } from 'react-native';
+import UpdateApi from "../constants/UpdateApi";
+import Modal from 'react-native-modal';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
 
 const HealthDuringAddSchema = yup.object({
     bloodGroup: yup.string(),
@@ -21,24 +27,98 @@ const HealthDuringAddSchema = yup.object({
 })
 
 export default class HealthDuringAdd extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            child: this.props.navigation.getParam('child'),
+            childHealth: this.props.childHealth,
+            sucessDisplay: false,
+            errorDisplay: false,
+            loading: false,
+            isVisible: false,
+        }
+        console.log(this.state.childHealth)
+    }
+    getApiMethod(data, childHealth){
+        if('newChild' in this.props.childHealth){
+            return UpdateApi.addData(data, 'child-health')
+        }
+        else{
+            return UpdateApi.updateData(data, `child-health/${childHealth.healthNo}`)
+        }
+    }
+    _submitHealthDuringAdd(values){
+        this.setState({ loading: true });
+
+        let childHealth = this.props.childHealth
+        childHealth.bloodGroup = parseInt(values.bloodGroup)
+        childHealth.generalHealth = values.generalHealth
+        childHealth.healthDate = new Date()
+        childHealth.height =  values.height
+        childHealth.weight = values.weight
+        childHealth.comments =  values.comments
+
+        this.getApiMethod(JSON.stringify(childHealth), childHealth).then((response) => {
+            this.setState({ loading: false, isVisible: true });
+            if(response.ok){
+                response.json().then((res) => {
+                    console.log(res)
+                })
+                this.setState({ successDisplay: true });
+            }
+            else{
+                throw Error(response.status);
+            }
+            }).catch(error => {
+            console.log(error, 'ffff');
+            this.setState({ errorDisplay: true });
+            });
+        // fetch(url, {
+        //     method: apimethod,
+        //     headers: {
+        //         Accept: '*/*',
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(childHealth),
+        // })
+        // .then((response) => {console.log(response.status);return response.json()})
+        // .then((responseJson) => {
+        //     console.log(responseJson);
+        //     this.setState({submitAlertMessage: 'Successfully updated child with Child Number '+this.state.child.childNo});
+        //     alert(this.state.submitAlertMessage);
+        //     this.setState({showLoader: false,loaderIndex:0});
+        // })
+        // .catch((error) => {
+        //     this.setState({submitAlertMessage: 'Unable to update child. Plesae contact the Admin.'});
+        //     alert(this.state.submitAlertMessage);
+        //     console.log(error);
+        //     this.setState({showLoader: false,loaderIndex:0});
+        // });
+    }
     render() {
         return (
             <View style = {globalStyles.container}>
+                {/* <View style={{ position: 'absolute', top:"45%",right: 0, left: 0, zIndex: this.state.loaderIndex }}>
+                    <ActivityIndicator animating={this.state.showLoader} size="large" color="red" />
+                </View> */}
                 <Formik
                     initialValues = {
                         {
-                            bloodGroup: '',
-                            generalHealth: '',
-                            height: '',
-                            weight: '',
-                            comments: ''
+                            bloodGroup: this.state.child.bloodGroup ? this.state.child.bloodGroup.toString() : '',
+                            generalHealth: this.state.childHealth.generalHealth ? this.state.childHealth.generalHealth : '',
+                            height: this.state.childHealth.height ? this.state.childHealth.height : '',
+                            weight: this.state.childHealth.weight ? this.state.childHealth.weight : '',
+                            comments: this.state.childHealth.comments ? this.state.childHealth.comments : ''
                         }
                     }
                     validationSchema = {HealthDuringAddSchema}
                     onSubmit = {(values, actions) => {
-                        actions.resetForm()
+                        //actions.resetForm()
                         console.log(values)
-                        this.props.navigation.push('InfoGeneral', values)
+                        this.setState({showLoader: true,loaderIndex:10});
+                        let result = this._submitHealthDuringAdd(values);
+                        let alertMessage = this.state.submitAlertMessage;
+                        //this.props.navigation.push('InfoGeneral', values)
                     }}
                 >
                     {props => (
@@ -56,11 +136,11 @@ export default class HealthDuringAdd extends React.Component{
                                 onValueChange = {props.handleChange('bloodGroup')}
                                 selectedValue = {props.values.bloodGroup}
                                 >
-                                    <Picker.Item label = 'Select Blood Group' value = ''/>
-                                    <Picker.Item label = 'O+' value = 'O+'/>
-                                    <Picker.Item label = 'B+' value = 'B+'/>
-                                    <Picker.Item label = 'AB-' value = 'AB-'/>
-                                    <Picker.Item label = 'A+' value = 'A+'/>
+                                    <Picker.Item label = 'Select Blood Group' value = '0'/>
+                                    <Picker.Item label = 'O+' value = "1"/>
+                                    <Picker.Item label = 'B+' value = "2"/>
+                                    <Picker.Item label = 'AB-' value = "3"/>
+                                    <Picker.Item label = 'A+' value = "4"/>
                                 </Picker>
 
                                 <Text style = {globalStyles.text}>General Helath</Text>
@@ -109,6 +189,13 @@ export default class HealthDuringAdd extends React.Component{
                     )}
 
                 </Formik>
+                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={globalStyles.MainContainer}>
+                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Health' childNo={this.state.child.firstName} />
+                    </View>
+                </Modal>
+                <LoadingDisplay loading={this.state.loading} />
             </View>
         );
     }

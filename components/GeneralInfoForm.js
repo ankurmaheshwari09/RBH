@@ -1,9 +1,15 @@
 import React from 'react';
 import {Button, Text, TextInput, View, Picker, ScrollView,
-    KeyboardAvoidingView} from 'react-native';
+    KeyboardAvoidingView, ActivityIndicator} from 'react-native';
 import {Formik} from 'formik';
 import {globalStyles} from '../styles/global';
 import * as yup from 'yup';
+import {putDataAsync, base_url} from '../constants/Base';
+import UpdateApi from "../constants/UpdateApi";
+import Modal from 'react-native-modal';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
 
 const GeneralInfoFormSchema = yup.object({
     identificationPlace1: yup.string().required(),
@@ -22,33 +28,73 @@ const GeneralInfoFormSchema = yup.object({
 export default class GeneralInfoForm extends React.Component{
     constructor(props){
         super(props)
+        this.state = {
+            child: this.props.navigation.getParam('child'),
+            sucessDisplay: false,
+            errorDisplay: false,
+            loading: false,
+            isVisible: false,
+        }
+    }
+    
+    _submitGeneralInfo(values){
+        this.setState({ loading: true });
+        let child = this.props.childData
+        child.identificationMark1 =  values.identificationPlace1.toString() + ',' + values.markType1.toString()
+        child.identificationMark2 = values.identificationPlace2.toString() + ',' + values.markType2.toString()
+        child.stayReason =  values.cwcStayReason
+        child.occupation = values.occupationOnStreet
+        child.differentlyAbledGroup = values.specialNeed
+        child.duration = values.durationOnStreet
+        child.organisationName = values.psoName
+        child.cWCRefNo =  values.cwcRefNo
+        child.stayReason = values.cwcStayReason
+        console.log(child)
+        let path = `child/${child.childNo}`
+        UpdateApi.updateData(JSON.stringify(child), path).then((response) => {
+            this.setState({ loading: false, isVisible: true });
+            if(response.ok){
+                response.json().then((res) => {
+                    console.log(res)
+                })
+                this.setState({ successDisplay: true });
+            }
+            else{
+                throw Error(response.status);
+            }
+        }).catch(error => {
+            console.log(error, 'ffff');
+            this.setState({ errorDisplay: true });
+        });
+    
     }
     render() {
         return (
+            
             <View style = {globalStyles.container}>
-
+                
                 <Formik
                 enableReinitialize
                 initialValues = {
                     {
-                        identificationPlace1 : 2, 
-                        markType1: '', 
-                        identificationPlace2 : '', 
-                        markType2: '', 
-                        specialNeed: '',
-                        occupationOnStreet: '',
-                        durationOnStreet: '',
-                        psoName: '',
-                        cwcRefNo: '',
-                        cwcStayReason: ''
+                        identificationPlace1 : this.state.child.identificationMark1 ? parseInt(this.state.child.identificationMark1.split(',')[0]) : '', 
+                        markType1: this.state.child.identificationMark1 ? parseInt(this.state.child.identificationMark1.split(',')[1]): '', 
+                        identificationPlace2 : this.state.child.identificationMark2 ? parseInt(this.state.child.identificationMark2.split(',')[0]) : '', 
+                        markType2: this.state.child.identificationMark2 ? parseInt(this.state.child.identificationMark2.split(',')[1]) : '', 
+                        specialNeed: this.state.child.differentlyAbledGroup ? this.state.child.differentlyAbledGroup : '',
+                        occupationOnStreet: this.state.child.occupation ? this.state.child.occupation : '',
+                        durationOnStreet: this.state.child.duration ? this.state.child.duration : '',
+                        psoName: this.state.child.organisationName ? this.state.child.organisationName : '',
+                        cwcRefNo: this.state.child.cWCRefNo ? this.state.child.cWCRefNo : '',
+                        cwcStayReason: this.state.child.stayReason ? this.state.child.stayReason : ''
                     }
                 }
                 validationSchema = {GeneralInfoFormSchema}
                 onSubmit = {(values, actions) => {
-                    actions.resetForm();
-                    console.log(values);
-                    alert("Data Has been submitted")
-                    this.props.navigation.push('InfoGeneral', values)
+                    //actions.resetForm();
+                    let result = this._submitGeneralInfo(values);
+                    let alertMessage = this.state.submitAlertMessage;
+                    //this.props.navigation.push('InfoGeneral', values)
                     
                 }}
                 >
@@ -71,7 +117,7 @@ export default class GeneralInfoForm extends React.Component{
                                     props.setFieldValue('identificationPlace1', value)
                                 }}
                                 >
-                                    <Picker.Item key = '' label="Select Identification" value="" />
+                                    <Picker.Item label="Select Identification" value = "0"/>
                                     {global.identification.map((item) => {
                                         return <Picker.Item key = {item.identificationId} label = {item.identification} value = {item.identificationId}/>
                                     })}
@@ -87,9 +133,9 @@ export default class GeneralInfoForm extends React.Component{
                                 onValueChange = {value => {
                                     props.setFieldValue('markType1', value)
                                 }}
-                                enabled = {props.values.identificationPlace1 == '' ? false : true}
+                                enabled = {props.values.identificationPlace1 == '0' ? false : true}
                                 >
-                                    <Picker.Item label="Select MarkType" value="" />
+                                    <Picker.Item  label="Select MarkType" value="0" />
                                     {global.markTypes.map((item) => {
                                         return <Picker.Item key = {item.markTypeId} label = {item.markType} value = {item.markTypeId}/>
                                     })}
@@ -104,7 +150,7 @@ export default class GeneralInfoForm extends React.Component{
                                     props.setFieldValue('identificationPlace2', value)
                                 }}
                                 >
-                                    <Picker.Item label="Select Identification" value="" />
+                                    <Picker.Item label="Select Identification" value="0" />
                                     {global.identification.map((item) => {
                                         return <Picker.Item key = {item.identificationId} label = {item.identification} value = {item.identificationId}/>
                                     })}
@@ -118,9 +164,9 @@ export default class GeneralInfoForm extends React.Component{
                                 onValueChange = {value => {
                                     props.setFieldValue('markType2', value)
                                 }}
-                                enabled = {props.values.identificationPlace2 == '' ? false : true}
+                                enabled = {props.values.identificationPlace2 == '0' ? false : true}
                                 >
-                                    <Picker.Item label="Select MarkType" value="" />
+                                    <Picker.Item label="Select MarkType" value="0" />
                                     {global.markTypes.map((item) => {
                                         return <Picker.Item key = {item.markTypeId} label = {item.markType} value = {item.markTypeId}/>
                                     })}
@@ -135,7 +181,7 @@ export default class GeneralInfoForm extends React.Component{
                                     props.setFieldValue('specialNeed', value)
                                 }}
                                 >
-                                    <Picker.Item label="Select Differently Abled Group" value="" />
+                                    <Picker.Item label="Select Differently Abled Group" value="0" />
                                     {global.specialNeed.map((item) => {
                                         return <Picker.Item key = {item.differentlyAbledGroupId} label = {item.differentlyAbledGroup} value = {item.differentlyAbledGroupId}/>
                                     })}
@@ -150,7 +196,7 @@ export default class GeneralInfoForm extends React.Component{
                                     props.setFieldValue('occupationOnStreet', value)
                                 }}
                                 >
-                                    <Picker.Item label="Select Occupation" value="" />
+                                    <Picker.Item label="Select Occupation" value="0" />
                                     {global.occupation.map((item) => {
                                         return <Picker.Item key = {item.occupationNo} label = {item.occupation} value = {item.occupationNo}/>
                                     })}
@@ -200,7 +246,13 @@ export default class GeneralInfoForm extends React.Component{
                     )}
 
                 </Formik>
-
+                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={globalStyles.MainContainer}>
+                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='General Info' childNo={this.state.child.firstName} />
+                    </View>
+                </Modal>
+                <LoadingDisplay loading={this.state.loading} />
             </View>
         );
     }

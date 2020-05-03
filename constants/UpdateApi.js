@@ -1,7 +1,7 @@
 class UpdateApi {
     static updateData(jsonBody, update) {
         const path = `https://rest-service.azurewebsites.net/api/v1/${update}`;
-        console.log(path, 'jjjjjjjjjjj');
+        console.log(path, 'Calling PUT');
         console.log(jsonBody, 'llllll');
         return fetch(path, {
             method: 'PUT',
@@ -16,8 +16,9 @@ class UpdateApi {
         });
     }
     static addData(jsonBody, update) {
+        console.log('Calling POST')
         const path = `https://rest-service.azurewebsites.net/api/v1/${update}`;
-        console.log(path, 'jjjjjjjjjjj');
+        console.log(path, 'calling POST');
         console.log(jsonBody, 'llllll');
         return fetch(path, {
             method: 'POST',

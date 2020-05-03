@@ -34,13 +34,13 @@ const DrawerNavigator = createDrawerNavigator({
             drawerIcon: ({tintColor}) => <Feather name="clipboard" size={20} color={tintColor}/>
         }
     },
-    Login: {
-        screen: LoginScreen,
-        navigationOptions: {
-            title: "Logout",
-            drawerIcon: ({tintColor}) => <Feather name="log-out" size={20} color={tintColor}/>
-        }
-    },
+    // Login: {
+    //     screen: LoginScreen,
+    //     navigationOptions: {
+    //         title: "Logout",
+    //         drawerIcon: ({tintColor}) => <Feather name="log-out" size={20} color={tintColor}/>,
+    //     }
+    // }
 }, {
     contentComponent: props => <SideBar {...props} />
 });

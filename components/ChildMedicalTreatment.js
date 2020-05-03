@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Text, TextInput, View, Picker, ScrollView,
-    KeyboardAvoidingView,Alert, StyleSheet} from 'react-native';
+    KeyboardAvoidingView,Alert, StyleSheet,Dimensions} from 'react-native';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
@@ -9,6 +9,10 @@ import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 import {base_url} from '../constants/Base';
+import Modal from 'react-native-modal';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
 
 
 const MedicalTreatmentSchema = yup.object({
@@ -32,7 +36,11 @@ visitDate: '',
 showSD: false,
 showVD: false,
 submitAlertMessage: '',
-child: this.props.navigation.getParam('child')
+child: this.props.navigation.getParam('child'),
+isVisible: false,
+loading: false,
+errorDisplay: false,
+sucessDisplay: false
 }
 }
 
@@ -74,6 +82,7 @@ showVisitedDatepicker = () => {
 
 
     submitMedicalTreatmentForm(values) {
+        this.setState({ loading: true });
         let request_body = JSON.stringify({
                 "childNo": this.state.child.childNo,
                 "illnessStartDate": values.IllnessStartDate,
@@ -96,13 +105,15 @@ showVisitedDatepicker = () => {
         })
         .then((response) => response.json())
         .then((responseJson) => {
+            this.setState({ successDisplay: true });
+            this.setState({ loading: false, isVisible: true });
             console.log(responseJson);
             this.setState({submitAlertMessage: 'Successfully added child medical treatment '});
-            alert(this.state.submitAlertMessage);
+
         })
         .catch((error) => {
             this.setState({submitAlertMessage: 'Unable to add child medical treatment details. Please contact the Admin.'});
-            alert(this.state.submitAlertMessage);
+            this.setState({ errorDisplay: true });
             console.log(error);
         });
     }
@@ -228,6 +239,13 @@ showVisitedDatepicker = () => {
               )
    }
     </Formik>
+    <Modal style={Styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                            <View style={Styles.MainContainer}>
+                                <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                                <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName}/ >
+                            </View>
+    </Modal>
+     <LoadingDisplay loading={this.state.loading}/>
     </View>
     );
     }
@@ -264,5 +282,24 @@ const Styles = StyleSheet.create({
                    borderWidth: 1,
                    borderRadius: 8
         },
+     MainContainer: {
+                justifyContent: 'space-between',
+                flex: 1,
+            //    paddingTop: 10,
+
+            },
+     modalContainer: {
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                alignSelf: 'center',
+                backgroundColor: 'white',
+                width: Dimensions.get('window').width /2 + 50,
+                maxHeight: Dimensions.get('window').height / 4,
+                top: 150,
+                borderRadius: 30
+              //  margin: 90,
+
+            }
 
 });
