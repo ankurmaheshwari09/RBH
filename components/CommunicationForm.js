@@ -14,18 +14,18 @@ import { SuccessDisplay } from "../utils/SuccessDisplay";
 //import communicationConstants from '../constants/CommunicationConstants';
 
 const CommunicationFormSchema = yup.object({
-    showErrorPresentDetails: yup.boolean(),
+    showPresentDetailsError: yup.boolean(),
     PresentLocalAddress: yup.string().required(),
     Area: yup.string().required(),
     Country: yup.string().required(),
-    State: yup.string().when("showErrorPresentDetails", {
-        is: true, then: yup.string().required("Must enter State Value")
+    State: yup.string().when('showPresentDetailsError', {
+        is: true, then: yup.string().required("State is a required field")
     }),
-    District: yup.string().when("showErrorPresentDetails", {
-        is: true, then: yup.string().required("Must enter District Value")
+    District: yup.string().when('showPresentDetailsError', {
+        is: true, then: yup.string().required("District is a required field")
     }),
-    Pincode: yup.string().when("showErrorPresentDetails", {
-        is: true, then: yup.string().required("Must enter PinCode Value").matches(/^[0-9]{6}$/, 'Enter 6 digit Pin Code')
+    Pincode: yup.string().when('showPresentDetailsError', {
+        is: true, then: yup.string().required("PinCode is a required field").matches(/^[0-9]{6}$/, 'Enter 6 digit Pin Code')
     }),
 //    Pincode: yup.string().matches(/^[0-9]{6}$/, 'Pincode is not valid'),
     Phone: yup.string().matches(/^[0-9]{10}$/, 'Enter 10 digit Phone number'),
@@ -47,7 +47,8 @@ export default class CommunicationForm extends React.Component {
             states: [],
             districts: [],
             presentDistricts: [],
-            showPresentDetails: false
+            showPresentState: false,
+            showPresentDistrictAndPincode: false,
         }
     }
 
@@ -139,7 +140,7 @@ export default class CommunicationForm extends React.Component {
                             Country: '',
                             State: '',
                             District: '',
-                            showErrorPresentDetails: false
+                            showPresentDetailsError: false
 //                            CWCStayReason: ''
                         }
                     }
@@ -148,8 +149,8 @@ export default class CommunicationForm extends React.Component {
                         console.log(values);
                         this.submitChildCommunicationForm(values);
                         actions.resetForm();
-//                        props.setFieldValue({'showErrorPresentDetails':false});
-                        this.setState({showPresentDetails:false, isVisible:false, loading:false, errorDisplay:false, successDisplay:false})
+//                        props.setFieldValue({'showPresentDetailsError':false});
+                        this.setState({presentDistricts:[], showPresentState:false, showPresentDistrictAndPincode:false, isVisible:false, loading:false, errorDisplay:false, successDisplay:false})
 //                        alert("Data Has been submitted")
 //                        this.props.navigation.push('CommunicationScreen', values)
 
@@ -184,15 +185,16 @@ export default class CommunicationForm extends React.Component {
                                         onValueChange={value => {
                                            props.setFieldValue('Country', value);
                                            if(value==1){
-                                                props.setFieldValue('showErrorPresentDetails', true);
-                                                this.setState({showPresentDetails: true});
+                                                props.setFieldValue('showPresentDetailsError', true);
+                                                this.setState({showPresentState: true});
                                            } else{
-                                                props.setFieldValue('showErrorPresentDetails', false);
-                                                this.setState({showPresentDetails:false});
+                                                props.setFieldValue('showPresentDetailsError', false);
+                                                this.setState({showPresentState:false});
                                                 props.setFieldValue('State','');
                                                 props.setFieldValue('District','');
-                                                props.setFieldValue('PinCode','');
+                                                props.setFieldValue('Pincode','');
                                            }
+                                           this.setState({showPresentDistrictAndPincode:false});
                                         }}
                                         value={props.values.Country}
                                     >
@@ -204,7 +206,7 @@ export default class CommunicationForm extends React.Component {
                                         }
                                     </Picker>
 
-                                    {this.state.showPresentDetails ?
+                                    {this.state.showPresentState ?
                                         <View>
                                         <Text style={globalStyles.text}>State</Text>
                                         <Text style={globalStyles.errormsg}>{props.touched.State && props.errors.State}</Text>
@@ -212,11 +214,19 @@ export default class CommunicationForm extends React.Component {
                                             selectedValue={props.values.State}
                                             style={globalStyles.dropDown}
                                             onValueChange={(value) => {
-                                               props.setFieldValue('State', value);
-                                               console.log("state has been updated to "+value);
-                                               this.getPresentDistricts(value);
-                                               props.setFieldValue('District','');
+                                                props.setFieldValue('State', value);
+                                                console.log("state has been updated to "+ value);
+                                                props.setFieldValue('District','');
+                                                props.setFieldValue('Pincode','');
+                                                if(value!=''){
+                                                    this.getPresentDistricts(value);
+                                                    this.setState({showPresentDistrictAndPincode: true});
+                                                }
+                                                else{
+                                                    this.setState({showPresentDistrictAndPincode: false});
+                                                }
                                             }}
+                                            value={props.values.State}
                                         >
                                             <Picker.Item label="Select State" value='' />
                                             {
@@ -225,6 +235,11 @@ export default class CommunicationForm extends React.Component {
                                                })
                                             }
                                          </Picker>
+                                         </View>
+                                    :null}
+
+                                    {this.state.showPresentDistrictAndPincode ?
+                                        <View>
                                         <Text style={globalStyles.text}>District</Text>
                                         <Text style={globalStyles.errormsg}>{props.touched.District && props.errors.District}</Text>
                                         <Picker
@@ -232,7 +247,9 @@ export default class CommunicationForm extends React.Component {
                                             style={globalStyles.dropDown}
                                             onValueChange={value => {
 //                                               console.log(this.state.presentDistricts);
-                                               props.setFieldValue('District', value)}}
+                                               props.setFieldValue('District', value);
+                                               console.log("district has been updated to "+ value);
+                                            }}
                                             value={props.values.District}
                                         >
                                             <Picker.Item label="Select District" value='' />
@@ -251,6 +268,7 @@ export default class CommunicationForm extends React.Component {
                                         />
                                         </View>
                                     :null}
+
                                     <Text style={globalStyles.text}>Mobile Number</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Mobile && props.errors.Mobile}</Text>
                                     <TextInput
