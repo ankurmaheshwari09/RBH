@@ -122,6 +122,7 @@ export default class AddChild extends React.Component{
         referralSourcesList: [],
         childStatusList: [],
         submitAlertMessage: '',
+        photoUploadMessage: '',
         orgid: '',
         isVisible: false,
         sucessDisplay: false,
@@ -197,6 +198,7 @@ export default class AddChild extends React.Component{
     }
 
     _submitAddChildForm(values) {
+        console.log("submitchild called");
         let request_body = JSON.stringify({
             "firstName": values.FirstName,
             "lastName": values.LastName,
@@ -215,7 +217,7 @@ export default class AddChild extends React.Component{
             "childStatus": values.ChildStatus,
             "rainbowHomeNumber": this.state.orgid
         });
-        console.log(request_body);
+        // console.log(request_body);
         let result = {};
         fetch(base_url+"/child", {
             method: 'POST',
@@ -228,19 +230,74 @@ export default class AddChild extends React.Component{
         .then((response) => response.json())
         .then((responseJson) => {
             console.log(responseJson);
-            this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo});
+            let photoUrl = base_url+"/upload-image/"+responseJson.childNo;
+            console.log(photoUrl);
+            let imageUri = ''
+            if(this.state.image == null) {
+                imageUri= ''
+            }
+            else {
+                imageUri = this.state.image;
+            }
+            console.log(imageUri);
+            fetch(photoUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                body: {
+                    "file": imageUri,
+                }
+            })
+            .then((response) => {
+                console.log("succesfully uploaded image");
+                // console.log(response);
+                this.state.photoUploadMessage = "Succesfully uploaded image";
+                this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo+ ' '+ this.state.photoUploadMessage});
             // alert(this.state.submitAlertMessage);
-            Alert.alert(
-                'Added Child',
-                this.state.submitAlertMessage,
-                [
-                    { text: 'OK', onPress: () => this.props.navigation.goBack() },
-                ],
-                { cancelable: false },
-            );
-            // this.setState({isVisible: true});
-            // this.setState({ successDisplay: true });
-            this.setState({showLoader: false,loaderIndex:0});
+                Alert.alert(
+                    'Added Child',
+                    this.state.submitAlertMessage,
+                    [
+                        { text: 'OK', onPress: () => this.props.navigation.goBack() },
+                    ],
+                    { cancelable: false },
+                );
+                // this.setState({isVisible: true});
+                // this.setState({ successDisplay: true });
+                this.setState({showLoader: false,loaderIndex:0});
+            }) 
+            .catch((error) => {
+                console.log("upload image failed");
+                // console.log(error);
+                this.state.photoUploadMessage = "Image not uploaded succesfully";
+                this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo+ ' '+ this.state.photoUploadMessage});
+                // alert(this.state.submitAlertMessage);
+                Alert.alert(
+                    'Added Child',
+                    this.state.submitAlertMessage,
+                    [
+                        { text: 'OK', onPress: () => this.props.navigation.goBack() },
+                    ],
+                    { cancelable: false },
+                );
+                // this.setState({isVisible: true});
+                // this.setState({ successDisplay: true });
+                this.setState({showLoader: false,loaderIndex:0});
+            })
+            // this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo+ ' '+ this.state.photoUploadMessage});
+            // // alert(this.state.submitAlertMessage);
+            // Alert.alert(
+            //     'Added Child',
+            //     this.state.submitAlertMessage,
+            //     [
+            //         { text: 'OK', onPress: () => this.props.navigation.goBack() },
+            //     ],
+            //     { cancelable: false },
+            // );
+            // // this.setState({isVisible: true});
+            // // this.setState({ successDisplay: true });
+            // this.setState({showLoader: false,loaderIndex:0});
         })
         .catch((error) => {
             this.setState({submitAlertMessage: 'Unable to add child. Plesae contact the Admin.'});
