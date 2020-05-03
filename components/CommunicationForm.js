@@ -14,15 +14,22 @@ import { SuccessDisplay } from "../utils/SuccessDisplay";
 //import communicationConstants from '../constants/CommunicationConstants';
 
 const CommunicationFormSchema = yup.object({
+    showErrorPresentDetails: yup.boolean(),
     PresentLocalAddress: yup.string().required(),
     Area: yup.string().required(),
     Country: yup.string().required(),
-    State: yup.string().required(),
-    District: yup.string().required(),
-    Pincode: yup.string().required().matches(/^[0-9]{6}$/, 'Pincode is not valid'),
+    State: yup.string().when("showErrorPresentDetails", {
+        is: true, then: yup.string().required("Must enter State Value")
+    }),
+    District: yup.string().when("showErrorPresentDetails", {
+        is: true, then: yup.string().required("Must enter District Value")
+    }),
+    Pincode: yup.string().when("showErrorPresentDetails", {
+        is: true, then: yup.string().required("Must enter PinCode Value").matches(/^[0-9]{6}$/, 'Enter 6 digit Pin Code')
+    }),
 //    Pincode: yup.string().matches(/^[0-9]{6}$/, 'Pincode is not valid'),
-    Phone: yup.string().matches(/^[0-9]{10}$/, 'Phone number is not valid'),
-    Mobile: yup.string().matches(/^[0-9]{10}$/, 'Mobile number is not valid'),
+    Phone: yup.string().matches(/^[0-9]{10}$/, 'Enter 10 digit Phone number'),
+    Mobile: yup.string().matches(/^[0-9]{10}$/, 'Enter 10 digit mobile number'),
     PermanentAddress: yup.string(),
 });
 
@@ -39,6 +46,8 @@ export default class CommunicationForm extends React.Component {
             countries: [],
             states: [],
             districts: [],
+            presentDistricts: [],
+            showPresentDetails: false
         }
     }
 
@@ -52,6 +61,18 @@ export default class CommunicationForm extends React.Component {
 
     componentDidMount() {
         this.addChildCommunicationConstants();
+    }
+
+    getPresentDistricts(value)  {
+        this.setState({presentDistricts:[]});
+        let presentDistricts = [];
+        this.state.districts.map((item) => {
+            if(item.stateID == value){
+                presentDistricts.push(item);
+           }
+        });
+        this.setState({presentDistricts:presentDistricts})
+//        console.log(this.state.presentDistricts);
     }
 
     submitChildCommunicationForm(values) {
@@ -76,7 +97,7 @@ export default class CommunicationForm extends React.Component {
             body: request_body,
         })
         .then((response) => {
-               //response.json();
+//               response.json();
                console.log('Communication Form Status and Response are', response.status, 'and', response.ok);
                this.setState({ loading: false, isVisible: true, });
                if (response.ok) {
@@ -118,7 +139,8 @@ export default class CommunicationForm extends React.Component {
                             Country: '',
                             State: '',
                             District: '',
-                            // CWCStayReason: ''
+                            showErrorPresentDetails: false
+//                            CWCStayReason: ''
                         }
                     }
                     validationSchema={CommunicationFormSchema}
@@ -126,8 +148,10 @@ export default class CommunicationForm extends React.Component {
                         console.log(values);
                         this.submitChildCommunicationForm(values);
                         actions.resetForm();
-                        //alert("Data Has been submitted")
-                        //this.props.navigation.push('CommunicationScreen', values)
+//                        props.setFieldValue({'showErrorPresentDetails':false});
+                        this.setState({showPresentDetails:false, isVisible:false, loading:false, errorDisplay:false, successDisplay:false})
+//                        alert("Data Has been submitted")
+//                        this.props.navigation.push('CommunicationScreen', values)
 
                     }}
                 >
@@ -158,56 +182,75 @@ export default class CommunicationForm extends React.Component {
                                         selectedValue={props.values.Country}
                                         style={globalStyles.dropDown}
                                         onValueChange={value => {
-                                           props.setFieldValue('Country', value)}}
+                                           props.setFieldValue('Country', value);
+                                           if(value==1){
+                                                props.setFieldValue('showErrorPresentDetails', true);
+                                                this.setState({showPresentDetails: true});
+                                           } else{
+                                                props.setFieldValue('showErrorPresentDetails', false);
+                                                this.setState({showPresentDetails:false});
+                                                props.setFieldValue('State','');
+                                                props.setFieldValue('District','');
+                                                props.setFieldValue('PinCode','');
+                                           }
+                                        }}
                                         value={props.values.Country}
                                     >
-                                        <Picker.Item key = '' label="Select Country" value="" />
+                                        <Picker.Item key = '' label="Select Country" value='' />
                                         {
                                            this.state.countries.map((item) => {
                                                return <Picker.Item key = {item.countryId} label = {item.country} value = {item.countryId}/>
                                            })
-                                         }
+                                        }
                                     </Picker>
 
-                                    <Text style={globalStyles.text}>State</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.State && props.errors.State}</Text>
-                                    <Picker
-                                        selectedValue={props.values.State}
-                                        style={globalStyles.dropDown}
-                                        onValueChange={value => {
-                                           props.setFieldValue('State', value)
-                                        }}
-                                    >
-                                        <Picker.Item label="Select State" value="" />
-                                        {
-                                           this.state.states.map((item) => {
-                                               return <Picker.Item key = {item.stateID} label = {item.state} value = {item.stateID}/>
-                                           })
-                                         }
-                                     </Picker>
-                                    <Text style={globalStyles.text}>District</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.District && props.errors.District}</Text>
-                                    <Picker
-                                        selectedValue={props.values.District}
-                                        style={globalStyles.dropDown}
-                                        onValueChange={value => {
-                                           props.setFieldValue('District', value)}}
-                                        value={props.values.District}
-                                    >
-                                        <Picker.Item label="Select District" value="0" />
-                                        {
-                                           this.state.districts.map((item) => {
-                                              return <Picker.Item key = {item.districtID} label = {item.district} value = {item.districtID}/>
-                                          })
-                                         }
-                                    </Picker>
-                                    <Text style={globalStyles.text}>Pin Code</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.Pincode && props.errors.Pincode}</Text>
-                                    <TextInput
-                                        style={globalStyles.input}
-                                        onChangeText={props.handleChange('Pincode')}
-                                        value={props.values.Pincode}
-                                    />
+                                    {this.state.showPresentDetails ?
+                                        <View>
+                                        <Text style={globalStyles.text}>State</Text>
+                                        <Text style={globalStyles.errormsg}>{props.touched.State && props.errors.State}</Text>
+                                        <Picker
+                                            selectedValue={props.values.State}
+                                            style={globalStyles.dropDown}
+                                            onValueChange={(value) => {
+                                               props.setFieldValue('State', value);
+                                               console.log("state has been updated to "+value);
+                                               this.getPresentDistricts(value);
+                                               props.setFieldValue('District','');
+                                            }}
+                                        >
+                                            <Picker.Item label="Select State" value='' />
+                                            {
+                                               this.state.states.map((item) => {
+                                                   return <Picker.Item key = {item.stateID} label = {item.state} value = {item.stateID}/>
+                                               })
+                                            }
+                                         </Picker>
+                                        <Text style={globalStyles.text}>District</Text>
+                                        <Text style={globalStyles.errormsg}>{props.touched.District && props.errors.District}</Text>
+                                        <Picker
+                                            selectedValue={props.values.District}
+                                            style={globalStyles.dropDown}
+                                            onValueChange={value => {
+//                                               console.log(this.state.presentDistricts);
+                                               props.setFieldValue('District', value)}}
+                                            value={props.values.District}
+                                        >
+                                            <Picker.Item label="Select District" value='' />
+                                            {
+                                               this.state.presentDistricts.map((item) => {
+                                                  return <Picker.Item key = {item.districtID} label = {item.district} value = {item.districtID}/>
+                                              })
+                                            }
+                                        </Picker>
+                                        <Text style={globalStyles.text}>Pin Code</Text>
+                                        <Text style={globalStyles.errormsg}>{props.touched.Pincode && props.errors.Pincode}</Text>
+                                        <TextInput
+                                            style={globalStyles.input}
+                                            onChangeText={props.handleChange('Pincode')}
+                                            value={props.values.Pincode}
+                                        />
+                                        </View>
+                                    :null}
                                     <Text style={globalStyles.text}>Mobile Number</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Mobile && props.errors.Mobile}</Text>
                                     <TextInput
