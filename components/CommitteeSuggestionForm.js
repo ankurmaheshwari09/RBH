@@ -122,7 +122,7 @@ export default class CommitteeScreen extends React.Component {
             //console.log(responseJson1,'it is response for getting stored details');
             //console.log(responseJson2,'it is response for staff list');
             this.setState({staffMembers: responseJson2})
-            //console.log(this.getStaffMembers(),'returning members');
+            console.log(this.getStaffMembers(),'returning members');
             //console.log(this.state.staffMembers,'staff members list');
             if(responseJson1 == null)
             {
@@ -138,7 +138,7 @@ export default class CommitteeScreen extends React.Component {
                     );
                 let formatted_date = moment(this.state.meetingdate).format("YYYY-MM-DD");
                 this.setState({meetingdate: formatted_date});
-                this.populateSelectedStaff(responseJson2);
+                //this.populateSelectedStaff(responseJson2);
              }
     });
     }
@@ -226,30 +226,29 @@ export default class CommitteeScreen extends React.Component {
         return (<View style={globalStyles.container1}>
             <View style={globalStyles.container}>
                 <Formik
-               enableReinitialize
                     initialValues={
                         {
-                            Suggestion:this.state.suggestion,
+                            Suggestion:'',
                             MeetingDate: this.state.meetingdate,
                             
                         }
                     }
                     validationSchema={CommitteeFormSchema}
                     onSubmit={async(values, actions) => {
-                        //actions.resetForm();
+                        actions.resetForm();
                         console.log(values);
                         this.setState({meetingdate: ''});
                         let checkUpdate =  this.state.updateDetails;
                         if(checkUpdate)
                         {
-                            let result = this._updateCommitteeSuggestionForm(values);
-                            console.log(result);
+                            this._updateCommitteeSuggestionForm(values);
+                            //console.log(result);
                         }
                         else
                         {
                           
-                            let result = this._submitCommitteeSuggestionForm(values);
-                            console.log(result);
+                            this._submitCommitteeSuggestionForm(values);
+                            //console.log(result);
                         }
 
                         this.props.navigation.push('CommitteeSuggestionForm', values)
@@ -268,8 +267,8 @@ export default class CommitteeScreen extends React.Component {
                         <View style={globalStyles.dobView}>
                             <TextInput
                                 style={globalStyles.inputform, globalStyles.dobValue}
-                                //editable={true}
-                                value={this.state.meetingdate || ''}
+                                editable={true}
+                                value={this.state.meetingdate}
                                 onValueChange={props.handleChange('MeetingDate')}                               
                             />
                             <TouchableHighlight onPress={this.showSDDatepicker}>
