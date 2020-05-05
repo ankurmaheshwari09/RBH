@@ -8,6 +8,7 @@ import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { getOrgId } from '../constants/LoginConstant';
 import { Ionicons } from '@expo/vector-icons';
+import { base_url, getDataAsync } from '../constants/Base';
 
 export default class ChildList extends Component {
     constructor(props) {
@@ -20,6 +21,7 @@ export default class ChildList extends Component {
             selectedChild: null,
             loading: false,
             data: [],
+            checkProfileAlert: false,
             error: null,
             search: null,
             errorDisplay: false,
@@ -48,12 +50,12 @@ export default class ChildList extends Component {
         this.getData = this.getData.bind(this);
         this.getModalItems = this.getModalItems.bind(this);
         this.checkStatusDateExpired = this.checkStatusDateExpired.bind(this);
-        
+        this.getAddedData = this.getAddedData.bind(this);
       //  this.setStyles = this.setStyles.bind(this);
         // this.show =this.show.bind(this);
     }
-    componentDidMount() {
-        this.getData();
+    async componentDidMount() {
+        await this.getData();
     }
 
 
@@ -64,40 +66,89 @@ export default class ChildList extends Component {
             errorDisplay: false
         });
     }
-    getData() {
 
-        this.setState({ search: null, loading: true });
+    // This function adds a new property to object
+    async getAddedData(data) {
+
+        let result = data.map(async childData => {
+            let res = await fetch(base_url + "/child-profile-all-description/" + childData.childNo, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            })
+            let responseJson = await res.json();
+            if (res.ok) {
+
+                if (responseJson == null) {
+                    childData.changeProfile = true;
+                    this.setState({ checkProfileAlert: true });
+                }
+                else {
+                    let date_modified = responseJson[0].modified_ON;
+                    let dm = moment(date_modified).format("YYYY-MM-DD");
+                    let dm1 = moment(new Date()).format("YYYY-MM-DD");
+                    let a = new Date(dm);
+                    let b = new Date(dm1);
+                    let diffInDate = b - a;
+                    let daysTillToday = Math.floor(diffInDate / (1000 * 60 * 60 * 24));
+                    console.log(daysTillToday, childData.childNo, 'daysTillToday');
+                    if (daysTillToday >= 365) {
+                        childData.changeProfile = true;
+                        this.setState({ checkProfileAlert: true });
+                    } else {
+                        this.setState({ checkProfileAlert: false });
+                        childData.changeProfile = false;
+                    }
+                }
+            }
+            else {
+                console.log(res.status);
+                throw Error(res.status);
+            }
+            return childData;
+        });
+
+        let final_result = await Promise.all(result)
+        //console.log(final_result,'finished adding data');
+        this.setState({ data: final_result, loading: false });
+
+    };
+    async getData() {
+        console.log('inside get');
         let orgId = getOrgId();
         const path = 'https://rest-service.azurewebsites.net/api/v1/children/' + orgId;
         console.log(path, 'lllll');
-        fetch(path , {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-
-            .then(res => {
-                
-                if (res.ok) {
-                  //  console.log(res);
-                    res.json().then((data) => {
-                        this.setState({
-                            data: data,
-                            loading: false,
-                        });
-                     
-                        this.arrayholder = data;
-                    });
-                } else {
-                    console.log(res.status);
-                    throw Error(res.status);
+        this.setState({ search: null, loading: true });
+        try {
+            let const1 = await fetch(path, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
                 }
             })
-            .catch(error => {
-                this.setState({ loading: false, errorDisplay: true });
-            });
+            let response = await const1.json();
+            if (const1.ok) {
+                await this.getAddedData(response);
+                //console.log(this.state.data,'final');
+                
+                if (this.state.checkProfileAlert) {
+                    console.log('alert');
+                    alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
+                }
+                this.arrayholder = response;
+            } else {
+                console.log(response.status); 
+                throw Error(response.status);
+            }
+        }
+        catch (error) {
+            console.log(error, 'error in getting data');
+            this.setState({ loading: false, errorDisplay: true });
+        }
     }
+    
 
    /* static getDerivedStateFromProps(props, state) {
 
@@ -294,6 +345,11 @@ export default class ChildList extends Component {
                                                     <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>}
                                                 {item.style == styles.red ? < Ionicons name="md-warning" size={20} color="red" /> : null}
                                             </View>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text style={styles.heading}>Profile Update: </Text >
+                                                {item.changeProfile ? <Text style={styles.cardContent}>Yes</Text> :
+                                                    <Text style={styles.cardContent}>No</Text>}
+                                            </View>
                                             </View>
                                         
                                     </Card>
@@ -348,7 +404,7 @@ const styles = StyleSheet.create({
     },
     container: {
         //  width : 400,
-        height: 280,
+        height: 300,
 
         /*  marginLeft : 10,
           marginTop: 10,
