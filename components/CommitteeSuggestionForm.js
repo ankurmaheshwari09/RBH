@@ -132,12 +132,15 @@ export default class CommitteeScreen extends React.Component {
             else{
                 this.state.updateDetails=true;
                 console.log('have response');
+                console.log(responseJson1[0],'responseeeeeeeee');
+                let formatted_date = moment(responseJson1[0].committeeSuggestionDate).format("YYYY-MM-DD");
+                console.log(formatted_date,'date');
+                console.log(responseJson1[0].committeeSuggestionText,'suggestionnn' );
                 this.setState({committeeSuggestionNo:responseJson1[0].committeeSuggestionNo,
                     suggestion: responseJson1[0].committeeSuggestionText,
-                    meetingdate: responseJson1[0].committeeSuggestionDate}
-                    );
-                let formatted_date = moment(this.state.meetingdate).format("YYYY-MM-DD");
-                this.setState({meetingdate: formatted_date});
+                    meetingdate: formatted_date});
+                    console.log(this.state.suggestion, 'state suggestion');
+                   
                 //this.populateSelectedStaff(responseJson2);
              }
     });
@@ -223,21 +226,23 @@ export default class CommitteeScreen extends React.Component {
 
 
     render() {
+        console.log('calling render',this.state.suggestion);
         return (<View style={globalStyles.container1}>
             <View style={globalStyles.container}>
-                <Formik
+                <Formik     
+                   //enableReinitialize
                     initialValues={
                         {
-                            Suggestion:'',
-                            MeetingDate: this.state.meetingdate,
+                            Suggestion: this.state.suggestion,
+                            MeetingDate: this.state.meetingdate
                             
                         }
                     }
                     validationSchema={CommitteeFormSchema}
                     onSubmit={async(values, actions) => {
-                        actions.resetForm();
+                        //actions.resetForm();
                         console.log(values);
-                        this.setState({meetingdate: ''});
+                        //this.setState({meetingdate: ''});
                         let checkUpdate =  this.state.updateDetails;
                         if(checkUpdate)
                         {
@@ -251,7 +256,7 @@ export default class CommitteeScreen extends React.Component {
                             //console.log(result);
                         }
 
-                        this.props.navigation.push('CommitteeSuggestionForm', values)
+                        //this.props.navigation.push('CommitteeSuggestionForm', values)
                     }}
                 >
         {props => (
@@ -268,8 +273,8 @@ export default class CommitteeScreen extends React.Component {
                             <TextInput
                                 style={globalStyles.inputform, globalStyles.dobValue}
                                 editable={true}
-                                value={this.state.meetingdate}
-                                onValueChange={props.handleChange('MeetingDate')}                               
+                                onValueChange={props.handleChange('MeetingDate')}       
+                                value={props.values.MeetingDate}                        
                             />
                             <TouchableHighlight onPress={this.showSDDatepicker}>
                                 <View>
@@ -286,14 +291,14 @@ export default class CommitteeScreen extends React.Component {
                                     onChange={(e,date) => this._pickDate(e,date,props.handleChange('MeetingDate'))}
                                 />
                             }
-                            {/* <Text style={globalStyles.errormsg}>{props.touched.MeetingDate && props.errors.MeetingDate}</Text> */}
+                            <Text style={globalStyles.errormsg}>{props.touched.MeetingDate && props.errors.MeetingDate}</Text>
                             </View>
 
                         <Text style={globalStyles.text}>Enter/Update Suggestion:</Text>
-                        {/* <Text style={globalStyles.errormsg}>{props.touched.Suggestion && props.errors.Suggestion}</Text> */}
+                        <Text style={globalStyles.errormsg}>{props.touched.Suggestion && props.errors.Suggestion}</Text>
                         <TextInput
                             style={globalStyles.input}
-                            onChangeText={props.handleChange('Suggestion')}
+                            onChangeText={(Suggestion)=> { props.setFieldValue('Suggestion', Suggestion) }}
                             value={props.values.Suggestion}
                             multiline={true}
                             numberOfLines={6}
