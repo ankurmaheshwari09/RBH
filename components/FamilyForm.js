@@ -25,13 +25,22 @@ const FamilyFormSchema = yup.object({
 let arr = "";
 
 export default class FamilyForm extends React.Component {
+    constructor(props) {
+        super(props);
+        this.getStyles = this.getStyles.bind(this);
+        // this.show =this.show.bind(this);
+    }
     reviews = [];
-    family=[];
+    family = [];
+    deletedValues = [];
     state = {
+        initialDeleteStatus: '1',
+        afterDeleteStatus:'0',
         modalVisible: false,
         child: this.props.navigation.getParam('child'),
         modaledit: false,
         loading: false,
+        viewItem:true,
         submitAlertMessage: '',
         loaderIndex: 0,
         relations: [],
@@ -88,11 +97,27 @@ export default class FamilyForm extends React.Component {
                 this.setState({
                     childFamilyList: resJson,
                     //display: [{ familyDisplay: this.state.childFamilyList }, { relationDisplay: this.state.relations.relation }],
-                   // error: res.error || null,
+                    // error: res.error || null,
                     loading: false,
                 });
-                console.log("ncdiuuir", this.state.childFamilyList);
-               // this.arrayholder = res;
+                //for (var i = 0; i < this.state.childFamilyList.length; i++) {
+                    var initial = 0;
+                    var len = this.state.childFamilyList.length;
+              
+                while (initial < len) {
+                    console.log(".........", this.state.childFamilyList[initial]);
+                    console.log(".........", this.state.childFamilyList[initial].deletestatus);
+                    console.log(".........", this.state.afterDeleteStatus);
+                    if (this.state.childFamilyList[initial].deletestatus == this.state.afterDeleteStatus) {
+                        console.log("deleted", this.state.childFamilyList[initial].familyNo);
+                        this.deletedValues = this.deletedValues.concat(this.state.childFamilyList[initial].familyNo);
+                        console.log("deleted array values", this.deletedValues);
+                    }
+                    initial++;
+                }
+                    console.log("ncdiuuir", this.state.childFamilyList);
+                    // this.arrayholder = res;
+               // }
             })
             ;
     }
@@ -108,6 +133,14 @@ export default class FamilyForm extends React.Component {
     setModaledit(visible) {
         this.setState({ modaledit: visible });
     }
+    getStyles(deleteStatus) {
+        if (deleteStatus == this.state.initialDeleteStatus) {
+            return styles.blue;
+        }
+        else {
+            return styles.green;
+        }
+    }
 
     _submitFamilyForm(values) {
         console.log("post", values);
@@ -121,6 +154,7 @@ export default class FamilyForm extends React.Component {
             presentcondition: values.Present,
             remarks: values.Remarks,
             income: values.Income,
+            deletestatus: this.state.initialDeleteStatus,
         });
         let result = {};
         fetch(base_url + "/child-family", {
@@ -180,6 +214,7 @@ export default class FamilyForm extends React.Component {
             presentcondition: values.Present,
             remarks: values.Remarks,
             income: values.Income,
+            deletestatus: this.state.initialDeleteStatus
         });
         let result = {};
         fetch(base_url + "/child-family", {
@@ -228,23 +263,81 @@ export default class FamilyForm extends React.Component {
     }
 
 
-    onPressForDelete(id) {
-        alert("Deleted family details with familyID :" + id);
-        console.log(this.state.childFamilyList);
-        
-        console.log(".........id", id);
+    onPressForDelete(item) {
+       // alert("Deleted family details with familyID :" + id);
+        console.log(item);
+
+        console.log(".........id", item.familyNo);
         for (var i = 0; i < this.state.childFamilyList.length; i++) {
             console.log(".........", this.state.childFamilyList[i].familyNo);
-            if (this.state.childFamilyList[i].familyNo === id) {
-                console.log(".........",this.state.childFamilyList[i].familyNo);
-                this.state.childFamilyList.splice(i, 1);
-                console.log(this.state.childFamilyList);
+            if (this.state.childFamilyList[i].familyNo === item.familyNo) 
+                this.family = this.state.childFamilyList[i];
+            console.log(".........details*", this.state.childFamilyList[i].familyNo);
+            //this.setState({ initialDeleteStatus: this.state.afterDeleteStatus })
+                //this.state.childFamilyList.splice(i, 1);
+                //console.log(this.state.childFamilyList);
+                this.setState({ loading: true, loaderIndex: 0 });
+                let request_body = JSON.stringify({
+                    childNo: item.childNo,
+                    familyNo: item.familyNo,
+                    name: item.name,
+                    relation: item.relation,
+                    occupation: item.occupation,
+                    age: item.age,
+                    presentcondition: item.presentcondition,
+                    remarks: item.remarks,
+                    income: item.income,
+                    deletestatus: this.state.afterDeleteStatus
+                });
+                let result = {};
+                fetch(base_url + "/child-family", {
+                    method: 'PUT',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: request_body,
+                })
+                    .then((response) => response.json())
+                    .then((responseJson) => {
+                        this.setState({ familyDetails: responseJson });
+                        console.log(".........after*", this.state.childFamilyList[i]);
+                        console.log("[[[[[[[[[[", responseJson);
+
+
+                        // this.setState({ loading: true, loaderIndex: 0 });
+                        fetch(base_url + '/child-family/' + this.state.child.childNo, {
+                            method: 'GET',
+                            headers: {
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                        })
+                            .then((res) => res.json())
+                            .then((resJson) => {
+                                this.setState({
+                                    childFamilyList: resJson,
+                                    //display: [{ familyDisplay: this.state.childFamilyList }, { relationDisplay: this.state.relations.relation }],
+                                    // error: res.error || null,
+                                    loading: false,
+                                });
+                                this.setState({ submitAlertMessage: 'Successfully deleted family with family Number ' + item.familyNo });
+                                alert(this.state.submitAlertMessage);
+                                console.log("ncdiuuir", this.state.childFamilyList);
+                                // this.arrayholder = res;
+                            })
+                            ;
+                    })
+                    .catch((error) => {
+                        this.setState({ submitAlertMessage: 'Unable to delete child. Plesae contact the Admin.' });
+                        alert(this.state.submitAlertMessage);
+                        console.log(error);
+                        this.setState({ loading: false, loaderIndex: 0 });
+                    });
             }
         }
-        //this.reviews = this.reviews.splice(id-1,1);
-        this.setModalVisible(this.state.modalVisible)
-        //console.log(this.reviews);
-    }
+        
+    
     onPressForEdit(id) {
        // alert("Deleted family details with familyID :" + id);
 
@@ -267,7 +360,7 @@ export default class FamilyForm extends React.Component {
     }
     render() {
         return (
-            <View >
+            <View>
 
                 <Modal visible={this.state.modalVisible} animationType='slide'>
                     <View style={styles.modalContent}>
@@ -277,7 +370,7 @@ export default class FamilyForm extends React.Component {
                             style={{ ...styles.modalToggle, ...styles.modalClose }}
                             onPress={() => this.setModalVisible(!this.state.modalVisible)}
                         />
-                      
+
                         <View style={globalStyles.container}>
 
                             <Formik
@@ -293,7 +386,7 @@ export default class FamilyForm extends React.Component {
                                     }
                                 }
                                 validationSchema={FamilyFormSchema}
-                                onSubmit={async(values, actions) => {
+                                onSubmit={async (values, actions) => {
                                     actions.resetForm();
                                     console.log(values);
                                     console.log("Submit method called here ");
@@ -302,29 +395,29 @@ export default class FamilyForm extends React.Component {
                                     let alertMessage = this.state.submitAlertMessage;
                                     console.log(result);
                                     this.reviews = this.reviews.concat(values);
-                                   // alert("Data Has been submitted");
+                                    // alert("Data Has been submitted");
                                     this.setModalVisible(!this.state.modalVisible);
-                                    
+
                                     //this.setState(this.reviews.review.concat(values));
                                     console.log("final", this.reviews);
-    
-                                  
-                                    this.reviews.map((v,i) => {
-                                       // arr = v;
 
-                                        console.log(".....id", i+1);
+
+                                    this.reviews.map((v, i) => {
+                                        // arr = v;
+
+                                        console.log(".....id", i + 1);
                                         console.log(".....name", v.Name);
 
-                                        })
+                                    })
                                     this.props.navigation.navigate('FamilyForm', values)
-   
+
 
                                 }}
-        >
+                            >
                                 {props => (
-                                    <KeyboardAvoidingView 
+                                    <KeyboardAvoidingView
                                         enabled style={globalStyles.keyboardavoid}
-                                        >
+                                    >
                                         <ScrollView>
 
                                             <View>
@@ -383,7 +476,7 @@ export default class FamilyForm extends React.Component {
                                                         props.setFieldValue('Present', value);
                                                     }}
                                                 >
-                                                    <Picker.Item  label="Select Present Condition" value="" />
+                                                    <Picker.Item label="Select Present Condition" value="" />
                                                     {
                                                         this.state.presentConditions.map((item) => {
                                                             return <Picker.Item key={item.presentId} label={item.present} value={item.presentId} />
@@ -555,7 +648,7 @@ export default class FamilyForm extends React.Component {
                         </View>
                     </View>
                 </Modal>
-                
+
                 <MaterialIcons
                     name='add'
                     size={24}
@@ -566,53 +659,68 @@ export default class FamilyForm extends React.Component {
                     //visibility of Overlay Loading Spinner
                     visible={this.state.loading}
                     //Text with the Spinner 
-                    textContent={'Loading...'}
+                    textContent={'Loading..'}
                 //Text style of the Spinner Text
                 //  textStyle={styles.spinnerTextStyle}
                 />
                 <FlatList
                     data={this.state.childFamilyList}
-                    renderItem={({ item, index}) => (
-                        <View style={{ flex: 1, flexDirection: 'column', margin: 1 }}>
-                            <TouchableOpacity style={styles.container} >
-                                {/*react-native-elements Card*/}
-                                <Card>
-                                    <CardContent style={styles.paragraph}>
-                                        <Text>Name :{`${item.name}`}</Text>
-                                        <Text>Relation : {`${item.relationType}`}</Text>
-                                        <Text>Age : {`${item.age}`}</Text>
-                                        <Text>Occupation : {`${item.occupationType}`}</Text>
-                                        <Text>Present :{`${item.presentcondition}`}</Text>
-                                        <Text>Income : {`${item.income}`}</Text>
-                                        <Text>Remarks :{`${item.remarks}`}</Text>
-                 
-                                    </CardContent>
-                                    <MaterialIcons
-                                        name='edit'
-                                        size={18}
-                                        style={styles.Icons}
-                                        onPress={() => this.onPressForEdit(item.familyNo)}
-                                    />
-                                    <MaterialIcons
-                                        name='delete'
-                                        size={18}
-                                        style={styles.Icons}
-                                        onPress={() => this.onPressForDelete(item.familyNo)}
-                                    />
-                                </Card>
-                            </TouchableOpacity>
+                    renderItem={({ item, index }) => (
+                       
+                        <View style={{ flexDirection: 'column'}}>
+                            {`${item.deletestatus}` === this.state.initialDeleteStatus ?
+                                <TouchableOpacity style={styles.container} >
+
+                                    {/*react-native-elements Card*/}
+
+                                    <Card>
+                                        <CardContent style={styles.paragraph}>
+                                            <Text>Name :{`${item.name}`}</Text>
+                                            <Text>Relation : {`${item.relationType}`}</Text>
+                                            <Text>Age : {`${item.age}`}</Text>
+                                            <Text>Occupation : {`${item.occupationType}`}</Text>
+                                            <Text>Present :{`${item.presentconditionType}`}</Text>
+                                            <Text>Income : {`${item.income}`}</Text>
+                                            <Text>Remarks :{`${item.remarks}`}</Text>
+
+                                        </CardContent>
+                                        <MaterialIcons
+                                            name='edit'
+                                            size={18}
+                                            style={styles.Icons}
+                                            onPress={() => this.onPressForEdit(item.familyNo)}
+                                        />
+                                        <MaterialIcons
+                                            name='delete'
+                                            size={18}
+                                            style={styles.Icons}
+                                            onPress={() => this.onPressForDelete(item)}
+                                        />
+
+                                    </Card>
+
+                                </TouchableOpacity>
+                                : null}  
+
                         </View>
+                    
+                            
                     )}
                     //Setting the number of column
                     numColumns={1}
-                    keyExtractor={(item, index) => index.toString()} 
-                    //keyExtractor={this.reviews.name}
+                    keyExtractor={(item, index) => index.toString()}
+                //keyExtractor={this.reviews.name}
                 />
 
             </View>
+            
+    
            
         );
+        <View style={styles.modalToggle}>
+        </View>
     }
+
 }
 const styles = StyleSheet.create({
     modalToggle: {
@@ -649,7 +757,15 @@ const styles = StyleSheet.create({
         margin:10
     },
     paragraph: {
-        padding: 20
+        padding: 20,
+        
+    }, blue: {
+        backgroundColor: '#AED6F1',
+        //  borderWidth: 5
+    },
+    green: {
+        backgroundColor: '#ABEBC6',
+        //  borderWidth: 5,
     },
     container: {
         // width : 150,
@@ -657,6 +773,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginTop: 10,
         marginRight: 10,
+        //marginBottom:50
         // borderRadius : 15,
         // backgroundColor : '#FFFFFF',
     }
