@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Text, TextInput, View, Picker, ScrollView,
-    KeyboardAvoidingView , Image, StyleSheet} from 'react-native';
+    KeyboardAvoidingView , Image, StyleSheet, Alert} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Feather} from '@expo/vector-icons';
 import {Formik} from 'formik';
@@ -122,7 +122,11 @@ export default class AddChild extends React.Component{
         referralSourcesList: [],
         childStatusList: [],
         submitAlertMessage: '',
+        photoUploadMessage: '',
         orgid: '',
+        isVisible: false,
+        sucessDisplay: false,
+        errorDisplay: false,
     };
 
     async _pickImage (handleChange) {
@@ -194,6 +198,7 @@ export default class AddChild extends React.Component{
     }
 
     _submitAddChildForm(values) {
+        console.log("submitchild called");
         let request_body = JSON.stringify({
             "firstName": values.FirstName,
             "lastName": values.LastName,
@@ -212,7 +217,7 @@ export default class AddChild extends React.Component{
             "childStatus": values.ChildStatus,
             "rainbowHomeNumber": this.state.orgid
         });
-        console.log(request_body);
+        // console.log(request_body);
         let result = {};
         fetch(base_url+"/child", {
             method: 'POST',
@@ -225,13 +230,89 @@ export default class AddChild extends React.Component{
         .then((response) => response.json())
         .then((responseJson) => {
             console.log(responseJson);
-            this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo});
-            alert(this.state.submitAlertMessage);
-            this.setState({showLoader: false,loaderIndex:0});
+            let photoUrl = base_url+"/upload-image/"+responseJson.childNo;
+            console.log(photoUrl);
+            let imageUri = ''
+            if(this.state.image == null) {
+                imageUri= ''
+            }
+            else {
+                imageUri = this.state.image;
+            }
+            console.log(imageUri);
+            fetch(photoUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                body: {
+                    "file": imageUri,
+                }
+            })
+            .then((response) => {
+                console.log(response.status)
+                console.log("succesfully uploaded image");
+                // console.log(response);
+                this.state.photoUploadMessage = "Succesfully uploaded image";
+                this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo+ ' '+ this.state.photoUploadMessage});
+            // alert(this.state.submitAlertMessage);
+                Alert.alert(
+                    'Added Child',
+                    this.state.submitAlertMessage,
+                    [
+                        { text: 'OK', onPress: () => this.props.navigation.goBack() },
+                    ],
+                    { cancelable: false },
+                );
+                // this.setState({isVisible: true});
+                // this.setState({ successDisplay: true });
+                this.setState({showLoader: false,loaderIndex:0});
+            }) 
+            .catch((error) => {
+                console.log("upload image failed");
+                // console.log(error);
+                this.state.photoUploadMessage = "Image not uploaded succesfully";
+                this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo+ ' '+ this.state.photoUploadMessage});
+                // alert(this.state.submitAlertMessage);
+                Alert.alert(
+                    'Added Child',
+                    this.state.submitAlertMessage,
+                    [
+                        { text: 'OK', onPress: () => this.props.navigation.goBack() },
+                    ],
+                    { cancelable: false },
+                );
+                // this.setState({isVisible: true});
+                // this.setState({ successDisplay: true });
+                this.setState({showLoader: false,loaderIndex:0});
+            })
+            // this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo+ ' '+ this.state.photoUploadMessage});
+            // // alert(this.state.submitAlertMessage);
+            // Alert.alert(
+            //     'Added Child',
+            //     this.state.submitAlertMessage,
+            //     [
+            //         { text: 'OK', onPress: () => this.props.navigation.goBack() },
+            //     ],
+            //     { cancelable: false },
+            // );
+            // // this.setState({isVisible: true});
+            // // this.setState({ successDisplay: true });
+            // this.setState({showLoader: false,loaderIndex:0});
         })
         .catch((error) => {
             this.setState({submitAlertMessage: 'Unable to add child. Plesae contact the Admin.'});
-            alert(this.state.submitAlertMessage);
+            // alert(this.state.submitAlertMessage);
+            Alert.alert(
+                'Failed To Add Child',
+                this.state.submitAlertMessage,
+                [
+                    { text: 'OK', onPress: () => console.log("Failed to add child") },
+                ],
+                { cancelable: false },
+            );
+            // this.setState({isVisible: true});
+            // this.setState({ errorDisplay: true });
             console.log(error);
             this.setState({showLoader: false,loaderIndex:0});
         });
@@ -569,7 +650,12 @@ export default class AddChild extends React.Component{
                     )}
 
                 </Formik>
-
+                {/* <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={globalStyles.MainContainer}>
+                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='General Info' />
+                    </View>
+                </Modal> */}
             </View>
         );
     }

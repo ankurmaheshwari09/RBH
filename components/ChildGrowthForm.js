@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Text, TextInput, View, Picker, ScrollView,
-    KeyboardAvoidingView,StyleSheet} from 'react-native';
+    KeyboardAvoidingView,StyleSheet,Dimensions } from 'react-native';
 import {Formik} from 'formik';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -9,6 +9,10 @@ import moment from 'moment';
 import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
 import {base_url} from '../constants/Base';
+import Modal from 'react-native-modal';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
 
 const ChildGrowthSchema = yup.object({
     AssessmentDate: yup.string().required(),
@@ -29,7 +33,11 @@ this.state ={
 AssessmentOn:'',
 showAD: false,
 submitAlertMessage: '',
-child: this.props.navigation.getParam('child')
+child: this.props.navigation.getParam('child'),
+isVisible: false,
+loading: false,
+errorDisplay: false,
+sucessDisplay: false
 }
 }
 showAssessmentDatePicker = () => {
@@ -50,6 +58,7 @@ _pickAssessmentDate = (event, date, handleChange) => {
     }
 
     submitChildGrowthForm(values) {
+        this.setState({ loading: true });
         let request_body = JSON.stringify({
                 "childNo": this.state.child.childNo,
                 "healthDate":values.AssessmentDate,
@@ -70,13 +79,14 @@ _pickAssessmentDate = (event, date, handleChange) => {
         })
         .then((response) => response.json())
         .then((responseJson) => {
+            this.setState({ successDisplay: true });
+            this.setState({ loading: false, isVisible: true });
             console.log(responseJson);
             this.setState({submitAlertMessage: 'Successfully added child growth details '});
-            alert(this.state.submitAlertMessage);
         })
         .catch((error) => {
             this.setState({submitAlertMessage: 'Unable to add child growth details. Please contact the Admin.'});
-            alert(this.state.submitAlertMessage);
+            this.setState({ errorDisplay: true });
             console.log(error);
         });
     }
@@ -108,8 +118,6 @@ _pickAssessmentDate = (event, date, handleChange) => {
                     AssessmentOn:''
                     });
                      this.submitChildGrowthForm(values);
-//                    console.log(result);
-//                    alert("Data Has been submitted")
                     actions.resetForm();
 
                 }}
@@ -184,6 +192,13 @@ _pickAssessmentDate = (event, date, handleChange) => {
               )
    }
     </Formik>
+    <Modal style={Styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                        <View style={Styles.MainContainer}>
+                            <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                            <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName}/ >
+                        </View>
+    </Modal>
+    <LoadingDisplay loading={this.state.loading}/>
     </View>
     );
     }
@@ -220,5 +235,24 @@ const Styles = StyleSheet.create({
                    borderWidth: 1,
                    borderRadius: 8
         },
+    MainContainer: {
+            justifyContent: 'space-between',
+            flex: 1,
+        //    paddingTop: 10,
+
+        },
+    modalContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            alignSelf: 'center',
+            backgroundColor: 'white',
+            width: Dimensions.get('window').width /2 + 50,
+            maxHeight: Dimensions.get('window').height / 4,
+            top: 150,
+            borderRadius: 30
+          //  margin: 90,
+
+        }
 
 });

@@ -48,11 +48,12 @@ export default class ChildResultScreen extends React.Component {
     }
     componentWillUnmount() {
         const { params } = this.props.navigation.state;
-        //params.refreshChildList();
+        params.refreshChildList();
 
     }
     render() {
         return (<View style={globalStyles.container1}>
+            <Text style={globalStyles.Header}>Exam Results:</Text>
             <Text> Child Name: {this.state.child.firstName}</Text>
             <View style={globalStyles.container}>
 

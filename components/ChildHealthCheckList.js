@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView,StyleSheet} from 'react-native';
+import {Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView, StyleSheet, Dimensions} from 'react-native';
 import {useField, useFormikContext, Formik} from 'formik';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Feather} from '@expo/vector-icons';
@@ -8,6 +8,10 @@ import moment from 'moment';
 import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
 import {base_url} from '../constants/Base';
+import Modal from 'react-native-modal';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
 
 const HealthCheckListSchema = yup.object({
     HIVTest: yup.string().required("HIV Test is a required field"),
@@ -26,6 +30,10 @@ export default class ChildHealthCheckList extends React.Component{
         super(props);
         this.state={
             child: this.props.navigation.getParam('child'),
+            isVisible: false,
+            loading: false,
+            errorDisplay: false,
+            successDisplay: false,
             DewormingDate: '',
             GynecologyDate: '',
             showHIVTestResult: false,
@@ -99,7 +107,7 @@ export default class ChildHealthCheckList extends React.Component{
             "tbTestResult":values.TBTestResult,
             "dewormingDone":values.Deworming,
             "dewormingDate":values.DewormingDate,
-            "campsCheckupNotes":values.CampsCheckUps,
+            "campCheckupNotes":values.CampsCheckUps,
             "gynecologyCheckupDone":values.Gynecology,
             "gynecologyCheckupDate":values.GynecologyDate,
         });
@@ -112,16 +120,30 @@ export default class ChildHealthCheckList extends React.Component{
             },
             body: request_body,
         })
-        .then((response) => response.json())
-        .then((responseJson) => {
-            console.log(responseJson);
-            this.setState({submitAlertMessage: 'Successfully added child health checklist details'});
-            alert(this.state.submitAlertMessage);
+        .then((response) => {
+//            response.json())
+            console.log('Child Health Check List Form Status and Response are', response.status, 'and', response.ok);
+           this.setState({ loading: false, isVisible: true, });
+           if (response.ok) {
+               response.json().then((res) => {
+                   console.log(res);
+               });
+               this.setState({ successDisplay: true });
+//                   this.setState({submitAlertMessage: 'Successfully added child health checklist details'});
+//                   alert(this.state.submitAlertMessage);
+           } else {
+               throw Error(response.status);
+           }
         })
+//        .then((responseJson) => {
+//            console.log(responseJson);
+//            this.setState({ successDisplay: true });
+//        })
         .catch((error) => {
-            this.setState({submitAlertMessage: 'Unable to add child health checklist details. Please contact the Admin.'});
-            alert(this.state.submitAlertMessage);
             console.log(error);
+            this.setState({ errorDisplay: true });
+//            this.setState({submitAlertMessage: 'Unable to add child health checklist details. Please contact the Admin.'});
+//            alert(this.state.submitAlertMessage);
         });
     }
 
@@ -137,15 +159,18 @@ export default class ChildHealthCheckList extends React.Component{
                             TBTest: '',
                             TBTestResult: '',
                             Deworming: '',
-                            DewormingDate: this.state.DewormingDate,
+//                            DewormingDate: this.state.DewormingDate,
+                            DewormingDate:'',
                             CampsCheckUps: '',
                             Gynecology: '',
-                            GynecologyDate: this.state.GynecologyDate,
+                            GynecologyDate: '',
+//                            GynecologyDate: this.state.GynecologyDate,
                         }
                     }
                     validationSchema = {HealthCheckListSchema}
                     onSubmit = { async (values, actions) => {
                         console.log(values);
+                        this.setState({ HIVTestResultError: false, TBTestResultError: false, DewormingDateError: false, GynecologyDateError:false});
                         if(values.HIVTestResult == '' && this.state.showHIVTestResult == true) {
                             this.setState({ HIVTestResultError: true});
                         } if(values.TBTestResult == '' && this.state.showTBTestResult == true) {
@@ -158,6 +183,7 @@ export default class ChildHealthCheckList extends React.Component{
                         if(!this.state.HIVTestResultError && !this.state.TBTestResultError && !this.state.DewormingDateError && !this.state.GynecologyDateError) {
                             this.submitChildHealthCheckListForm(values);
                             actions.resetForm();
+                            this.setState({isVisible:false, loading:false, errorDisplay:false, successDisplay:false})
                             this.setState({DewormingDate:'', GynecologyDate:'', HIVTestResultError:false, TBTestResultError:false,
                                            showHIVTestResult:false, showTBTestResult:false, showDewormingDate:false,
                                            showGynecologyDate:false, showElementDewormingDate:false, showElementGynecologyDate:false,
@@ -368,6 +394,13 @@ export default class ChildHealthCheckList extends React.Component{
                     )}
 
                 </Formik>
+                <Modal style={Styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={Styles.MainContainer}>
+                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Health CheckList Status' childNo={this.state.child.firstName} />
+                    </View>
+                </Modal>
+                <LoadingDisplay loading={this.state.loading} />
             </View>
         );
     }
@@ -404,5 +437,20 @@ const Styles = StyleSheet.create({
         flex: 2,
         fontSize: 40,
         marginRight: 15
+    },
+    MainContainer: {
+        justifyContent: 'space-between',
+        flex: 1,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+        backgroundColor: 'white',
+        width: Dimensions.get('window').width / 2 + 50,
+        maxHeight: Dimensions.get('window').height / 4,
+        top: 150,
+        borderRadius: 30
     }
 });
