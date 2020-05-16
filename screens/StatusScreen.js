@@ -47,6 +47,7 @@ export default class StatusScreen extends React.Component {
         
     }
 
+    //setting the dropdown options according to current status
     static getDerivedStateFromProps(props, state) {
         if (state.child.childStatus.childStatusId == 1) {
             
@@ -70,10 +71,11 @@ export default class StatusScreen extends React.Component {
                 })
             }
         } else if (state.child.childStatus.childStatusId == 4) {
+            //setting the option as readmission when current option is close
             return {
                 statusOptions: global.status.filter((item) => {
-                    return item.childStatusId == 3;
-                })
+                    return item.childStatusId == 5;
+                })        
             }
         }
         else return state;
@@ -92,7 +94,7 @@ export default class StatusScreen extends React.Component {
         this.setState({ show: true });
 
     };
-
+d
     updateStatus(values) {
         this.setState({ loading: true });
         let request_body = JSON.stringify({
@@ -230,9 +232,14 @@ export default class StatusScreen extends React.Component {
                                         {this.state.statusOptions.map((item) => {
                                             if (item.childStatusId == 4) {
                                                 return <Picker.Item key={item.childStatusId} label={'Exit'} value={item.childStatusId} />
-                                            } else {
+                                            } else if (item.childStatusId == 5) {
+                                                return <Picker.Item key={item.childStatusId} label={'Present'} value={item.childStatusId} />
+                                            }
+                                            else {
                                                 return <Picker.Item key={item.childStatusId} label={item.childStatus} value={item.childStatusId} />
-                                            }})}
+                                            }
+                                        
+                                        })}
 
                                     </Picker>
                                         <Text style={globalStyles.errormsg}>{props.touched.childStatus && props.errors.childStatus}</Text>
