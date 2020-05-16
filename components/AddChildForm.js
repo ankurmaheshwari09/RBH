@@ -12,6 +12,8 @@ import { TouchableHighlight } from 'react-native-gesture-handler';
 import {base_url,getDataAsync} from '../constants/Base';
 import { ActivityIndicator } from 'react-native';
 import { getOrgId } from '../constants/LoginConstant';
+import Modal from 'react-native-modal';
+import { Ionicons } from '@expo/vector-icons';
 
 const AddChildSchema = yup.object({
     // ChildPhoto: yup.object(),
@@ -53,20 +55,22 @@ const addChildStyles = StyleSheet.create({
         position: 'relative',
         paddingTop: 10
     },
+    title: {
+        marginLeft: '50%',
+        fontSize: 25
+    },
     inputText: {
         borderWidth: 1,
         borderColor: '#ddd',
         padding: 10,
         marginBottom: 10,
         fontSize: 18,
-        borderRadius: 6
+        borderRadius: 6,
+        borderColor: 'lightgreen',
     },
     dropDown: {
+        borderColor: 'lightgreen',
         borderWidth: 1,
-        borderColor: '#ddd',
-        padding: 10,
-        fontSize: 18,
-        borderRadius: 6
     },
     image: {
         marginTop: 10,
@@ -76,8 +80,8 @@ const addChildStyles = StyleSheet.create({
         height: 150,
         borderRadius: 150 / 2,
         overflow: "hidden",
-        borderWidth: 3,
-        borderColor: "black"
+        borderWidth: 2,
+        borderColor: "lightgreen"
     },
     dobView: {
         flex: 1,
@@ -91,12 +95,26 @@ const addChildStyles = StyleSheet.create({
         fontSize: 18,
         borderRadius: 6,
         flex: 3,
+        borderColor: 'lightgreen',
     },
     dobBtn: {
         marginLeft: 2,
         flex: 2,
         fontSize: 40,
     },
+    text: {
+        color: '#000000',
+        fontSize: 15,
+        fontWeight: 'bold',
+        borderColor: '#000000'
+        },
+    modalButton: {
+        color: 'blue',
+        padding: 10,
+        borderRadius: 6,
+        marginBottom: 5,
+        fontSize: 14,
+    }
   });
 
 const defaultImg = require('../assets/person.png');
@@ -191,6 +209,14 @@ export default class AddChild extends React.Component{
         console.log("change called");
     }
 
+    modalclickOKSuccess = () => {
+        this.props.navigation.goBack();
+    }
+
+    modalclickOKError = () => {
+        this.setState({isVisible: false});
+    }
+
     componentDidMount() {
         this.addChildConstants();
         let orgId = getOrgId();
@@ -217,8 +243,7 @@ export default class AddChild extends React.Component{
             "childStatus": values.ChildStatus,
             "rainbowHomeNumber": this.state.orgid
         });
-        // console.log(request_body);
-        let result = {};
+        var imageupload = false;
         fetch(base_url+"/child", {
             method: 'POST',
             headers: {
@@ -227,12 +252,108 @@ export default class AddChild extends React.Component{
             },
             body: request_body,
         })
+        // .then((response) => {
+        //     if(response.status == 200) {
+        //         console.log(response.status);
+        //         let responseJson = response.json();
+        //         console.log("printing response json");
+        //         console.log(responseJson);
+        //         let childId = responseJson.childNo;
+        //         console.log("printing childId")
+        //         console.log(childId);
+        //         console.log(responseJson);
+        //         let photoUrl = base_url+"/upload-image/"+responseJson.childNo;
+        //         console.log(photoUrl);
+        //         let imageUri = '';
+        //         if(this.state.image == null) {
+        //             imageUri= ''
+        //         }
+        //         else {
+        //             imageUri = this.state.image;
+        //         }
+        //         console.log(imageUri);
+        //         fetch(photoUrl, {
+        //             method: 'PUT',
+        //             headers: {},
+        //             body: {
+        //                 "file": imageUri,
+        //             }
+        //         })
+        //         .then((response) => {
+        //             console.log("*****");
+        //             console.log(response.status);
+        //             console.log("******");
+        //             if(response.status == 200) {
+        //                 this.state.photoUploadMessage = "Succesfully uploaded image";
+        //                 imageupload = true;
+        //             }
+        //             else {
+        //                 this.state.photoUploadMessage = "Error uploading image";
+        //             }
+        //             this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo+ ' '+ this.state.photoUploadMessage});
+        //             Alert.alert(
+        //                 'Added Child',
+        //                 this.state.submitAlertMessage,
+        //                 [
+        //                     { text: 'OK', onPress: () => this.props.navigation.goBack() },
+        //                 ],
+        //                 { cancelable: false },
+        //             ); 
+        //             this.setState({isVisible: true, errorDisplay: true});
+        //             this.setState({showLoader: false,loaderIndex:0});
+        //         })
+        //         .catch((error)=> {
+        //             this.state.photoUploadMessage = "Error uploading image";
+        //             this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo+ ' '+ this.state.photoUploadMessage});
+        //             Alert.alert(
+        //                 'Added Child',
+        //                 this.state.submitAlertMessage,
+        //                 [
+        //                     { text: 'OK', onPress: () => this.props.navigation.goBack() },
+        //                 ],
+        //                 { cancelable: false },
+        //             );
+        //             this.setState({isVisible: true, errorDisplay: true});
+        //             this.setState({showLoader: false,loaderIndex:0});
+        //         })
+        //     }
+        //     else {
+        //         this.setState({submitAlertMessage: 'Unable to add child. Plesae contact the Admin.'});
+        //         Alert.alert(
+        //             'Failed To Add Child',
+        //             this.state.submitAlertMessage,
+        //             [
+        //                 { text: 'OK', onPress: () => console.log("Failed to add child") },
+        //             ],
+        //             { cancelable: false },
+        //         );
+        //         this.setState({isVisible: true, errorDisplay: true});
+        //         this.setState({showLoader: false,loaderIndex:0});
+        //     }
+        // })
+        // .catch((error) => {
+        //     this.setState({submitAlertMessage: 'Unable to add child. Plesae contact the Admin.'});
+        //     alert(this.state.submitAlertMessage);
+        //     Alert.alert(
+        //         'Failed To Add Child',
+        //         this.state.submitAlertMessage,
+        //         [
+        //             { text: 'OK', onPress: () => console.log("Failed to add child") },
+        //         ],
+        //         { cancelable: false },
+        //     );
+        //     this.setState({isVisible: true});
+        //     this.setState({ errorDisplay: true });
+        //     console.log(error);
+        //     this.setState({isVisible: true, errorDisplay: true});
+        //     this.setState({showLoader: false,loaderIndex:0});
+        // });
         .then((response) => response.json())
         .then((responseJson) => {
             console.log(responseJson);
             let photoUrl = base_url+"/upload-image/"+responseJson.childNo;
             console.log(photoUrl);
-            let imageUri = ''
+            let imageUri = '';
             if(this.state.image == null) {
                 imageUri= ''
             }
@@ -242,19 +363,25 @@ export default class AddChild extends React.Component{
             console.log(imageUri);
             fetch(photoUrl, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                headers: {},
                 body: {
                     "file": imageUri,
                 }
             })
-            .then((response) => {
+            .then((response) => {       
                 console.log("succesfully uploaded image");
-                // console.log(response);
-                this.state.photoUploadMessage = "Succesfully uploaded image";
+                console.log("*****");
+                console.log(response.status);
+                console.log(response.text());
+                console.log("******");
+                if(response.status == 200) {
+                    this.state.photoUploadMessage = "Succesfully uploaded image";
+                    imageupload = true;
+                }
+                else {
+                    this.state.photoUploadMessage = "Error uploading image";
+                }
                 this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo+ ' '+ this.state.photoUploadMessage});
-            // alert(this.state.submitAlertMessage);
                 Alert.alert(
                     'Added Child',
                     this.state.submitAlertMessage,
@@ -263,8 +390,14 @@ export default class AddChild extends React.Component{
                     ],
                     { cancelable: false },
                 );
-                // this.setState({isVisible: true});
-                // this.setState({ successDisplay: true });
+                this.setState({isVisible: true});
+                if(imageupload) {
+                    this.setState({ successDisplay: true });
+                }
+                else {
+                    this.setState({ errorDisplay: true});
+                }
+                
                 this.setState({showLoader: false,loaderIndex:0});
             }) 
             .catch((error) => {
@@ -362,7 +495,7 @@ export default class AddChild extends React.Component{
                         <View style={{ position: 'absolute', top:"45%",right: 0, left: 0, zIndex: this.state.loaderIndex }}>
                             <ActivityIndicator animating={this.state.showLoader} size="large" color="red" />
                         </View>
-                        <ScrollView>
+                        <ScrollView showsVerticalScrollIndicator={false}>
                             
                             <View>
                                 {/* Child Photo */}
@@ -468,7 +601,7 @@ export default class AddChild extends React.Component{
                                     onValueChange = {value => {
                                         props.setFieldValue('Community', value);
                                     }}
-                                    style = {globalStyles.dropDown}
+                                    style = {addChildStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Community' value = ''/>
                                     {
@@ -486,7 +619,7 @@ export default class AddChild extends React.Component{
                                     onValueChange = {value => {
                                         props.setFieldValue('MotherTongue', value);
                                     }}
-                                    style = {globalStyles.dropDown}
+                                    style = {addChildStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Mother Tongue' value = ''/>
                                     {
@@ -504,7 +637,7 @@ export default class AddChild extends React.Component{
                                     onValueChange = {value => {
                                         props.setFieldValue('ParentalStatus', value);
                                     }}
-                                    style = {globalStyles.dropDown}
+                                    style = {addChildStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Parental Status' value = ''/>
                                     {
@@ -522,7 +655,7 @@ export default class AddChild extends React.Component{
                                     onValueChange = {value => {
                                         props.setFieldValue('ReasonForAdmission', value);
                                     }}
-                                    style = {globalStyles.dropDown}
+                                    style = {addChildStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Reason For Admission' value = ''/>
                                     {
@@ -540,7 +673,7 @@ export default class AddChild extends React.Component{
                                     onValueChange = {value => {
                                         props.setFieldValue('PreviousEducationStatus', value);
                                     }}
-                                    style = {globalStyles.dropDown}
+                                    style = {addChildStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Previous Education Status' value = ''/>
                                     {
@@ -558,7 +691,7 @@ export default class AddChild extends React.Component{
                                     onValueChange = {value => {
                                         props.setFieldValue('AdmittedBy', value);
                                     }}
-                                    style = {globalStyles.dropDown}
+                                    style = {addChildStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Admitted By' value = ''/>
                                     {
@@ -603,7 +736,7 @@ export default class AddChild extends React.Component{
                                     onValueChange = {value => {
                                         props.setFieldValue('ReferredSource', value);
                                     }}
-                                    style = {globalStyles.dropDown}
+                                    style = {addChildStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Referred Source' value = ''/>
                                     {
@@ -631,9 +764,9 @@ export default class AddChild extends React.Component{
                                     onValueChange = {value => {
                                         props.setFieldValue('ChildStatus', value);
                                     }}
-                                    style = {globalStyles.dropDown}
+                                    style = {addChildStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Child Status' value = ''/>
+                                    <Picker.Item label='Select Child Status' value = '' style={{borderColor: 'lightgreen'}}/>
                                     {
                                         this.state.childStatusList.map((item) => {
                                             return <Picker.Item key = {item.childStatusId} label = {item.childStatus} value = {item.childStatusId}/>
@@ -649,10 +782,16 @@ export default class AddChild extends React.Component{
                     )}
 
                 </Formik>
-                {/* <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={globalStyles.MainContainer}>
-                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                        <SuccessDisplay successDisplay={this.state.successDisplay} type='General Info' />
+                {/* <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} >
+                    <View style={globalStyles.MainContainer} isVisible={this.state.successDisplay}>
+                        <Ionicons name="md-checkmark-circle" size={60} color="green" />
+                        <Text style={addChildStyles.text}>{this.state.submitAlertMessage}</Text>
+                        <Button style = {addChildStyles.modalButton} title="Okay!" onPress={this.modalclickOKSuccess}></Button>
+                    </View>
+                    <View style={globalStyles.MainContainer} isVisible={this.state.errorDisplay}>
+                        <Ionicons name="md-warning" size={60} color="red" />``
+                        <Text style={addChildStyles.text}>{this.state.submitAlertMessage}</Text>
+                        <Button style = {addChildStyles.modalButton} title="Okay!" onPress={this.modalclickOKError}></Button>
                     </View>
                 </Modal> */}
             </View>
