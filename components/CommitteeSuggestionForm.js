@@ -15,6 +15,7 @@ import CheckBox from 'react-native-check-box';
 import {base_url,getDataAsync} from '../constants/Base';
 //import UpdateApi from "../constants/UpdateApi";
 import Modal from 'react-native-modal';
+import { getOrgId } from '../constants/LoginConstant';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
@@ -26,7 +27,7 @@ const CommitteeFormSchema = yup.object({
 
 export default class CommitteeScreen extends React.Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             showElements: false,
             showSSElements: false,
@@ -36,14 +37,13 @@ export default class CommitteeScreen extends React.Component {
             staffMembers: [],
             selectedStaff: [],
             selectedStaffArray: [],
-            meetingdate: '',
+            updateSelectedStaff: [],
             committeeSuggestionNo: '',
             child: this.props.navigation.getParam('child'),
             sucessDisplay: false,
             errorDisplay: false,
             loading: false,
             isVisible: false,
-            showSD: false,
         }
         this.getStaffMembers =this.getStaffMembers.bind(this);
         this.populateSelectedStaff = this.populateSelectedStaff.bind(this);
@@ -54,6 +54,10 @@ export default class CommitteeScreen extends React.Component {
         this.selectedStaffAsObjects = this.selectedStaffAsObjects.bind(this);
 
     }
+    state = {
+        showSD: false,
+        meetingdate: '',
+    };
     
     _pickDate = (event, date, handleChange) => {
         console.log(date);
@@ -94,13 +98,17 @@ export default class CommitteeScreen extends React.Component {
     };
 
     populateSelectedStaff = (committeeStaff) => {
-       var joined = this.state.selectedStaff.concat(committeeStaff[0].staffNo);
-       this.setState({selectedStaff: joined});
+       let submitted = [];
+       for(var i=0; i< committeeStaff.length;i++){
+        submitted = this.state.updateSelectedStaff.concat(committeeStaff[i].staffNo);
+       }
+       this.setState({selectedStaff: submitted});
     } 
 
 
     async componentDidMount() {
         console.log(this.state.child.childNo);
+        let orgId = getOrgId();
         Promise.all([
         await fetch(base_url+"/admission-all-committee-suggestions/"+this.state.child.childNo,{
             method: 'GET',
@@ -109,7 +117,7 @@ export default class CommitteeScreen extends React.Component {
                 'Content-Type': 'application/json',
             }
         }), 
-        await fetch(base_url+"/home-staff-list/45",{
+        await fetch(base_url+"/home-staff-list/"+orgId,{
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -138,10 +146,11 @@ export default class CommitteeScreen extends React.Component {
                 console.log(responseJson1[0].committeeSuggestionText,'suggestionnn' );
                 this.setState({committeeSuggestionNo:responseJson1[0].committeeSuggestionNo,
                     suggestion: responseJson1[0].committeeSuggestionText,
-                    meetingdate: formatted_date});
+                    meetingdate: formatted_date,
+                    updateSelectedStaff: responseJson1[0].staffNumber});
                     console.log(this.state.suggestion, 'state suggestion');
                    
-                //this.populateSelectedStaff(responseJson2);
+                //this.populateSelectedStaff(updateSelectedStaff);
              }
     });
     }
@@ -168,7 +177,9 @@ export default class CommitteeScreen extends React.Component {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            this.setState({ loading: false, isVisible: true });
+            this.setState({ loading: false, isVisible: true,
+                 suggestion: values.Suggestion,
+                  meetingdate: values.MeetingDate });
             // if(responseJson.ok) {
                 console.log(responseJson);
                 this.setState({ showElements: false, showSSElements: false});
@@ -189,10 +200,10 @@ export default class CommitteeScreen extends React.Component {
        // console.log(this.selectedStaffAsObjects(this.state.selectedStaff),'array turned objects');
         this.setState({ loading: true });
         let request_body = JSON.stringify({
+                "childNo": this.state.child.childNo,
+                "committeeSuggestionDate": values.MeetingDate, 
                 "committeeSuggestionNo": this.state.committeeSuggestionNo,
                 "committeeSuggestionText": values.Suggestion,
-                "committeeSuggestionDate": values.MeetingDate,
-                "childNo": this.state.child.childNo,
                 "staffNo": 1,
                 "staffNumber": this.selectedStaffAsObjects(this.state.selectedStaff)
         });
@@ -208,14 +219,16 @@ export default class CommitteeScreen extends React.Component {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            this.setState({ loading: false, isVisible: true });
-            // if(responseJson.ok) {
+            this.setState({ loading: false, isVisible: true,
+                suggestion: values.Suggestion,
+                meetingdate: values.MeetingDate});
+         if(responseJson.ok) {
                 console.log(responseJson);
                 this.setState({ successDisplay: true });
-            // }
-            // else{
-            //     throw Error(responseJson.status);
-            // }
+            }
+            else{
+                throw Error(responseJson.status);
+            }
         })
         .catch((error) => {
             console.log(error);
@@ -239,21 +252,21 @@ export default class CommitteeScreen extends React.Component {
                         }
                     }
                     validationSchema={CommitteeFormSchema}
-                    onSubmit={async(values, actions) => {
+                    onSubmit={async (values, actions) => {
                         //actions.resetForm();
                         console.log(values);
-                        //this.setState({meetingdate: ''});
+                        //this.setState({meetingdate: '', suggestion: ''});
                         let checkUpdate =  this.state.updateDetails;
                         if(checkUpdate)
                         {
-                            this._updateCommitteeSuggestionForm(values);
-                            //console.log(result);
+                            let result = this._updateCommitteeSuggestionForm(values);
+                            console.log(result);
                         }
                         else
                         {
                           
-                            this._submitCommitteeSuggestionForm(values);
-                            //console.log(result);
+                            let result = this._submitCommitteeSuggestionForm(values);
+                            console.log(result);
                         }
 
                         //this.props.navigation.push('CommitteeSuggestionForm', values)
@@ -271,10 +284,9 @@ export default class CommitteeScreen extends React.Component {
                         <Text style={globalStyles.text}>Select Date:</Text>
                         <View style={globalStyles.dobView}>
                             <TextInput
-                                style={globalStyles.inputform, globalStyles.dobValue}
-                                editable={true}
-                                onValueChange={props.handleChange('MeetingDate')}       
-                                value={props.values.MeetingDate}                        
+                                style={globalStyles.inputText, globalStyles.dobValue}
+                                value={props.values.MeetingDate}
+                                onValueChange={props.handleChange('MeetingDate')}                                    
                             />
                             <TouchableHighlight onPress={this.showSDDatepicker}>
                                 <View>
@@ -298,7 +310,8 @@ export default class CommitteeScreen extends React.Component {
                         <Text style={globalStyles.errormsg}>{props.touched.Suggestion && props.errors.Suggestion}</Text>
                         <TextInput
                             style={globalStyles.input}
-                            onChangeText={(Suggestion)=> { props.setFieldValue('Suggestion', Suggestion) }}
+                            onChangeText={props.handleChange('Suggestion')}
+                            //onChangeText={(Suggestion)=> { props.setFieldValue('Suggestion', Suggestion) }}
                             value={props.values.Suggestion}
                             multiline={true}
                             numberOfLines={6}

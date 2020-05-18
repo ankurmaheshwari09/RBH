@@ -6,7 +6,7 @@ export function generalInfoConstants(){
     getDataAsync(base_url + '/identifications').then(data => {global.identification = data})
 
     global.markTypes;
-    getDataAsync(base_url + '/mark-types').then(data => {console.log(data);global.markTypes = data})
+    getDataAsync(base_url + '/mark-types').then(data => {global.markTypes = data})
 
     global.specialNeed;
     getDataAsync(base_url + '/differently-abled-groups').then(data => {global.specialNeed = data})
