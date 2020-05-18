@@ -14,10 +14,10 @@ import { SuccessDisplay } from "../utils/SuccessDisplay";
 //import communicationConstants from '../constants/CommunicationConstants';
 
 const CommunicationFormSchema = yup.object({
-    showPresentDetailsError: yup.boolean(),
-    PresentLocalAddress: yup.string().required(),
+    PresentAddress: yup.string().required(),
     Area: yup.string().required(),
     Country: yup.string().required(),
+    showPresentDetailsError: yup.boolean(),
     State: yup.string().when('showPresentDetailsError', {
         is: true, then: yup.string().required("State is a required field")
     }),
@@ -28,8 +28,8 @@ const CommunicationFormSchema = yup.object({
         is: true, then: yup.string().required("PinCode is a required field").matches(/^[0-9]{6}$/, 'Enter 6 digit Pin Code')
     }),
 //    Pincode: yup.string().matches(/^[0-9]{6}$/, 'Pincode is not valid'),
-    Phone: yup.string().matches(/^[0-9]{10}$/, 'Enter 10 digit Phone number'),
     Mobile: yup.string().matches(/^[0-9]{10}$/, 'Enter 10 digit mobile number'),
+    Phone: yup.string().required("10 digit Phone No is a required field").matches(/^[0-9]{10}$/, 'Enter 10 digit Phone number'),
     PermanentAddress: yup.string(),
 });
 
@@ -49,6 +49,9 @@ export default class CommunicationForm extends React.Component {
             presentDistricts: [],
             showPresentState: false,
             showPresentDistrictAndPincode: false,
+            // permtDistricts: [],
+            // showPermtState: false,
+            // showPermtDistrictAndPincode: false,
         }
     }
 
@@ -80,13 +83,20 @@ export default class CommunicationForm extends React.Component {
         let request_body = JSON.stringify({
             "phoneNo":values.Phone,
             "mobileNo":values.Mobile,
-            "presentAddress1":values.PresentLocalAddress,
+            "presentAddress1":values.PresentAddress,
+            // "presentAddress2": null,
             "presentCity":values.Area,
             "presentCountry":values.Country,
             "presentStateRH":values.State,
             "presentDistrict":values.District,
             "presentPincode":values.Pincode,
             "permtAddress1":values.PermanentAddress,
+            // "permtAddress2":null,
+            // "permtCountry":values.PermtCountry,
+            // "permtStateRH":values.PermtState
+            // "permtDistrict":values.PermtDistrict,
+            // "permtPincode":values.PermtPincode,
+
         });
         this.setState({ loading: true });
         fetch(base_url+"/child-communication", {
@@ -131,7 +141,7 @@ export default class CommunicationForm extends React.Component {
                 <Formik
                     initialValues={
                         {
-                            PresentLocalAddress: '',
+                            PresentAddress: '',
                             Area: '',
                             Pincode: '',
                             Mobile: '',
@@ -163,12 +173,12 @@ export default class CommunicationForm extends React.Component {
                             <ScrollView>
 
                                 <View>
-                                    <Text style={globalStyles.text}>Present(Local)Address Details(Street No/Name,Village Name)</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.PresentLocalAddress && props.errors.PresentLocalAddress}</Text>
+                                    <Text style={globalStyles.text}>Present(Local)Address Details:{"\n"}(Street No/Name,Village Name)</Text>
+                                    <Text style={globalStyles.errormsg}>{props.touched.PresentAddress && props.errors.PresentAddress}</Text>
                                     <TextInput
                                         style={globalStyles.input}
-                                        onChangeText={props.handleChange('PresentLocalAddress')}
-                                        value={props.values.PresentLocalAddress}
+                                        onChangeText={props.handleChange('PresentAddress')}
+                                        value={props.values.PresentAddress}
                                     />
                                     <Text style={globalStyles.text}>Area/Town/City Name</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Area && props.errors.Area}</Text>
@@ -248,6 +258,7 @@ export default class CommunicationForm extends React.Component {
                                             onValueChange={value => {
 //                                               console.log(this.state.presentDistricts);
                                                props.setFieldValue('District', value);
+                                               props.setFieldValue('Pincode','');
                                                console.log("district has been updated to "+ value);
                                             }}
                                             value={props.values.District}
@@ -269,14 +280,14 @@ export default class CommunicationForm extends React.Component {
                                         </View>
                                     :null}
 
-                                    <Text style={globalStyles.text}>Mobile Number</Text>
+                                    <Text style={globalStyles.text}>Mobile Number(Personal)</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Mobile && props.errors.Mobile}</Text>
                                     <TextInput
                                         style={globalStyles.input}
                                         onChangeText={props.handleChange('Mobile')}
                                         value={props.values.Mobile}
                                     />
-                                    <Text style={globalStyles.text}>Phone Number</Text>
+                                    <Text style={globalStyles.text}>Phone Number(Relatives/Neighbours)</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Phone && props.errors.Phone}</Text>
                                     <TextInput
                                         style={globalStyles.input}
