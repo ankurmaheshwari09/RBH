@@ -104,7 +104,7 @@ export default class ViewProfile extends React.Component {
         let responseJson = await response.json();
         if(response.ok) {
             console.log(responseJson);
-            this.setState({ loading: false, isVisible: true, successDisplay: true });
+            this.setState({ loading: false, isVisible: true, successDisplay: true, refreshPage: true });
         }
         else{
             console.log(error);
