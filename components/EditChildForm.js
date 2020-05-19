@@ -118,6 +118,8 @@ export default class EditChild extends React.Component{
         errorDisplay: false,
         loading: false,
         isVisible: false,
+        photoUploadMessage: '',
+        img: ''
     };
 
     async _pickImage (handleChange) {
@@ -128,9 +130,32 @@ export default class EditChild extends React.Component{
         console.log(result);
         if (!result.cancelled) {
             this.setState({ image: result.uri });
+            this.setState({img: result})
             handleChange(result.uri)
         }
     }
+
+    createFormData = (photo) => {
+        const data = new FormData();
+      
+        data.append("photo", {
+          name: photo.fileName,
+          type: photo.type,
+          uri: photo.uri
+        });      
+        return data;
+      };
+
+    handleChoosePhoto = () => {
+        const options = {
+          noData: true,
+        }
+        ImagePicker.launchImageLibrary(options, response => {
+          if (response.uri) {
+            this.setState({ photo: response })
+          }
+        })
+      }
 
     _pickDob = (event,date,handleChange) => {
         console.log(date);
@@ -171,6 +196,45 @@ export default class EditChild extends React.Component{
         this.setState({orgid: orgId});
     }
 
+    uploadImage(child){
+        let photoUrl = base_url+"/upload-image/"+child.childNo;
+        console.log(photoUrl);
+        let imageUri = ''
+        let height = 0
+        let width = 0
+        if(this.state.image == null) {
+            imageUri= ''
+        }
+        else {
+            imageUri = this.state.image;
+            // height = this.state.image.height
+            // width = this.state.image.width
+        }
+        console.log(imageUri);
+        let filename = imageUri.split('/').pop();
+        let match = /\.(\w+)$/.exec(filename);
+        let type = match ? `image/${match[1]}` : `image`;
+        let formData = new FormData();
+        formData.append('file', { uri: imageUri, name: filename, type });
+        fetch(photoUrl, {
+            method: 'PUT',
+            body: formData,
+            headers: {
+                'content-type': 'multipart/form-data',
+            }
+        }).then((response) => {
+            console.log('--------------------------')
+            console.log(response.status)
+            if(response.status == 200){
+                console.log(response)
+                this.setState({ successDisplay: true });
+            }
+            else{
+                throw Error(response.status);
+            }
+        })
+    }
+
     _submitEditChildForm(values) {
         this.setState({ loading: true });
         let child = this.props.childData
@@ -188,17 +252,19 @@ export default class EditChild extends React.Component{
         child.admittedBy = values.AdmittedBy,
         child.referredBy = values.ReferredBy,
         child.referredSource = values.ReferredSource,
-        //child.childStatus = values.ChildStatus,
-        child.rainbowHomeNumber = 45
         console.log(child)
         let path = `child/${child.childNo}`
         UpdateApi.updateData(JSON.stringify(child), path).then((response) => {
-            this.setState({ loading: false, isVisible: true });
             if(response.ok){
                 response.json().then((res) => {
+                    this.setState({ loading: false, isVisible: true });
                     console.log(res)
-                })
-                this.setState({ successDisplay: true });
+                    //this.uploadImage(child)
+                    this.setState({ successDisplay: true });
+                }).catch(error => {
+                    console.log(error, 'ffff');
+                    this.setState({ errorDisplay: true });
+                });
             }
             else{
                 throw Error(response.status);

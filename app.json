@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Test_Project",
-    "slug": "Test_Project",
+    "name": "RBH",
+    "slug": "trial-run",
     "privacy": "public",
     "sdkVersion": "36.0.0",
     "platforms": [
@@ -25,6 +25,10 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "versionCode": 1,
+      "package": "com.dummy.RBH"
     }
   }
 }
