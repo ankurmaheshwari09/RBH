@@ -7,9 +7,11 @@ import {
     Button,
     StyleSheet,
     ActivityIndicator,
+    KeyboardAvoidingView ,
     Image
 } from 'react-native';
 import {base_url} from '../constants/Base';
+import {globalStyles} from '../styles/global';
 import { setOrgId, getOrgId } from '../constants/LoginConstant'
 
 export default class Login extends Component {
@@ -92,8 +94,12 @@ export default class Login extends Component {
 
     render() {
         return (
+            <KeyboardAvoidingView behavior="null"
+                                                    enabled style={globalStyles.keyboardavoid}
+                                                    keyboardVerticalOffset={0}>
+            <ScrollView showsVerticalScrollIndicator={false}>
             <View style={titlestyle.container}>
-                <Image source={ require('../assets/RBHlogoicon.png') } style = {titlestyle.logoicon}/>
+                <Image source={ require('../assets/RBHlogo.png') } style = {titlestyle.logoicon}/>
                 <Text style={titlestyle.header}>
                     Login
                 </Text>
@@ -125,11 +131,13 @@ export default class Login extends Component {
                     onPress={this._userLogin}
                     title="Submit"
                 />
-                <Image source={ require('../assets/RBHlogotext.png') } style = {titlestyle.logotext}/>
+                {/* <Image source={ require('../assets/RBHlogotext.png') } style = {titlestyle.logotext}/> */}
             <View style={{ position: 'absolute', top:"60%",right: 0, left: 0, zIndex: this.state.loaderIndex }}>
                     <ActivityIndicator animating={this.state.showLoader} size="large" color="red" />
                 </View>
             </View>
+            </ScrollView>
+            </KeyboardAvoidingView>
             )
     }
 }
@@ -157,8 +165,7 @@ const titlestyle = StyleSheet.create({
     borderColor: 'lightgreen',
   },
   logoicon: {
-      marginLeft: '25%',
-      marginTop: '10%',
+      marginLeft: '-10%',
   },
   logotext: {
       marginTop: '20%',
