@@ -167,33 +167,28 @@ export default class CommitteeScreen extends React.Component {
         });
         console.log(request_body,'req body');
         let result = {};
-        await fetch(base_url+"/admission-committee-suggestion", {
+        let response = await fetch(base_url+"/admission-committee-suggestion", {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
             body: request_body,
-        })
-        .then((response) => response.json())
-        .then((responseJson) => {
-            this.setState({ loading: false, isVisible: true,
-                 suggestion: values.Suggestion,
-                  meetingdate: values.MeetingDate });
-            // if(responseJson.ok) {
-                console.log(responseJson);
-                this.setState({ showElements: false, showSSElements: false});
-                this.setState({ successDisplay: true });
-            //     }
-            // else{
-            //     throw Error(responseJson.status);
-            // }
-        })
-        .catch((error) => {
-            console.log(error);
-            this.setState({showElements: false, showSSElements: false});
-            this.setState({ errorDisplay: true });
         });
+        let responseJson = await response.json();
+        
+        this.setState({ loading: false, isVisible: true,
+            suggestion: values.Suggestion,
+            meetingdate: values.MeetingDate });
+        if(response.ok){
+            console.log(responseJson);
+            this.setState({ successDisplay: true });
+        }
+        else{
+            console.log(error);
+            this.setState({ errorDisplay: true });
+        }
+          
     }
 
     async _updateCommitteeSuggestionForm(values) {
@@ -209,32 +204,26 @@ export default class CommitteeScreen extends React.Component {
         });
         console.log(request_body,'req body');
         let result = {};
-        await fetch(base_url+"/admission-committee-suggestion/"+this.state.committeeSuggestionNo, {
+        let response = await fetch(base_url+"/admission-committee-suggestion/"+this.state.committeeSuggestionNo, {
             method: 'PUT',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
             body: request_body,
-        })
-        .then((response) => response.json())
-        .then((responseJson) => {
+        });
+        let responseJson = await response.json();
             this.setState({ loading: false, isVisible: true,
                 suggestion: values.Suggestion,
                 meetingdate: values.MeetingDate});
-         if(responseJson.ok) {
+            if(response.ok) {
                 console.log(responseJson);
                 this.setState({ successDisplay: true });
             }
             else{
-                throw Error(responseJson.status);
+                console.log(error);
+                this.setState({ errorDisplay: true });
             }
-        })
-        .catch((error) => {
-            console.log(error);
-            //this.setState({date: null, showElements: false, showSSElements: false});
-            this.setState({ errorDisplay: true });
-        });
     }
 
 
@@ -243,7 +232,7 @@ export default class CommitteeScreen extends React.Component {
         return (<View style={globalStyles.container1}>
             <View style={globalStyles.container}>
                 <Formik     
-                   //enableReinitialize
+                   enableReinitialize
                     initialValues={
                         {
                             Suggestion: this.state.suggestion,

@@ -35,6 +35,7 @@ export default class ViewProfile extends React.Component {
             errorDisplay: false,
             loading: false,
             isVisible: false,
+            refreshPage: false,
         }
         this._submitProfile =this._submitProfile.bind(this);
         this._updateProfile =this._updateProfile.bind(this);
@@ -92,7 +93,7 @@ export default class ViewProfile extends React.Component {
                 "modified_ON": new Date()
         });
         let result = {};
-        await fetch(base_url+"/child-profile-description", {
+        let response = await fetch(base_url+"/child-profile-description", {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -100,16 +101,15 @@ export default class ViewProfile extends React.Component {
             },
             body: request_body,
         })
-        .then((response) => response.json())
-        .then((responseJson) => {
-            this.setState({ loading: false, isVisible: true });
+        let responseJson = await response.json();
+        if(response.ok) {
             console.log(responseJson);
-            this.setState({ successDisplay: true });
-        })
-        .catch((error) => {
+            this.setState({ loading: false, isVisible: true, successDisplay: true });
+        }
+        else{
             console.log(error);
             this.setState({ errorDisplay: true });
-        });
+        }
     }
 
     async _updateProfile(values) {
@@ -121,7 +121,7 @@ export default class ViewProfile extends React.Component {
                 "profileDescriptionNo": this.state.profileDescriptionNo
         });
         let result = {};
-        await fetch(base_url+"/child-profile-description/"+this.state.profileDescriptionNo, {
+        let response = await fetch(base_url+"/child-profile-description/"+this.state.profileDescriptionNo, {
             method: 'PUT',
             headers: {
                 Accept: 'application/json',
@@ -129,23 +129,24 @@ export default class ViewProfile extends React.Component {
             },
             body: request_body,
         })
-        .then((response) => response.json())
-        .then((responseJson) => {
-            this.setState({ loading: false, isVisible: true });
-                console.log(responseJson);
-                this.setState({ successDisplay: true });
-        })
-        .catch((error) => {
+        let responseJson = await response.json();
+        if(response.ok){
+            console.log(responseJson);
+            this.setState({ loading: false, isVisible: true, successDisplay: true, refreshPage: true });
+                
+        }
+        else {
             console.log(error,'error');
             this.setState({ errorDisplay: true });
-        });
+        }
     }
 
-    // componentWillUnmount() {
-    //     const { params } = this.props.navigation.state;
-    //     params.refreshChildList();
-        
-    // }
+    componentWillUnmount() {
+        const { params } = this.props.navigation.state;
+        if(this.state.refreshPage){
+            params.refreshChildList();
+        }  
+    }
 
     render() {
         return (<View style={globalStyles.container1}>
