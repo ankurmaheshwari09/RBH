@@ -4,6 +4,7 @@ import { Card, CardImage, CardContent } from 'react-native-cards'
 import Modal from 'react-native-modal';
 import { SearchBar } from 'react-native-elements';
 import moment from 'moment';
+import Spinner from 'react-native-loading-spinner-overlay';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { getOrgId } from '../constants/LoginConstant';
@@ -356,6 +357,7 @@ export default class ChildList extends Component {
                                 </TouchableOpacity>
                             </View>
                         )}
+
                         //Setting the number of column
                         numColumns={2}
                         keyExtractor={item => item.childNo}
