@@ -67,18 +67,18 @@ export default class Login extends Component {
                 this.setState({showLoader: false,loaderIndex:0});
             }
         })
-        // if(this.state.username == "admin" && this.state.password == "admin") {
-        //     if(this.props.onLoginPress) {
-        //         this.props.onLoginPress();
-        //         this.setState({ isLoggingIn: false, message: 'Please enter a valid usernam and password' });
-        //     }
-        //     else {
-        //         this.props.navigation.navigate('Home');
-        //     }
-        // }
-        // else {
-        //     this.setState({ isLoggingIn: false, message: 'Please enter a valid usernam and password' });
-        // }
+         /*if(this.state.username == "admin" && this.state.password == "admin") {
+             if(this.props.onLoginPress) {
+                this.props.onLoginPress();
+                this.setState({ isLoggingIn: false, message: 'Please enter a valid usernam and password' });
+             }
+             else {
+                 this.props.navigation.navigate('Home');
+             }
+         }
+         else {
+             this.setState({ isLoggingIn: false, message: 'Please enter a valid usernam and password' });
+         }*/
     }
 
     clearUsername = () => {
