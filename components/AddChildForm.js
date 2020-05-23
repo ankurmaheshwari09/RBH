@@ -445,16 +445,17 @@ export default class AddChild extends React.Component{
             else {
                 imageUri = this.state.image;
             }
+            var formdata = new FormData();
+            formdata.append('file', { uri: imageUri, name: 'photo.jpg', type: 'image/jpg' });
             console.log(imageUri);
             fetch(photoUrl, {
                 method: 'PUT',
-                headers: {},
-                body: {
-                    "file": imageUri,
-                }
+                headers: {
+                    'content-type': 'multipart/form-data;boundary=----WebKitFormBoundaryyEmKNDsBKjB7QEqu',
+                },
+                body: formdata,
             })
             .then((response) => {       
-                console.log("succesfully uploaded image");
                 console.log("*****");
                 console.log(response.status);
                 console.log(response.text());
@@ -466,7 +467,7 @@ export default class AddChild extends React.Component{
                 else {
                     this.state.photoUploadMessage = "Error uploading image";
                 }
-                this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo+ ' '+ this.state.photoUploadMessage});
+                this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo+ '. '+ this.state.photoUploadMessage});
                 this.resetForm();
                 Alert.alert(
                     'Added Child',
