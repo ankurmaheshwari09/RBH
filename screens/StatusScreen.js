@@ -118,7 +118,6 @@ d
                     console.log(res);
                 });
                 this.setState({ successDisplay: true });
-              
             } else {
                 throw Error(response.status);
             }
@@ -130,11 +129,12 @@ d
       
     }
 
-   
+
     componentWillUnmount() {
-        const { params } = this.props.navigation.state;
-        params.refreshChildList();
-        
+        if (this.state.successDisplay) {
+            const { params } = this.props.navigation.state;
+            params.refreshChildList();
+        }
     }
 
     handleChange = selectedOption => {
@@ -152,11 +152,7 @@ d
                 value: 'futureProgram'
             }
         ];
-        const options = [
-            { value: 'chocolate', label: 'Chocolate' },
-            { value: 'strawberry', label: 'Strawberry' },
-            { value: 'vanilla', label: 'Vanilla' },
-        ];
+       
         return (
             <View style={globalStyles.container}>
                 <View >
@@ -308,7 +304,7 @@ d
                                                 onChangeText={(reasonDescription) => { this.setState({ reasonDescriptionError: false }); props.setFieldValue('reasonDescription', reasonDescription) }}
                                                 //   defaultValue={this.state.text}
                                                 multiline={true}
-                                                numberOfLines={6}
+                                                numberOfLines={8}
                                                 placeholder={'Enter Reason Description'}
                                                 
                                             />
@@ -333,7 +329,7 @@ d
                                                     actionItemsModal: true
                                                 })
                                             }}>
-                                            <Text style={globalStyles.dropDown}>Select Action</Text>
+                                                <Text style={globalStyles.touchableBox}>Select Action</Text>
                                             </TouchableOpacity>
                                             <Modal style={styles.actionItemsModal} isVisible={this.state.actionItemsModal} onBackdropPress={() => this.setState({ actionItemsModal: false })}>
                                                 <View style = {{ flex: 1,justifyContent:'center'}}>
