@@ -12,6 +12,7 @@ import { TouchableHighlight } from 'react-native-gesture-handler';
 import {base_url,getDataAsync} from '../constants/Base';
 import { ActivityIndicator } from 'react-native';
 import { getOrgId } from '../constants/LoginConstant';
+import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
 import Modal from 'react-native-modal';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -150,6 +151,7 @@ export default class AddChild extends React.Component{
         showdoa: false,
         showLoader: false,
         loaderIndex: 0,
+        gender: 2,
         dob: '',
         doa: '',
         religions: [],
@@ -221,6 +223,13 @@ export default class AddChild extends React.Component{
         console.log(typeof(a));
         this.setState({doa:a, showdoa: false});
         handleChange(a);
+    }
+
+    _changeGender = (value, handleChange) => {
+        console.log('gender change');
+        console.log(value);
+        this.setState({gender: value});
+        handleChange(value);
     }
 
     showDatepickerDOB = () => {
@@ -540,6 +549,17 @@ export default class AddChild extends React.Component{
     }
 
     render() {
+
+        const radio_props = [
+            {
+                label: 'Male',
+                value: '1',
+            },
+            {
+                label: 'Female',
+                value: '2',
+            }
+        ];
         
         return (
             <View style = {addChildStyles.container}>
@@ -627,7 +647,7 @@ export default class AddChild extends React.Component{
                                 {/* Gender */}
                                 <Text style = {addChildStyles.label}>Gender :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.Gender && props.errors.Gender}</Text>
-                                <Picker
+                                {/* <Picker
                                     selectedValue = {props.values.Gender}
                                     onValueChange = {props.handleChange('Gender')}
                                     style = {addChildStyles.dropDown}
@@ -635,7 +655,19 @@ export default class AddChild extends React.Component{
                                     <Picker.Item label='Select Gender' value = ''/>
                                     <Picker.Item label='Male' value = '1'/>
                                     <Picker.Item label='Female' value = '2'/>
-                                </Picker>
+                                </Picker> */}
+                                <RadioForm
+                                        style={{marginLeft: 10}}
+                                        radio_props={radio_props}
+                                        initial={this.state.gender}
+                                        buttonSize={10}
+                                        buttonOuterSize={20}
+                                        buttonColor={'black'}
+                                        buttonInnerColor={'black'}
+                                        selectedButtonColor={'blue'}
+                                        formHorizontal={false}
+                                        onPress={(value) => this._changeGender(value,props.handleChange('Gender'))}
+                                />
 
                                 {/* DOB */}
                                 <Text style = {addChildStyles.label}>Date Of Birth :</Text>
