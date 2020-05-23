@@ -231,7 +231,8 @@ d
                                         <Picker.Item label="Select Status" value="" />
                                         {this.state.statusOptions.map((item) => {
                                             if (item.childStatusId == 4) {
-                                                return <Picker.Item key={item.childStatusId} label={'Exit'} value={item.childStatusId} />
+                                                console.log('insdie if');
+                                                return <Picker.Item key= '4' label={'Exit'} value='4' />
                                             } else if (item.childStatusId == 5) {
                                                 return <Picker.Item key={item.childStatusId} label={'Present'} value={item.childStatusId} />
                                             }

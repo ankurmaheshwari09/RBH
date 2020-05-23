@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { createStackNavigator } from 'react-navigation-stack';
-import { createAppContainer } from 'react-navigation'
+import { createStackNavigator, StackNavigator} from 'react-navigation-stack';
+import { createAppContainer} from 'react-navigation'
 
 import EducationScreen from '../screens/EducationScreen';
 import StatusScreen from '../screens/StatusScreen';
@@ -22,6 +22,8 @@ import CommunicationScreen from '../screens/CommunicationScreen';
 import FamilyInfoNavigation from './FamilyInfoNavigation';
 import CommunicationInfoNavigation from './CommunicationInfoNavigation';
 import childResultScreen from '../screens/ChildResultScreen';
+import TestScreen from '../screens/TestScreen';
+import HomeScreen from '../screens/HomeScreen';
 
 
 
@@ -42,7 +44,10 @@ import childResultScreen from '../screens/ChildResultScreen';
 
 
 const screens = {
-    ViewChild: {
+    Home: {
+        screen: HomeScreen,
+    },
+    ChildList: {
         screen: ChildList,
     },
     Education: {
@@ -75,10 +80,14 @@ const screens = {
     childresult: {
         screen: childResultScreen,
     },
-
+    Test: {
+        screen: TestScreen
+    }
+   
 };
 
 
-const HomeStack = createStackNavigator(screens, { headerMode: 'none' });
 
-export default createAppContainer(HomeStack)
+const HomeStack = createStackNavigator(screens, { headerMode: 'none'});
+
+export default createAppContainer(HomeStack);

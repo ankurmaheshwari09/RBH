@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, ToolbarAndroid, Button, FlatList, Image, Dimensions } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ToolbarAndroid, Button, FlatList, Image, Dimensions, BackHandler, Alert } from 'react-native'
 import { Card, CardImage, CardContent } from 'react-native-cards'
 import Modal from 'react-native-modal';
 import { SearchBar } from 'react-native-elements';
@@ -9,10 +9,13 @@ import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { getOrgId } from '../constants/LoginConstant';
 import { Ionicons } from '@expo/vector-icons';
 import { base_url, getDataAsync } from '../constants/Base';
+import { NavigationEvents } from 'react-navigation';
+import { NavigationActions, StackActions } from 'react-navigation';
 
 export default class ChildList extends Component {
     constructor(props) {
         super(props);
+       // console.log(this.props.navigation.dangerouslyGetParent(),'hhhhh');
         this.state = {
             dataSource: {},
             isVisible: false,
@@ -29,7 +32,7 @@ export default class ChildList extends Component {
                 { key: 'Status', page: 'ChildStatus' },
                 { key: 'Health', page: 'Health' },
                 { key: 'Education', page: 'Education' },
-                { key: 'Childresult', page: 'childresult' },
+                { key: 'Childresult', page: 'childresult' },    
                 { key: 'Family', page: 'Family' },
                 { key: 'Communication', page: 'Communication' },
                 { key: 'General Info', page: 'GeneralInfo' },
@@ -37,7 +40,10 @@ export default class ChildList extends Component {
                 { key: 'Committee', page: 'Committee' },
                 { key: 'Follow Up', page: 'FollowUpBy' },
             ],
-            modalItemsForCurrentItem: null
+            modalItemsForCurrentItem: null,
+            test: props.screenProps,
+            render: true
+            
         };
         this.arrayholder = [];
         this.onPress = this.onPress.bind(this);
@@ -51,20 +57,83 @@ export default class ChildList extends Component {
         this.getModalItems = this.getModalItems.bind(this);
         this.checkStatusDateExpired = this.checkStatusDateExpired.bind(this);
         this.getAddedData = this.getAddedData.bind(this);
+        this.refresh = this.refresh.bind(this);
+        this.reset = true;
+        this.counter = 0;
       //  this.setStyles = this.setStyles.bind(this);
         // this.show =this.show.bind(this);
     }
     async componentDidMount() {
+       // alert("----in mount----");
+        this.counter = 1;
         await this.getData();
+       /* this.focusListener = this.props.navigation.addListener('didFocus', () => {
+            this.onFocusFunction()
+        })*/
+        BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
+    }
+    onFocusFunction() {
+        alert("focused")
+        console.log("focused")
+    }
+   /* DidUpdate(props) {
+      component  alert("in receive");
+    }*/
+
+    static getDerivedStateFromProps(props, state) {
+        //alert(props.screenProps);
+        return null;
     }
 
+    refresh() {
+        this.reset = false;
+       // this.props.navigation.goBack();
+    const actionToDispatch = (StackActions.reset(
+                {
+                    index: 0,
+                    key: null,
+                    actions: [
+                      
+                        NavigationActions.navigate({ routeName: 'Test' }),
+                        NavigationActions.navigate({ routeName: 'ChildList' })
+                        
+                    ]
+            }));
+        console.log(actionToDispatch, 'lllllll');
+        this.props.navigation.dispatch(actionToDispatch);
+    }
+
+    onBackButtonPressAndroid = () => {
+        console.log(this.reset, 'oooooooooo');
+        if (this.reset) { 
+            /*Alert.alert(
+                'Child',
+                this.state.submitAlertMessage,
+                [
+                    { text: 'OK', onPress: () => { this.setState({reset: false}) } },
+                ]
+              
+            );*/
+           // this.props.navigation.dispatch(StackActions.popToTop());
+          //  this.props.navigation.dispatch(StackActions.pop(1));
+//this.refresh();
+            //    this.setState({ reset: false })
+            
+        return false;
+        }
+        return false;
+    }
 
     componentWillUnmount() {
+      //  alert("----in unmount----");
         this.setState({
             loading: false,
             search: null,
             errorDisplay: false
         });
+       // this.focusListener.remove();
+        this.counter = 0;
+        BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
     }
 
     // This function adds a new property to object
@@ -93,7 +162,7 @@ export default class ChildList extends Component {
                     let b = new Date(dm1);
                     let diffInDate = b - a;
                     let daysTillToday = Math.floor(diffInDate / (1000 * 60 * 60 * 24));
-                    console.log(daysTillToday, childData.childNo, 'daysTillToday');
+                 //   console.log(daysTillToday, childData.childNo, 'daysTillToday');
                     if (daysTillToday >= 365) {
                         childData.changeProfile = true;
                         this.setState({ checkProfileAlert: true });
@@ -201,6 +270,7 @@ export default class ChildList extends Component {
     }
     renderHeader = () => {
         return (
+            <View>
             <SearchBar
                 placeholder="Type Here..."
                 lightTheme
@@ -208,9 +278,23 @@ export default class ChildList extends Component {
                 onChangeText={text => this.searchFilterFunction(text)}
                 value={this.state.search}
 
-            />
+                />
+                <Button onPress={() => { this.call() }} title="Refresh"></Button>
+            </View>
         );
     };
+  
+    shoudlrefreshScreen() {
+        console.log(this.counter, 'counter');
+        console.log(this.props.screenProps, 'addChild');
+        if (this.props.screenProps && this.counter === 1) {
+            this.call();
+            return 'New Cjild Added';
+        } else {
+            return null;
+        }
+       // return this.props.screenProps;
+    }
 
     getStyles(status, childMap, childNo) {
        
@@ -246,7 +330,7 @@ export default class ChildList extends Component {
         
         let date = childMap.map((item) => {
             if (item.childStatusID.childStatus == status) {
-                console.log(item.csmid, 'id');
+               // console.log(item.csmid, 'id');
                 return moment(item.childStatusDate).format('YYYY-MM-DD');
             } else {
                 return '';
@@ -267,7 +351,7 @@ export default class ChildList extends Component {
         // To calculate the no. of days between two dates 
         var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24); 
 
-        console.log(Difference_In_Days);
+       // console.log(Difference_In_Days);
 
         return Difference_In_Days;
     }
@@ -282,7 +366,7 @@ export default class ChildList extends Component {
 
     getImageUri(picture,gender) {
        
-        console.log(picture);
+       // console.log(picture);
         if (picture === null || picture === "") {
             if (gender === 1) {
                 return require('../assets/girl.jpg');
@@ -301,8 +385,12 @@ export default class ChildList extends Component {
             return styles.image;
         }
     }
-    render() {
 
+    async call() {
+        await this.getData();
+    }
+    render() {
+      //  {this.state.reneder ? this.}
         return (
             <View style={styles.MainContainer}>
                 <LoadingDisplay loading={this.state.loading} />
@@ -374,6 +462,7 @@ export default class ChildList extends Component {
                         />
                     </View>
                 </Modal>
+                <NavigationEvents onDidFocus={() => console.log('I am triggered')} />
             </View>
         );
     }

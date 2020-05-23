@@ -8,18 +8,19 @@ import ChildList from "../components/ChildList";
 
 export default class Screen extends Component {
 
+
     render () {
         return (
             <View style={styles.container}>
                 <View>
                     <CustomHeader title="Rainbow Homes" navigation={this.props.navigation}/>
                 </View>
-
+                
                     {/* { presentScreen } */}
                     {/* <Text>Hello</Text> */}
                     {/* <HomeScreen /> */}
                     {/*<ChildList></ChildList>*/}
-                    <PresentScreen screen={this.props.screen} navigation={this.props.navigation}/>
+                <PresentScreen screen={this.props.screen} navigation={this.props.navigation} extraProps={this.props.navigation.getParam('nav')}/>
 
 
             </View>

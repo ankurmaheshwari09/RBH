@@ -14,7 +14,7 @@ import { SuccessDisplay } from "../utils/SuccessDisplay";
 //import communicationConstants from '../constants/CommunicationConstants';
 
 const CommunicationFormSchema = yup.object({
-    PresentLocalAddress: yup.string().required(),
+
     Area: yup.string().required(),
     Country: yup.string().required(),
     State: yup.string().required(),

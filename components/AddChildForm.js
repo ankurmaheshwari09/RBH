@@ -11,7 +11,7 @@ import moment from 'moment';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import {base_url,getDataAsync} from '../constants/Base';
 import { ActivityIndicator } from 'react-native';
-import { getOrgId } from '../constants/LoginConstant';
+import { getOrgId, callList } from '../constants/LoginConstant';
 
 const AddChildSchema = yup.object({
     // ChildPhoto: yup.object(),
@@ -193,7 +193,8 @@ export default class AddChild extends React.Component{
     componentDidMount() {
         this.addChildConstants();
         let orgId = getOrgId();
-        this.setState({orgid: orgId});
+        this.setState({ orgid: orgId });
+       
     }
 
     _submitAddChildForm(values) {
@@ -234,7 +235,7 @@ export default class AddChild extends React.Component{
                 'Added Child',
                 this.state.submitAlertMessage,
                 [
-                    { text: 'OK', onPress: () => this.props.navigation.goBack() },
+                    { text: 'OK', onPress: () => { callList(); this.props.navigation.goBack() } },
                 ],
                 { cancelable: false },
             );
@@ -264,8 +265,6 @@ export default class AddChild extends React.Component{
         
         return (
             <View style = {addChildStyles.container}>
-                
-
                 <Formik
                 initialValues = {
                     {

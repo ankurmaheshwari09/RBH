@@ -12,5 +12,9 @@ export function setOrgId(id) {
 }
 
 export function logOut() {
-	EventRegister.emit('logoutEvent',' Logging out ');
+    EventRegister.emit('logoutEvent', ' Logging out ');
+}
+
+export function callList() {
+    EventRegister.emit('addSuccess', ' getting list ');
 }
