@@ -12,11 +12,18 @@ export const globalStyles = StyleSheet.create({
             marginTop: 10
         },
     input: {
-        borderWidth: 3,
-        borderColor: '#ddd',
+        borderWidth: 1,
+        borderColor: '#000000',
         padding: 20,
         fontSize: 18,
         borderRadius: 6
+    },
+    touchableBox: {
+        padding: 10,
+        fontSize: 18,
+        borderRadius: 6,
+        backgroundColor: '#fafafa',
+        marginBottom: 1
     },
     inputform: {
             borderWidth: 3,
@@ -46,7 +53,7 @@ export const globalStyles = StyleSheet.create({
         fontSize: 18,
         borderRadius: 6,
         marginBottom: 1,
-
+        flexWrap: 'wrap'
     },
     text: {
         padding: 10,
