@@ -6,6 +6,7 @@ import {Feather} from '@expo/vector-icons';
 import {Formik} from 'formik';
 import {globalStyles} from '../styles/global';
 import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
 import * as yup from 'yup';
 import moment from 'moment';
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -17,6 +18,7 @@ import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
+//import RNFetchBlob from 'rn-fetch-blob'
 
 const EditChildSchema = yup.object({
     // ChildPhoto: yup.object(),
@@ -118,20 +120,23 @@ export default class EditChild extends React.Component{
         errorDisplay: false,
         loading: false,
         isVisible: false,
-        photoUploadMessage: '',
-        img: ''
+        photoUploadMessage: ''
     };
 
     async _pickImage (handleChange) {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: true,
-            aspect: [3, 3],
-        });
-        console.log(result);
-        if (!result.cancelled) {
-            this.setState({ image: result.uri });
-            this.setState({img: result})
-            handleChange(result.uri)
+        const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+        if( status == 'granted'){
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1
+            });
+            console.log(result);
+            if (!result.cancelled) {
+                this.setState({ image: result.uri });
+                handleChange(result.uri)
+            }
         }
     }
 
@@ -200,39 +205,43 @@ export default class EditChild extends React.Component{
         let photoUrl = base_url+"/upload-image/"+child.childNo;
         console.log(photoUrl);
         let imageUri = ''
-        let height = 0
-        let width = 0
         if(this.state.image == null) {
             imageUri= ''
         }
         else {
             imageUri = this.state.image;
-            // height = this.state.image.height
-            // width = this.state.image.width
         }
-        console.log(imageUri);
-        let filename = imageUri.split('/').pop();
-        let match = /\.(\w+)$/.exec(filename);
-        let type = match ? `image/${match[1]}` : `image`;
-        let formData = new FormData();
-        formData.append('file', { uri: imageUri, name: filename, type });
-        fetch(photoUrl, {
-            method: 'PUT',
-            body: formData,
-            headers: {
-                'content-type': 'multipart/form-data',
-            }
-        }).then((response) => {
-            console.log('--------------------------')
+        
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "multipart/form-data;boundary=----WebKitFormBoundaryyEmKNDsBKjB7QEqu");
+        var formdata = new FormData();
+        formdata.append("file", {
+            uri: imageUri,
+            name: `photo.jpg`,
+            type: `image/jpg`
+          });
+        var requestOptions = {
+        method: 'PUT',
+        body: formdata,
+        headers: myHeaders,
+        };
+
+        fetch(photoUrl, requestOptions)
+        .then((response) => {
             console.log(response.status)
             if(response.status == 200){
-                console.log(response)
-                this.setState({ successDisplay: true });
+                this.setState({ loading: false, isVisible: true });
+                this.setState({successDisplay: true})    
             }
             else{
+                this.setState({ loading: false, isVisible: true });
+                this.setState({ errorDisplay: true });
                 throw Error(response.status);
             }
-        })
+        }).catch(error => {
+            this.setState({ loading: false, isVisible: true });
+            this.setState({ errorDisplay: true });
+        });
     }
 
     _submitEditChildForm(values) {
@@ -257,20 +266,19 @@ export default class EditChild extends React.Component{
         UpdateApi.updateData(JSON.stringify(child), path).then((response) => {
             if(response.ok){
                 response.json().then((res) => {
-                    this.setState({ loading: false, isVisible: true });
-                    console.log(res)
-                    //this.uploadImage(child)
-                    this.setState({ successDisplay: true });
+                    this.uploadImage(child)
                 }).catch(error => {
-                    console.log(error, 'ffff');
+                    this.setState({ loading: false, isVisible: true });
                     this.setState({ errorDisplay: true });
                 });
             }
             else{
+                this.setState({ loading: false, isVisible: true });
+                this.setState({ errorDisplay: true });
                 throw Error(response.status);
             }
         }).catch(error => {
-            console.log(error, 'ffff');
+            this.setState({ loading: false, isVisible: true });
             this.setState({ errorDisplay: true });
         });
     }
@@ -426,7 +434,7 @@ export default class EditChild extends React.Component{
                                     <Picker.Item label='Select Community' value = ''/>
                                     {
                                         global.communities.map((item) => {
-                                            return <Picker.Item key = {item.communityId} label = {item.community} value = {item.communityId}/>
+                                            return <Picker.Item label = {item.community} value = {item.communityId}/>
                                         })
                                     }
                                 </Picker>
@@ -444,7 +452,7 @@ export default class EditChild extends React.Component{
                                     <Picker.Item label='Select Mother Tongue' value = ''/>
                                     {
                                         global.motherTongues.map((item) => {
-                                            return <Picker.Item key = {item.motherTongueId} label = {item.motherTongue} value = {item.motherTongueId}/>
+                                            return <Picker.Item label = {item.motherTongue} value = {item.motherTongueId}/>
                                         })
                                     }
                                 </Picker>
@@ -462,7 +470,7 @@ export default class EditChild extends React.Component{
                                     <Picker.Item label='Select Parental Status' value = ''/>
                                     {
                                         global.parentalStatusList.map((item) => {
-                                            return <Picker.Item key = {item.parentalStatusId} label = {item.parentalStatus} value = {item.parentalStatusId}/>
+                                            return <Picker.Item label = {item.parentalStatus} value = {item.parentalStatusId}/>
                                         })
                                     }
                                 </Picker>
@@ -480,7 +488,7 @@ export default class EditChild extends React.Component{
                                     <Picker.Item label='Select Reason For Admission' value = ''/>
                                     {
                                         global.admissionReasons.map((item) => {
-                                            return <Picker.Item key = {item.reasonForAdmissionId} label = {item.reasonForAdmission} value = {item.reasonForAdmissionId}/>
+                                            return <Picker.Item label = {item.reasonForAdmission} value = {item.reasonForAdmissionId}/>
                                         })
                                     }
                                 </Picker>
@@ -498,7 +506,7 @@ export default class EditChild extends React.Component{
                                     <Picker.Item label='Select Previous Education Status' value = ''/>
                                     {
                                         global.educationStatusList.map((item) => {
-                                            return <Picker.Item key = {item.educationStatusId} label = {item.educationStatus} value = {item.educationStatusId}/>
+                                            return <Picker.Item label = {item.educationStatus} value = {item.educationStatusId}/>
                                         })
                                     }
                                 </Picker>
@@ -516,7 +524,7 @@ export default class EditChild extends React.Component{
                                     <Picker.Item label='Select Admitted By' value = ''/>
                                     {
                                         global.homeStaffList.map((item) => {
-                                            return <Picker.Item key = {item.staffNo} label = {item.firstName + ' ' + item.lastName} value = {item.staffNo}/>
+                                            return <Picker.Item label = {item.firstName + ' ' + item.lastName} value = {item.staffNo}/>
                                         })
                                     }
                                 </Picker>
@@ -561,7 +569,7 @@ export default class EditChild extends React.Component{
                                     <Picker.Item label='Select Referred Source' value = ''/>
                                     {
                                         global.referralSourcesList.map((item) => {
-                                            return <Picker.Item key = {item.referralSourceId} label = {item.referralSource} value = {item.referralSourceId}/>
+                                            return <Picker.Item label = {item.referralSource} value = {item.referralSourceId}/>
                                         })
                                     }
                                 </Picker>

@@ -28,7 +28,13 @@
     },
     "android": {
       "versionCode": 1,
-      "package": "com.dummy.RBH"
+      "package": "com.dummy.RBH",
+      "permissions": [
+        "CAMERA",
+        "READ_INTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     }
   }
 }

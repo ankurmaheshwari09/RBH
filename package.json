@@ -42,7 +42,8 @@
     "react-navigation-drawer": "^2.4.1",
     "react-navigation-stack": "^2.2.3",
     "react-select": "^3.1.0",
-    "yup": "^0.28.1"
+    "yup": "^0.28.1",
+    "expo-permissions": "~8.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
