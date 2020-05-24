@@ -111,7 +111,7 @@ export default class PrevEduForm extends React.Component{
                                     showsVerticalScrollIndicator = {false}
                                 >
                                     <View>
-                                        <Text style = {globalStyles.text}>Drop Out Reason</Text>
+                                        <Text style = {globalStyles.text}>Drop Out Reason:</Text>
                                         <Text style = {globalStyles.errormsg}>{ props.touched.dropoutReason && props.errors.dropoutReason }</Text>
                                         <TextInput
                                         style = {globalStyles.inputText}
@@ -119,7 +119,7 @@ export default class PrevEduForm extends React.Component{
                                         value = {props.values.dropoutReason}
                                         />
 
-                                        <Text style = {globalStyles.text}>Year Of Studied</Text>
+                                        <Text style = {globalStyles.text}>Year Of Studied:</Text>
                                         <Text style = {globalStyles.errormsg}>{ props.touched.yearOfStudied && props.errors.yearOfStudied }</Text>
                                         <TextInput
                                         style = {globalStyles.inputText}
@@ -127,7 +127,7 @@ export default class PrevEduForm extends React.Component{
                                         value = {props.values.yearOfStudied}
                                         />
 
-                                        <Text style = {globalStyles.text}>Medium</Text>
+                                        <Text style = {globalStyles.text}>Medium:</Text>
                                         <Text style = {globalStyles.errormsg}>{ props.touched.medium && props.errors.medium }</Text>
                                         <Picker
                                         selectedValue = {props.values.medium}
@@ -143,7 +143,7 @@ export default class PrevEduForm extends React.Component{
                                     
                                         </Picker>
 
-                                        <Text style = {globalStyles.text}>School Name</Text>
+                                        <Text style = {globalStyles.text}>School Name:</Text>
                                         <Text style = {globalStyles.errormsg}>{ props.touched.schoolName && props.errors.schoolName }</Text>
                                         <TextInput
                                         style = {globalStyles.inputText}
@@ -151,7 +151,7 @@ export default class PrevEduForm extends React.Component{
                                         value = {props.values.schoolName}
                                         />
 
-                                        <Text style = {globalStyles.text}>School Type</Text>
+                                        <Text style = {globalStyles.text}>School Type:</Text>
                                         <Text style = {globalStyles.errormsg}>{ props.touched.schooltype && props.errors.schooltype }</Text>
                                         <Picker
                                         selectedValue = {props.values.schooltype}
@@ -167,7 +167,7 @@ export default class PrevEduForm extends React.Component{
                                     
                                         </Picker>
 
-                                        <Text style = {globalStyles.text}>Class</Text>
+                                        <Text style = {globalStyles.text}>Class:</Text>
                                         <Text style = {globalStyles.errormsg}>{ props.touched.class && props.errors.class }</Text>
                                         <Picker
                                         selectedValue = {props.values.class}
@@ -183,7 +183,7 @@ export default class PrevEduForm extends React.Component{
                                     
                                         </Picker>
 
-                                        <Text style = {globalStyles.text}>School Place</Text>
+                                        <Text style = {globalStyles.text}>School Place:</Text>
                                         <Text style = {globalStyles.errormsg}>{ props.touched.schoolPlace && props.errors.schoolPlace }</Text>
                                         <TextInput
                                         style = {globalStyles.inputText}
