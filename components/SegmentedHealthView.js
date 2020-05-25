@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import ChildMedicalTreatment from './ChildMedicalTreatment';
 import ChildGrowthForm from './ChildGrowthForm';
@@ -22,33 +21,29 @@ constructor(props) {
 //  health_child_No;
 //  health_child_No = this.props.navigation.getParam('child').childNo;
 
-    handleCustomIndexSelect = (index) => {
-      this.setState(prevState => ({ ...prevState, customStyleIndex: index }))
-    }
-
     render() {
       const {customStyleIndex } = this.state
               return (
                 <View style = {globalStyles.container}>
-                  <View style = {{height: 50}}>
+                  <View style = {globalStyles.segView}>
                   <ScrollView
                     horizontal = {true}
                     showsHorizontalScrollIndicator = {false}
-                    style = {{height:10}}
+                    style = {globalStyles.segScrollView}
                   >
                     <View>
                       <TouchableOpacity style = {{borderBottomWidth: this.state.customStyleIndex == 0 ? 3 : 0 ,borderBottomColor: this.state.customStyleIndex == 0 ? 'grey' : '#f0f0f0'}} onPress = {() => this.setState({customStyleIndex: 0})}>
-                        <Text style = {{fontSize:20, paddingLeft: 10, paddingRight: 20, paddingTop:20}}>ChildGrowthForm</Text>
+                        <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:20}}>ChildGrowthForm</Text>
                       </TouchableOpacity>
                     </View>
                     <View>
                       <TouchableOpacity style = {{borderBottomWidth: this.state.customStyleIndex == 1 ? 3 : 0 ,borderBottomColor: this.state.customStyleIndex == 1 ? 'grey' : '#f0f0f0'}} onPress = {() => this.setState({customStyleIndex: 1})}>
-                        <Text style = {{fontSize:20, paddingLeft: 10, paddingRight: 20, paddingTop:20}}>ChildMedicalTreatment</Text>
+                        <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:20}}>ChildMedicalTreatment</Text>
                       </TouchableOpacity>
                     </View>
                     <View>
                        <TouchableOpacity style = {{borderBottomWidth: this.state.customStyleIndex == 2 ? 3 : 0 ,borderBottomColor: this.state.customStyleIndex == 2 ? 'grey' : '#f0f0f0'}} onPress = {() => this.setState({customStyleIndex: 2})}>
-                         <Text style = {{fontSize:20, paddingLeft: 10, paddingRight: 20, paddingTop:20}}>ChildHealthCheckList</Text>
+                         <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:20}}>ChildHealthCheckList</Text>
                        </TouchableOpacity>
                     </View>
                   </ScrollView>
