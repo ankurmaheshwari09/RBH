@@ -1,17 +1,22 @@
-import {StyleSheet,Dimensions} from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 export const globalStyles = StyleSheet.create({
+    maincontainer: {
+        flex: 1,
+        padding: 15,
+        backgroundColor: '#f0f0f0'
+    },
     container: {
         flex: 1,
         padding: 20,
         backgroundColor: 'white',
     },
     formcontainer: {
-            flex: 1,
-            padding: 20,
-            backgroundColor: '#fff',
-            marginTop: 10
-        },
+        flex: 1,
+        padding: 20,
+        backgroundColor: '#fff',
+        marginTop: 10
+    },
     input: {
         borderWidth: 1,
         borderColor: '#000000',
@@ -27,14 +32,14 @@ export const globalStyles = StyleSheet.create({
         marginBottom: 1
     },
     inputform: {
-            borderWidth: 3,
-            borderColor: '#ddd',
-            padding: 20,
-            fontSize: 18,
-            borderRadius: 6,
-            marginLeft: 10,
-            marginRight: 15,
-        },
+        borderWidth: 3,
+        borderColor: '#ddd',
+        padding: 20,
+        fontSize: 18,
+        borderRadius: 6,
+        marginLeft: 10,
+        marginRight: 15,
+    },
     inputText: {
         borderWidth: 1,
         // borderColor: '#ddd',
@@ -110,7 +115,7 @@ export const globalStyles = StyleSheet.create({
         fontSize: 10,
     },
     keyboardavoid: {
-        flex: 1, 
+        flex: 1,
         flexDirection: 'column',
         justifyContent: 'center'
     },
@@ -135,7 +140,7 @@ export const globalStyles = StyleSheet.create({
         justifyContent: 'center'
     },
     homeView: {
-        flex:1,
+        flex: 1,
         padding: 10,
         alignItems: 'center',
         justifyContent: 'space-around'
@@ -155,33 +160,33 @@ export const globalStyles = StyleSheet.create({
         fontSize: 15,
     },
     errormsgform: {
-            padding: 1,
-            color: 'crimson',
-            fontWeight: 'bold',
-            fontSize: 10,
-            marginLeft: 10,
-            marginRight: 15
-        },
+        padding: 1,
+        color: 'crimson',
+        fontWeight: 'bold',
+        fontSize: 10,
+        marginLeft: 10,
+        marginRight: 15
+    },
     scrollContainer: {
         flex: 1,
         padding: 5
     },
-    segScrollView:{
+    segScrollView: {
         height: 0
     },
     segView: {
         height: 50
     },
-    spinnerTextStyle:{
+    spinnerTextStyle: {
         color: '#FF0000'
     },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',   
+        alignItems: 'center',
         alignSelf: 'center',
         backgroundColor: 'white',
-        width: Dimensions.get('window').width /2 + 50,
+        width: Dimensions.get('window').width / 2 + 50,
         maxHeight: Dimensions.get('window').height / 4,
         top: 150,
         borderRadius: 30
@@ -253,5 +258,12 @@ export const globalStyles = StyleSheet.create({
         borderRadius: 6,
         marginBottom: 5,
         fontSize: 14,
+    },
+    Header: {
+        padding: 5,
+        textAlign: "center",
+        color: '#000000',
+        fontSize: 25,
+        borderBottomColor: '#000000'
     },
 });
