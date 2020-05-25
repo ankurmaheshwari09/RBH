@@ -3,7 +3,7 @@ import {
     Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView
 } from 'react-native';
 import { Formik } from 'formik';
-import { globalStyles } from '../styles/samplestyles';
+import { globalStyles } from '../styles/global';
 import UpdateApi from "../constants/UpdateApi";
 import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
@@ -47,12 +47,14 @@ export default class ChildResultScreen extends React.Component {
 
     }
     componentWillUnmount() {
-        const { params } = this.props.navigation.state;
-        params.refreshChildList();
+        if (this.state.successDisplay) {
+            const { params } = this.props.navigation.state;
+            params.refreshChildList();
+        }
 
     }
     render() {
-        return (<View style={globalStyles.container1}>
+        return (<View style={globalStyles.maincontainer}>
             <Text style={globalStyles.Header}>Exam Results:</Text>
             <Text> Child Name: {this.state.child.firstName}</Text>
             <View style={globalStyles.container}>
