@@ -33,17 +33,17 @@ constructor(props) {
                   >
                     <View>
                       <TouchableOpacity style = {{borderBottomWidth: this.state.customStyleIndex == 0 ? 3 : 0 ,borderBottomColor: this.state.customStyleIndex == 0 ? 'grey' : '#f0f0f0'}} onPress = {() => this.setState({customStyleIndex: 0})}>
-                        <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:20}}>ChildGrowthForm</Text>
+                        <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:20}}>Child Growth Form</Text>
                       </TouchableOpacity>
                     </View>
                     <View>
                       <TouchableOpacity style = {{borderBottomWidth: this.state.customStyleIndex == 1 ? 3 : 0 ,borderBottomColor: this.state.customStyleIndex == 1 ? 'grey' : '#f0f0f0'}} onPress = {() => this.setState({customStyleIndex: 1})}>
-                        <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:20}}>ChildMedicalTreatment</Text>
+                        <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:20}}>Child Medical Treatment</Text>
                       </TouchableOpacity>
                     </View>
                     <View>
                        <TouchableOpacity style = {{borderBottomWidth: this.state.customStyleIndex == 2 ? 3 : 0 ,borderBottomColor: this.state.customStyleIndex == 2 ? 'grey' : '#f0f0f0'}} onPress = {() => this.setState({customStyleIndex: 2})}>
-                         <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:20}}>ChildHealthCheckList</Text>
+                         <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:20}}>Child Health CheckList</Text>
                        </TouchableOpacity>
                     </View>
                   </ScrollView>
