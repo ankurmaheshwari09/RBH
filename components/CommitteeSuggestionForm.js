@@ -4,7 +4,7 @@ import {
     KeyboardAvoidingView, Field, StyleSheet
 } from 'react-native';
 import { Formik } from 'formik';
-import { globalStyles } from '../styles/samplestyles';
+import { globalStyles } from '../styles/global';
 import * as yup from 'yup';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -97,12 +97,23 @@ export default class CommitteeScreen extends React.Component {
             
     };
 
-    populateSelectedStaff = (committeeStaff) => {
-       let submitted = [];
-       for(var i=0; i< committeeStaff.length;i++){
-        submitted = this.state.updateSelectedStaff.concat(committeeStaff[i].staffNo);
-       }
-       this.setState({selectedStaff: submitted});
+    populateSelectedStaff = () => {
+    //    let submitted = [];
+    //    for(var i=0; i< committeeStaff.length;i++){
+    //     submitted = submitted.concat(committeeStaff[i].staffNo);
+    //    }
+    //    this.setState({staffMembers: submitted});
+     return this.state.staffMembers.map((member) => {
+        if(this.state.updateSelectedStaff.includes(member.staffNo)){    
+                member.isSelected = true;
+                console.log('true');
+        }
+        else{
+                member.isSelected = false;     
+                console.log('false');
+        }
+        return member;
+        });  
     } 
 
 
@@ -148,9 +159,9 @@ export default class CommitteeScreen extends React.Component {
                     suggestion: responseJson1[0].committeeSuggestionText,
                     meetingdate: formatted_date,
                     updateSelectedStaff: responseJson1[0].staffNumber});
-                    console.log(this.state.suggestion, 'state suggestion');
                    
-                //this.populateSelectedStaff(updateSelectedStaff);
+                console.log(this.state.suggestion,'state suggestion');  
+                console.log(this.populateSelectedStaff(),'populate');
              }
     });
     }
@@ -229,7 +240,7 @@ export default class CommitteeScreen extends React.Component {
 
     render() {
         console.log('calling render',this.state.suggestion);
-        return (<View style={globalStyles.container1}>
+        return (<View style={globalStyles.formcontainer}>
             <View style={globalStyles.container}>
                 <Formik     
                    enableReinitialize
@@ -268,9 +279,9 @@ export default class CommitteeScreen extends React.Component {
                 <ScrollView>
 
                     <View>
-                        <Text style={globalStyles.text}>Child Name : {this.state.child.firstName}</Text>
-                                             
-                        <Text style={globalStyles.text}>Select Date:</Text>
+                        <Text style={globalStyles.label}>Child Name : {this.state.child.firstName}</Text>
+                        <Text style={globalStyles.padding}></Text>                   
+                        <Text style={globalStyles.label}>Select Meeting Date:</Text>
                         <View style={globalStyles.dobView}>
                             <TextInput
                                 style={globalStyles.inputText, globalStyles.dobValue}
@@ -295,10 +306,10 @@ export default class CommitteeScreen extends React.Component {
                             <Text style={globalStyles.errormsg}>{props.touched.MeetingDate && props.errors.MeetingDate}</Text>
                             </View>
 
-                        <Text style={globalStyles.text}>Enter/Update Suggestion:</Text>
+                        <Text style={globalStyles.label}>Enter/Update Suggestion:</Text>
                         <Text style={globalStyles.errormsg}>{props.touched.Suggestion && props.errors.Suggestion}</Text>
                         <TextInput
-                            style={globalStyles.input}
+                            style={globalStyles.inputText}
                             onChangeText={props.handleChange('Suggestion')}
                             //onChangeText={(Suggestion)=> { props.setFieldValue('Suggestion', Suggestion) }}
                             value={props.values.Suggestion}
