@@ -16,6 +16,7 @@ import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'reac
 import Modal from 'react-native-modal';
 import { Ionicons } from '@expo/vector-icons';
 import * as Permissions from 'expo-permissions';
+import {guidGenerator} from '../constants/Base';
 
 const AddChildSchema = yup.object({
     // ChildPhoto: yup.object(),
@@ -358,7 +359,7 @@ export default class AddChild extends React.Component{
                 imageUri = this.state.image;
             }
             var formdata = new FormData();
-            formdata.append('file', { uri: imageUri, name: `${responseJson.childNo}.jpg`, type: 'image/jpg' });
+            formdata.append('file', { uri: imageUri, name: `${guidGenerator()}.jpg`, type: 'image/jpg' });
             console.log(imageUri);
             fetch(photoUrl, {
                 method: 'PUT',
