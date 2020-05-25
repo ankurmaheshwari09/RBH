@@ -4,7 +4,7 @@ import {
     KeyboardAvoidingView, Field,
 } from 'react-native';
 import { Formik } from 'formik';
-import { globalStyles } from '../styles/samplestyles';
+import {globalStyles} from '../styles/global';
 import * as yup from 'yup';
 import moment from 'moment';
 import {base_url,getDataAsync} from '../constants/Base';
@@ -149,7 +149,7 @@ export default class ViewProfile extends React.Component {
     }
 
     render() {
-        return (<View style={globalStyles.container1}>
+        return (<View style={globalStyles.formcontainer}>
             <View style={globalStyles.container}>
                 <Formik
                 enableReinitialize
@@ -185,10 +185,11 @@ export default class ViewProfile extends React.Component {
 
                 <View>
                     
-                    <Text style={globalStyles.text}>Child Name : {this.state.child.firstName}</Text>
-                    <Text style={globalStyles.text}>Enter/Update Description about child:</Text>
+                    <Text style={globalStyles.label}>Child Name : {this.state.child.firstName}</Text>
+                    <Text style={globalStyles.padding}></Text>
+                    <Text style={globalStyles.label}>Enter/Update Description about child:</Text>
                     <TextInput
-                        style={globalStyles.input}
+                        style={globalStyles.inputText}
                         onChangeText={props.handleChange('Description')}
                         value={props.values.Description}
                         multiline={true}
