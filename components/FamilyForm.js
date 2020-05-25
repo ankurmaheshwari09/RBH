@@ -11,6 +11,9 @@ import { Card, CardContent } from 'react-native-cards'
 import { MaterialIcons } from '@expo/vector-icons';
 import { Item } from 'native-base';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
 
 const FamilyFormSchema = yup.object({
     Name: yup.string().required(),
@@ -40,6 +43,9 @@ export default class FamilyForm extends React.Component {
         child: this.props.navigation.getParam('child'),
         modaledit: false,
         loading: false,
+        sucessDisplay: false,
+        errorDisplay: false,
+        isVisibleMsg: false,
         viewItem:true,
         submitAlertMessage: '',
         loaderIndex: 0,
@@ -101,20 +107,9 @@ export default class FamilyForm extends React.Component {
                     loading: false,
                 });
                 //for (var i = 0; i < this.state.childFamilyList.length; i++) {
-                    var initial = 0;
-                    var len = this.state.childFamilyList.length;
+                
               
-                while (initial < len) {
-                    console.log(".........", this.state.childFamilyList[initial]);
-                    console.log(".........", this.state.childFamilyList[initial].deletestatus);
-                    console.log(".........", this.state.afterDeleteStatus);
-                    if (this.state.childFamilyList[initial].deletestatus == this.state.afterDeleteStatus) {
-                        console.log("deleted", this.state.childFamilyList[initial].familyNo);
-                        this.deletedValues = this.deletedValues.concat(this.state.childFamilyList[initial].familyNo);
-                        console.log("deleted array values", this.deletedValues);
-                    }
-                    initial++;
-                }
+               
                     console.log("ncdiuuir", this.state.childFamilyList);
                     // this.arrayholder = res;
                // }
@@ -144,7 +139,7 @@ export default class FamilyForm extends React.Component {
 
     _submitFamilyForm(values) {
         console.log("post", values);
-        this.setState({ loading: true, loaderIndex: 0 });
+        this.setState({ loading: true });
         let request_body = JSON.stringify({
             childNo: this.state.child.childNo,
             name: values.Name,
@@ -167,6 +162,7 @@ export default class FamilyForm extends React.Component {
         })
             .then((response) => response.json())
             .then((responseJson) => {
+                this.setState({ loading: false });
                 this.setState({ familyDetails: responseJson });
                 console.log("response.......", responseJson);
                
@@ -180,22 +176,24 @@ export default class FamilyForm extends React.Component {
                 })
                     .then((res) => res.json())
                     .then((resJson) => {
+                        
                         this.setState({
                             childFamilyList: resJson,
                             //display: [{ familyDisplay: this.state.childFamilyList }, { relationDisplay: this.state.relations.relation }],
                             // error: res.error || null,
                             loading: false,
                         });
-                        this.setState({ submitAlertMessage: 'Successfully added family details with family number ' + this.state.familyDetails.familyNo });
-                        alert(this.state.submitAlertMessage);
+                       // this.setState({ loading: false });
+                        this.setState({ successDisplay: true });
+                        
                         console.log("ncdiuuir", this.state.childFamilyList);
                         // this.arrayholder = res;
                     })
                     ;
             })
             .catch((error) => {
-                this.setState({ submitAlertMessage: 'Unable to add family Details. Plesae contact the Admin.' });
-                alert(this.state.submitAlertMessage);
+               // this.setState({ loading: false });
+                this.setState({ errorDisplay: true });
                 console.log(error);
                 this.setState({ loading: false, loaderIndex: 0 });
             });
@@ -247,16 +245,16 @@ export default class FamilyForm extends React.Component {
                             // error: res.error || null,
                             loading: false,
                         });
-                        this.setState({ submitAlertMessage: 'Successfully updated family with family Number ' + this.family.familyNo });
-                        alert(this.state.submitAlertMessage);
+                        this.setState({ isVisible: true });
+                        this.setState({ successDisplay: true });
                         console.log("ncdiuuir", this.state.childFamilyList);
                         // this.arrayholder = res;
                     })
                     ;
             })
             .catch((error) => {
-                this.setState({ submitAlertMessage: 'Unable to update child. Plesae contact the Admin.' });
-                alert(this.state.submitAlertMessage);
+                this.setState({ isVisible: true });
+                this.setState({ errorDisplay: true });
                 console.log(error);
                 this.setState({ loading: false, loaderIndex: 0 });
             });
@@ -270,9 +268,10 @@ export default class FamilyForm extends React.Component {
         console.log(".........id", item.familyNo);
         for (var i = 0; i < this.state.childFamilyList.length; i++) {
             console.log(".........", this.state.childFamilyList[i].familyNo);
-            if (this.state.childFamilyList[i].familyNo === item.familyNo) 
+            if (this.state.childFamilyList[i].familyNo === item.familyNo)
                 this.family = this.state.childFamilyList[i];
             console.log(".........details*", this.state.childFamilyList[i].familyNo);
+        }
             //this.setState({ initialDeleteStatus: this.state.afterDeleteStatus })
                 //this.state.childFamilyList.splice(i, 1);
                 //console.log(this.state.childFamilyList);
@@ -334,7 +333,7 @@ export default class FamilyForm extends React.Component {
                         console.log(error);
                         this.setState({ loading: false, loaderIndex: 0 });
                     });
-            }
+            
         }
         
     
@@ -361,7 +360,12 @@ export default class FamilyForm extends React.Component {
     render() {
         return (
             <View>
-
+                <Modal visible={this.state.isVisibleMsg} animationType='slide'>
+                    <View style={globalStyles.MainContainer}>
+                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='General Info' childNo={this.state.child.firstName} />
+                    </View>
+               </Modal>
                 <Modal visible={this.state.modalVisible} animationType='slide'>
                     <View style={styles.modalContent}>
                         <MaterialIcons
@@ -424,7 +428,7 @@ export default class FamilyForm extends React.Component {
                                                 <Text style={globalStyles.text}>Name</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.Name && props.errors.Name}</Text>
                                                 <TextInput
-                                                    style={globalStyles.input}
+                                                    style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Name')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Name} //value updated in 'values' is reflected here
                                                 />
@@ -447,7 +451,7 @@ export default class FamilyForm extends React.Component {
                                                 <Text style={globalStyles.text}>Age</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.Age && props.errors.Age}</Text>
                                                 <TextInput
-                                                    style={globalStyles.input}
+                                                    style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Age')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Age} //value updated in 'values' is reflected here
                                                 />
@@ -486,14 +490,14 @@ export default class FamilyForm extends React.Component {
                                                 <Text style={globalStyles.text}>Income</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.PresentLocalAddress && props.errors.PresentLocalAddress}</Text>
                                                 <TextInput
-                                                    style={globalStyles.input}
+                                                    style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Income')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Income} //value updated in 'values' is reflected here
                                                 />
                                                 <Text style={globalStyles.text}>Remarks</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.Remarks && props.errors.Remarks}</Text>
                                                 <TextInput
-                                                    style={globalStyles.input}
+                                                    style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Remarks')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Remarks} //value updated in 'values' is reflected here
                                                 />
@@ -505,10 +509,12 @@ export default class FamilyForm extends React.Component {
                                 )}
 
                             </Formik>
-
+                            
                         </View>
                     </View>
                 </Modal>
+                
+                <LoadingDisplay loading={this.state.loading} />
                 <Modal visible={this.state.modaledit} animationType='slide'>
                     <View style={styles.modalContent}>
                         <View style={globalStyles.container}>
@@ -564,7 +570,7 @@ export default class FamilyForm extends React.Component {
                                                 <Text style={globalStyles.text}>Name</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.Name && props.errors.Name}</Text>
                                                 <TextInput
-                                                    style={globalStyles.input}
+                                                    style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Name')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Name} //value updated in 'values' is reflected here
                                                 />
@@ -587,7 +593,7 @@ export default class FamilyForm extends React.Component {
                                                 <Text style={globalStyles.text}>Age</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.Age && props.errors.Age}</Text>
                                                 <TextInput
-                                                    style={globalStyles.input}
+                                                    style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Age')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Age} //value updated in 'values' is reflected here
                                                 />
@@ -626,14 +632,14 @@ export default class FamilyForm extends React.Component {
                                                 <Text style={globalStyles.text}>Income</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.PresentLocalAddress && props.errors.PresentLocalAddress}</Text>
                                                 <TextInput
-                                                    style={globalStyles.input}
+                                                    style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Income')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Income} //value updated in 'values' is reflected here
                                                 />
                                                 <Text style={globalStyles.text}>Remarks</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.Remarks && props.errors.Remarks}</Text>
                                                 <TextInput
-                                                    style={globalStyles.input}
+                                                    style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Remarks')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Remarks} //value updated in 'values' is reflected here
                                                 />
@@ -645,6 +651,7 @@ export default class FamilyForm extends React.Component {
                                 )}
 
                             </Formik>
+                          
                         </View>
                     </View>
                 </Modal>
@@ -655,20 +662,15 @@ export default class FamilyForm extends React.Component {
                     style={styles.modalToggle}
                     onPress={() => this.setModalVisible(true)}
                 />
-                <Spinner
-                    //visibility of Overlay Loading Spinner
-                    visible={this.state.loading}
-                    //Text with the Spinner 
-                    textContent={'Loading..'}
-                //Text style of the Spinner Text
-                //  textStyle={styles.spinnerTextStyle}
-                />
+                
+                
+                <View style={styles.bottom}>
                 <FlatList
                     data={this.state.childFamilyList}
                     renderItem={({ item, index }) => (
                        
                         <View style={{ flexDirection: 'column'}}>
-                            {`${item.deletestatus}` === this.state.initialDeleteStatus ?
+                           
                                 <TouchableOpacity style={styles.container} >
 
                                     {/*react-native-elements Card*/}
@@ -700,7 +702,7 @@ export default class FamilyForm extends React.Component {
                                     </Card>
 
                                 </TouchableOpacity>
-                                : null}  
+                            
 
                         </View>
                     
@@ -711,14 +713,13 @@ export default class FamilyForm extends React.Component {
                     keyExtractor={(item, index) => index.toString()}
                 //keyExtractor={this.reviews.name}
                 />
-
+                  </View> 
             </View>
             
     
            
         );
-        <View style={styles.modalToggle}>
-        </View>
+        
     }
 
 }
@@ -759,9 +760,8 @@ const styles = StyleSheet.create({
     paragraph: {
         padding: 20,
         
-    }, blue: {
-        backgroundColor: '#AED6F1',
-        //  borderWidth: 5
+    }, bottom: {
+        marginBottom: 150,
     },
     green: {
         backgroundColor: '#ABEBC6',

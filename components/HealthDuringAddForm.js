@@ -122,9 +122,9 @@ export default class HealthDuringAdd extends React.Component{
                     }}
                 >
                     {props => (
-                        <KeyboardAvoidingView behavior = "padding"
+                        <KeyboardAvoidingView behavior = "null"
                             enabled style = {globalStyles.keyboardavoid}
-                            keyboardVerticalOffset = {150}
+                            keyboardVerticalOffset = {0}
                         >
                         <ScrollView
                             showsVerticalScrollIndicator = {false}

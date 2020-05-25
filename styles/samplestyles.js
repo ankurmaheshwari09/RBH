@@ -1,7 +1,7 @@
 import { StyleSheet, Dimensions } from 'react-native';
 
 export const globalStyles = StyleSheet.create({
-    container1: {
+    maincontainer: {
         flex: 1,
         padding: 15,
         backgroundColor: '#f0f0f0'
