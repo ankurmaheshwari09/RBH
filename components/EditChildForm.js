@@ -18,7 +18,7 @@ import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
-//import RNFetchBlob from 'rn-fetch-blob'
+import {guidGenerator} from '../constants/Base';
 
 const EditChildSchema = yup.object({
     // ChildPhoto: yup.object(),
@@ -151,7 +151,7 @@ export default class EditChild extends React.Component{
         var formdata = new FormData();
         formdata.append("file", {
             uri: imageUri,
-            name: `${child.childNo}.jpg`,
+            name: `${guidGenerator()}.jpg`,
             type: `image/jpg`
           });
         var requestOptions = {
