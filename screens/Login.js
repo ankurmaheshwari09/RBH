@@ -6,9 +6,12 @@ import {
     View,
     Button,
     StyleSheet,
-    ActivityIndicator
+    ActivityIndicator,
+    KeyboardAvoidingView ,
+    Image
 } from 'react-native';
 import {base_url} from '../constants/Base';
+import {globalStyles} from '../styles/global';
 import { setOrgId, getOrgId } from '../constants/LoginConstant'
 
 export default class Login extends Component {
@@ -64,18 +67,18 @@ export default class Login extends Component {
                 this.setState({showLoader: false,loaderIndex:0});
             }
         })
-        // if(this.state.username == "admin" && this.state.password == "admin") {
-        //     if(this.props.onLoginPress) {
-        //         this.props.onLoginPress();
-        //         this.setState({ isLoggingIn: false, message: 'Please enter a valid usernam and password' });
-        //     }
-        //     else {
-        //         this.props.navigation.navigate('Home');
-        //     }
-        // }
-        // else {
-        //     this.setState({ isLoggingIn: false, message: 'Please enter a valid usernam and password' });
-        // }
+         /*if(this.state.username == "admin" && this.state.password == "admin") {
+             if(this.props.onLoginPress) {
+                this.props.onLoginPress();
+                this.setState({ isLoggingIn: false, message: 'Please enter a valid usernam and password' });
+             }
+             else {
+                 this.props.navigation.navigate('Home');
+             }
+         }
+         else {
+             this.setState({ isLoggingIn: false, message: 'Please enter a valid usernam and password' });
+         }*/
     }
 
     clearUsername = () => {
@@ -91,16 +94,21 @@ export default class Login extends Component {
 
     render() {
         return (
+            <KeyboardAvoidingView behavior="null"
+                                                    enabled style={globalStyles.keyboardavoid}
+                                                    keyboardVerticalOffset={0}>
+            <ScrollView showsVerticalScrollIndicator={false}>
             <View style={titlestyle.container}>
-            <ScrollView >
-                <Text>
-                    Login into the App
+                <Image source={ require('../assets/RBHlogo.png') } style = {titlestyle.logoicon}/>
+                <Text style={titlestyle.header}>
+                    Login
                 </Text>
                 <TextInput
                     ref={component => this._username = component}
                     onChangeText={(username) => this.setState({username})}
                     autoFocus={true}
                     placeholder='Username'
+                    style = {titlestyle.inputText}
                 />
                 <TextInput
                     ref={component => this._password = component}
@@ -109,6 +117,7 @@ export default class Login extends Component {
                     secureTextEntry={true}
                     onFocus={this.clearPassword}
                     onSubmitEditing={this._userLogin}
+                    style = {titlestyle.inputText}
                 />
                 {!!this.state.message && (
                     <Text
@@ -122,11 +131,13 @@ export default class Login extends Component {
                     onPress={this._userLogin}
                     title="Submit"
                 />
-            </ScrollView>
-            <View style={{ position: 'absolute', top:"50%",right: 0, left: 0, zIndex: this.state.loaderIndex }}>
+                {/* <Image source={ require('../assets/RBHlogotext.png') } style = {titlestyle.logotext}/> */}
+            <View style={{ position: 'absolute', top:"60%",right: 0, left: 0, zIndex: this.state.loaderIndex }}>
                     <ActivityIndicator animating={this.state.showLoader} size="large" color="red" />
                 </View>
             </View>
+            </ScrollView>
+            </KeyboardAvoidingView>
             )
     }
 }
@@ -135,6 +146,30 @@ const titlestyle = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 20,
-    padding: 20
+    padding: 20,
+
   },
+  header: {
+    marginLeft: '40%',
+    marginTop: '10%',
+    fontSize: 20,
+    marginBottom: '2%',
+  },
+  inputText: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    padding: 10,
+    marginBottom: 10,
+    fontSize: 18,
+    borderRadius: 6,
+    borderColor: 'lightgreen',
+  },
+  logoicon: {
+      marginLeft: '-10%',
+  },
+  logotext: {
+      marginTop: '20%',
+      marginLeft: '25%',
+  }
+
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Text, TextInput, View, Picker, ScrollView,
-    KeyboardAvoidingView,Alert, StyleSheet,Dimensions} from 'react-native';
+    KeyboardAvoidingView,Alert} from 'react-native';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
@@ -120,7 +120,7 @@ showVisitedDatepicker = () => {
     render() {
         return (
             <View style = {globalStyles.formcontainer}>
-                <Text style ={Styles.healthformheading}>       Child Medical Treatment      </Text>
+                <Text style ={globalStyles.healthformheading}>       Child Medical Treatment      </Text>
                 <Formik
                 initialValues = {
                     {
@@ -147,18 +147,18 @@ showVisitedDatepicker = () => {
                 }}
                 >
    { props => (
-               <ScrollView>
+               <ScrollView showsVerticalScrollIndicator = {false}>
                <View>
-                    <Text style={globalStyles.textform}>IllnessStartDate</Text>
-                        <View style={Styles.dobView}>
+                    <Text style={globalStyles.textform}>Illness Start Date</Text>
+                        <View style={globalStyles.dobView}>
                          <TextInput
-                          style={globalStyles.inputform, Styles.dobValue}
+                          style={globalStyles.inputform, globalStyles.dobValue}
                           value={this.state.startDate}
                           onValueChange={props.handleChange('IllnessStartDate')}
                           />
                          <TouchableHighlight onPress={this.showStartDatepicker}>
                            <View>
-                           <Feather style={Styles.dobBtn} name="calendar" />
+                           <Feather style={globalStyles.dobBtn} name="calendar" />
                            </View>
                            </TouchableHighlight>
                                                             {this.state.showSD &&
@@ -172,16 +172,16 @@ showVisitedDatepicker = () => {
                                                             }
                           <Text style={globalStyles.errormsgform}> {props.touched.IllnessStartDate && props.errors.IllnessStartDate}</Text>
                          </View>
-                    <Text style={globalStyles.textform}>VisitedDate</Text>
-                        <View style={Styles.dobView}>
+                    <Text style={globalStyles.textform}>Visited Date</Text>
+                        <View style={globalStyles.dobView}>
                                            <TextInput
-                                               style={globalStyles.inputform, Styles.dobValue}
+                                               style={globalStyles.inputform, globalStyles.dobValue}
                                                value={this.state.visitDate}
                                                onValueChange={props.handleChange('VisitedDate')}
                                            />
                                            <TouchableHighlight onPress={this.showVisitedDatepicker}>
                                                <View>
-                                                   <Feather style={Styles.dobBtn} name="calendar" />
+                                                   <Feather style={globalStyles.dobBtn} name="calendar" />
                                                </View>
                                            </TouchableHighlight>
 
@@ -197,38 +197,38 @@ showVisitedDatepicker = () => {
                                     <Text style={globalStyles.errormsgform}>{props.touched.VisitedDate && props.errors.VisitedDate}</Text>
                          </View>
 
-               <Text style={globalStyles.textform}>HospitalName</Text>
-                    <TextInput style={globalStyles.inputform} multiline ={true} value={props.values.HospitalName} onChangeText ={props.handleChange("HospitalName")} onBlur ={props.handleBlur("HospitalName")}></TextInput>
+               <Text style={globalStyles.text}>Hospital Name</Text>
+                    <TextInput style={globalStyles.inputText} multiline ={true} value={props.values.HospitalName} onChangeText ={props.handleChange("HospitalName")} onBlur ={props.handleBlur("HospitalName")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.HospitalName && props.errors.HospitalName}
                                         </Text>
 
-               <Text style={globalStyles.textform}>DoctorName</Text>
-                    <TextInput style={globalStyles.inputform} value={props.values.DoctorName} onChangeText ={props.handleChange("DoctorName")} onBlur ={props.handleBlur("DoctorName")}></TextInput>
+               <Text style={globalStyles.text}>Doctor Name</Text>
+                    <TextInput style={globalStyles.inputText} value={props.values.DoctorName} onChangeText ={props.handleChange("DoctorName")} onBlur ={props.handleBlur("DoctorName")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.DoctorName && props.errors.DoctorName}
                                         </Text>
 
-               <Text style={globalStyles.textform}>DiseasesDiagnosed</Text>
-                    <TextInput style={globalStyles.inputform} multiline ={true} value={props.values.DiseasesDiagnosed} onChangeText ={props.handleChange("DiseasesDiagnosed")} onBlur ={props.handleBlur("DiseasesDiagnosed")}></TextInput>
+               <Text style={globalStyles.text}>Diseases Diagnosed</Text>
+                    <TextInput style={globalStyles.inputText} multiline ={true} value={props.values.DiseasesDiagnosed} onChangeText ={props.handleChange("DiseasesDiagnosed")} onBlur ={props.handleBlur("DiseasesDiagnosed")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.DiseasesDiagnosed && props.errors.DiseasesDiagnosed}
                                         </Text>
 
-               <Text style={globalStyles.textform}>FurtherTests</Text>
-                    <TextInput style={globalStyles.inputform} multiline ={true}  value={props.values.FurtherTests} onChangeText ={props.handleChange("FurtherTests")} onBlur ={props.handleBlur("FurtherTests")}></TextInput>
+               <Text style={globalStyles.text}>Further Tests</Text>
+                    <TextInput style={globalStyles.inputText} multiline ={true}  value={props.values.FurtherTests} onChangeText ={props.handleChange("FurtherTests")} onBlur ={props.handleBlur("FurtherTests")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.FurtherTests && props.errors.FurtherTests}
                                         </Text>
 
-               <Text style={globalStyles.textform}>TotalMedicalCost(Rs)</Text>
-                    <TextInput style={globalStyles.inputform} value={props.values.TotalMedicalCost} onChangeText ={props.handleChange("TotalMedicalCost")} onBlur ={props.handleBlur("TotalMedicalCost")}></TextInput>
+               <Text style={globalStyles.text}>Total Medical Cost(Rs)</Text>
+                    <TextInput style={globalStyles.inputText} value={props.values.TotalMedicalCost} onChangeText ={props.handleChange("TotalMedicalCost")} onBlur ={props.handleBlur("TotalMedicalCost")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.TotalMedicalCost && props.errors.TotalMedicalCost}
                                         </Text>
 
-               <Text style={globalStyles.textform}>Remarks</Text>
-                    <TextInput style={globalStyles.inputform} multiline ={true} value={props.values.Remarks} onChangeText ={props.handleChange("Remarks")} onBlur ={props.handleBlur("Remarks")}></TextInput>
+               <Text style={globalStyles.text}>Remarks</Text>
+                    <TextInput style={globalStyles.inputText} multiline ={true} value={props.values.Remarks} onChangeText ={props.handleChange("Remarks")} onBlur ={props.handleBlur("Remarks")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.Remarks && props.errors.Remarks}
                                         </Text>
@@ -239,8 +239,8 @@ showVisitedDatepicker = () => {
               )
    }
     </Formik>
-    <Modal style={Styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                            <View style={Styles.MainContainer}>
+    <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                            <View style={globalStyles.MainContainer}>
                                 <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                                 <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName}/ >
                             </View>
@@ -250,56 +250,3 @@ showVisitedDatepicker = () => {
     );
     }
 }
-const Styles = StyleSheet.create({
- dobView: {
-        flex: 1,
-        flexDirection: 'row',
-    },
-    dobValue: {
-        borderWidth: 1,
-        borderColor: '#ddd',
-        padding: 10,
-        marginBottom: 10,
-        fontSize: 18,
-        borderRadius: 6,
-        flex: 3,
-        marginLeft: 10,
-        marginRight: 15
-    },
-    dobBtn: {
-        marginLeft: 2,
-        flex: 2,
-        fontSize: 40,
-        marginRight: 15
-    },
-    healthformheading: {
-                   fontSize: 18,
-                   alignSelf: 'center',
-                   marginBottom: 35,
-                   marginTop: 10,
-                   backgroundColor:'#48BBEC',
-                   color: 'white',
-                   borderWidth: 1,
-                   borderRadius: 8
-        },
-     MainContainer: {
-                justifyContent: 'space-between',
-                flex: 1,
-            //    paddingTop: 10,
-
-            },
-     modalContainer: {
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                alignSelf: 'center',
-                backgroundColor: 'white',
-                width: Dimensions.get('window').width /2 + 50,
-                maxHeight: Dimensions.get('window').height / 4,
-                top: 150,
-                borderRadius: 30
-              //  margin: 90,
-
-            }
-
-});

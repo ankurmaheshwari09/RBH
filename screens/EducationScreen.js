@@ -3,7 +3,7 @@ import {
     Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView, Field, StyleSheet, Dimensions
 } from 'react-native';
 import { Formik } from 'formik';
-import { globalStyles } from '../styles/samplestyles';
+import { globalStyles } from '../styles/global';
 import * as yup from 'yup';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
@@ -20,7 +20,9 @@ const EducationFormSchema = yup.object({
     Class: yup.string().required(),
     Medium: yup.string().required(),
     SchoolName: yup.string().required(),
-    SchoolPlace: yup.string().required()
+    SchoolType: yup.string().required(),
+    SchoolPlace: yup.string().required(),
+    StartingDate: yup.string().required()
 })
 
 export default class EducationScreen extends React.Component {
@@ -112,12 +114,14 @@ export default class EducationScreen extends React.Component {
 
     }
     componentWillUnmount() {
-        const { params } = this.props.navigation.state;
-        params.refreshChildList();
+        if (this.state.successDisplay) {
+            const { params } = this.props.navigation.state;
+            params.refreshChildList();
+        }
 
     }
     render() {
-        return (<View style={globalStyles.container1}>
+        return (<View style={globalStyles.maincontainer}>
             <Text style={globalStyles.Header}>Child Education:</Text>
             <Text> Child Name: {this.state.child.firstName}</Text>
             <View style={globalStyles.container}>
@@ -187,13 +191,14 @@ export default class EducationScreen extends React.Component {
 
                                     </Picker>
                                     <Text style={globalStyles.text}>School Name:</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.Class && props.errors.SchoolName}</Text>
+                                    <Text style={globalStyles.errormsg}>{props.touched.SchoolName && props.errors.SchoolName}</Text>
                                     <TextInput
                                         style={globalStyles.input}
                                         onChangeText={props.handleChange('SchoolName')}
                                         value={props.values.SchoolName}
                                     />
                                     <Text style={globalStyles.text}>School Type</Text>
+                                    <Text style={globalStyles.errormsg}>{props.touched.SchoolType && props.errors.SchoolType}</Text>
                                     <Picker
                                         selectedValue={props.values.SchoolType}
                                         style={globalStyles.dropDown}
@@ -206,13 +211,14 @@ export default class EducationScreen extends React.Component {
 
                                     </Picker>
                                     <Text style={globalStyles.text}>School Place:</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.Class && props.errors.SchoolPlace}</Text>
+                                    <Text style={globalStyles.errormsg}>{props.touched.SchoolPlace && props.errors.SchoolPlace}</Text>
                                     <TextInput
                                         style={globalStyles.input}
                                         onChangeText={props.handleChange('SchoolPlace')}
                                         value={props.values.SchoolPlace}
                                     />
                                     <Text style={globalStyles.text}>Starting Date:</Text>
+                                    <Text style={globalStyles.errormsg}>{props.touched.StartingDate && props.errors.StartingDate}</Text>
                                     <View style={globalStyles.dobView}>
                                         <TextInput
                                             style={globalStyles.inputText, globalStyles.dobValue}
@@ -225,7 +231,6 @@ export default class EducationScreen extends React.Component {
                                                 <Feather style={globalStyles.dobBtn} name="calendar" />
                                             </View>
                                         </TouchableHighlight>
-                                        <Text style={globalStyles.errormsg}>{props.touched.StartingDate && props.errors.StartingDate}</Text>
                                         {this.state.showSD &&
                                             <DateTimePicker
                                                 style={{ width: 100 }}

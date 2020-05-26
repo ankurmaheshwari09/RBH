@@ -99,16 +99,16 @@ export default class GeneralInfoForm extends React.Component{
                 }}
                 >
                     {props => (
-                        <KeyboardAvoidingView behavior="padding" 
+                        <KeyboardAvoidingView behavior="null" 
                             enabled style={globalStyles.keyboardavoid} 
-                            keyboardVerticalOffset={200}>
+                            keyboardVerticalOffset={0}>
                         <ScrollView
                             showsVerticalScrollIndicator = {false}
                         >
                             
                             <View>
                                 
-                                <Text style = {globalStyles.text}>IdentificationPlace 1</Text>
+                                <Text style = {globalStyles.text}>IdentificationPlace 1:</Text>
                                 <Text style = {globalStyles.errormsg}>{ props.touched.identificationPlace1 && props.errors.identificationPlace1 }</Text>
                                 <Picker
                                 selectedValue = {props.values.identificationPlace1}
@@ -124,7 +124,7 @@ export default class GeneralInfoForm extends React.Component{
                                     
                                 </Picker>
                                 
-                                <Text style = {globalStyles.text}>MarkType1</Text>
+                                <Text style = {globalStyles.text}>MarkType1:</Text>
                                 <Text style = {globalStyles.errormsg}>{ props.touched.markType1 && props.errors.markType1 }</Text>
 
                                 <Picker
@@ -142,7 +142,7 @@ export default class GeneralInfoForm extends React.Component{
                                     
                                 </Picker>
 
-                                <Text style = {globalStyles.text}>IdentificationPlace2</Text>
+                                <Text style = {globalStyles.text}>IdentificationPlace2:</Text>
                                 <Picker
                                 selectedValue = {props.values.identificationPlace2}
                                 style = {globalStyles.dropDown}
@@ -157,7 +157,7 @@ export default class GeneralInfoForm extends React.Component{
                                     
                                 </Picker>
 
-                                <Text style = {globalStyles.text}>MarkType2</Text>
+                                <Text style = {globalStyles.text}>MarkType2:</Text>
                                 <Picker
                                 selectedValue = {props.values.markType2}
                                 style = {globalStyles.dropDown}
@@ -173,7 +173,7 @@ export default class GeneralInfoForm extends React.Component{
                                     
                                 </Picker>
 
-                                <Text style = {globalStyles.text}>Special Need</Text>
+                                <Text style = {globalStyles.text}>Special Need:</Text>
                                 <Picker
                                 selectedValue = {props.values.specialNeed}
                                 style = {globalStyles.dropDown}
@@ -188,7 +188,7 @@ export default class GeneralInfoForm extends React.Component{
                                     
                                 </Picker>
 
-                                <Text style = {globalStyles.text}>Occupation On Street</Text>
+                                <Text style = {globalStyles.text}>Occupation On Street:</Text>
                                 <Picker
                                 selectedValue = {props.values.occupationOnStreet}
                                 style = {globalStyles.dropDown}
@@ -203,7 +203,7 @@ export default class GeneralInfoForm extends React.Component{
                                     
                                 </Picker>
 
-                                <Text style = {globalStyles.text}>Duration On Street</Text>
+                                <Text style = {globalStyles.text}>Duration On Street:</Text>
                                 <TextInput
                                     style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('durationOnStreet')} //This will update the IdentificationMArk value in 'values'
@@ -216,14 +216,14 @@ export default class GeneralInfoForm extends React.Component{
                                     value = {props.values.psoName}
                                 />
 
-                                <Text style = {globalStyles.text}>CWC Reference No</Text>
+                                <Text style = {globalStyles.text}>CWC Reference No:</Text>
                                 <TextInput
                                     style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('cwcRefNo')}
                                     value = {props.values.cwcRefNo}
                                 />
 
-                                <Text style = {globalStyles.text}>CWC Stay Reason</Text>
+                                <Text style = {globalStyles.text}>CWC Stay Reason:</Text>
                                 <Picker
                                 selectedValue = {props.values.cwcStayReason}
                                 style = {globalStyles.dropDown}

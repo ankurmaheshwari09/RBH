@@ -10,8 +10,8 @@ export function SuccessDisplay(props) {
             <View style={styles.container}>
                 <Ionicons name="md-checkmark-circle" size={60} color="green" />
                 <Text style={styles.text}>Successfully updated</Text>
-                <Text style={styles.text}>{props.type} for child {props.childNo} !</Text>
-
+                <Text style={styles.text}>{props.type} </Text>
+                <Text style={styles.text}>for child {props.childNo}</Text>
             </View>);
     }
     else {
