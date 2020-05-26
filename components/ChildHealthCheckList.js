@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView, StyleSheet, Dimensions} from 'react-native';
+import {Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView} from 'react-native';
 import {useField, useFormikContext, Formik} from 'formik';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Feather} from '@expo/vector-icons';
@@ -150,7 +150,7 @@ export default class ChildHealthCheckList extends React.Component{
     render() {
         return (
             <View style = {globalStyles.container}>
-                <Text style ={Styles.healthformheading}>       Child Health Checklist      </Text>
+                <Text style ={globalStyles.healthformheading}>       Child Health CheckList      </Text>
                 <Formik
                     initialValues = {
                         {
@@ -192,7 +192,7 @@ export default class ChildHealthCheckList extends React.Component{
                     }}
                 >
                     {props => (
-                        <ScrollView>
+                        <ScrollView showsVerticalScrollIndicator = {false}>
                             <View>
                                 <Text style = {globalStyles.text}>HIV Test</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.HIVTest && props.errors.HIVTest}</Text>
@@ -306,7 +306,7 @@ export default class ChildHealthCheckList extends React.Component{
                                 </Picker>
 
                                 {this.state.showDewormingDate ?
-                                    <View style={Styles.dobView}>
+                                    <View style={globalStyles.dobView}>
                                         <Text style = {globalStyles.text}>Deworming Date</Text>
                                         <TextInput
                                             style={globalStyles.inputText}
@@ -316,7 +316,7 @@ export default class ChildHealthCheckList extends React.Component{
                                         />
                                         <TouchableHighlight onPress={this.showDewormingDatepicker}>
                                             <View>
-                                                <Feather style={Styles.dobBtn} name="calendar" />
+                                                <Feather style={globalStyles.dobBtn} name="calendar" />
                                             </View>
                                         </TouchableHighlight>
                                         {this.state.showElementDewormingDate &&
@@ -335,7 +335,7 @@ export default class ChildHealthCheckList extends React.Component{
                                 <Text style = {globalStyles.text}>Camps Check Ups</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.CampsCheckUps && props.errors.CampsCheckUps}</Text>
                                 <TextInput
-                                    style = {globalStyles.input}
+                                    style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('CampsCheckUps')}
                                     value = {props.values.CampsCheckUps}
                                 />
@@ -362,7 +362,7 @@ export default class ChildHealthCheckList extends React.Component{
                                 </Picker>
 
                                 {this.state.showGynecologyDate ?
-                                    <View style={Styles.dobView}>
+                                    <View style={globalStyles.dobView}>
                                         <Text style = {globalStyles.text}>Gynecology Date</Text>
                                         <TextInput
                                             style={globalStyles.inputText}
@@ -372,7 +372,7 @@ export default class ChildHealthCheckList extends React.Component{
                                         />
                                         <TouchableHighlight onPress={this.showGynecologyDatepicker}>
                                             <View>
-                                                <Feather style={Styles.dobBtn} name="calendar" />
+                                                <Feather style={globalStyles.dobBtn} name="calendar" />
                                             </View>
                                         </TouchableHighlight>
                                         {this.state.showElementGynecologyDate &&
@@ -394,8 +394,8 @@ export default class ChildHealthCheckList extends React.Component{
                     )}
 
                 </Formik>
-                <Modal style={Styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={Styles.MainContainer}>
+                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={globalStyles.MainContainer}>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Health CheckList Status' childNo={this.state.child.firstName} />
                     </View>
@@ -406,51 +406,51 @@ export default class ChildHealthCheckList extends React.Component{
     }
 }
 
-const Styles = StyleSheet.create({
-    healthformheading: {
-        fontSize: 18,
-        alignSelf: 'center',
-        marginBottom: 35,
-        marginTop: 10,
-        backgroundColor:'#48BBEC',
-        color: 'white',
-        borderWidth: 1,
-        borderRadius: 8
-    },
-    dobView: {
-        flex: 1,
-        flexDirection: 'row'
-    },
-    dobValue: {
-        borderWidth: 1,
-        borderColor: '#ddd',
-        padding: 10,
-        marginBottom: 10,
-        fontSize: 18,
-        borderRadius: 6,
-        flex: 3,
-        marginLeft: 10,
-        marginRight: 15
-    },
-    dobBtn: {
-        marginLeft: 2,
-        flex: 2,
-        fontSize: 40,
-        marginRight: 15
-    },
-    MainContainer: {
-        justifyContent: 'space-between',
-        flex: 1,
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'center',
-        backgroundColor: 'white',
-        width: Dimensions.get('window').width / 2 + 50,
-        maxHeight: Dimensions.get('window').height / 4,
-        top: 150,
-        borderRadius: 30
-    }
-});
+// const Styles = StyleSheet.create({
+//     healthformheading: {
+//         fontSize: 18,
+//         alignSelf: 'center',
+//         marginBottom: 35,
+//         marginTop: 10,
+//         backgroundColor:'#48BBEC',
+//         color: 'white',
+//         borderWidth: 1,
+//         borderRadius: 8
+//     },
+//     dobView: {
+//         flex: 1,
+//         flexDirection: 'row'
+//     },
+//     dobValue: {
+//         borderWidth: 1,
+//         borderColor: '#ddd',
+//         padding: 10,
+//         marginBottom: 10,
+//         fontSize: 18,
+//         borderRadius: 6,
+//         flex: 3,
+//         marginLeft: 10,
+//         marginRight: 15
+//     },
+//     dobBtn: {
+//         marginLeft: 2,
+//         flex: 2,
+//         fontSize: 40,
+//         marginRight: 15
+//     },
+//     MainContainer: {
+//         justifyContent: 'space-between',
+//         flex: 1,
+//     },
+//     modalContainer: {
+//         flex: 1,
+//         justifyContent: 'center',
+//         alignItems: 'center',
+//         alignSelf: 'center',
+//         backgroundColor: 'white',
+//         width: Dimensions.get('window').width / 2 + 50,
+//         maxHeight: Dimensions.get('window').height / 4,
+//         top: 150,
+//         borderRadius: 30
+//     }
+// });
