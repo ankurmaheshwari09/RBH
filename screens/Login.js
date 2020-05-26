@@ -100,7 +100,7 @@ export default class Login extends Component {
                                                     keyboardVerticalOffset={0}>
             <ScrollView showsVerticalScrollIndicator={false}>
             <View style={titlestyle.container}>
-                <Image source={ require('../assets/RBHlogo.png') } style = {titlestyle.logoicon}/>
+                <Image source={ require('../assets/RBHsmall.png') } style = {titlestyle.logoicon}/>
                 <Text style={titlestyle.header}>
                     Login
                 </Text>
@@ -166,7 +166,8 @@ const titlestyle = StyleSheet.create({
     borderColor: 'lightgreen',
   },
   logoicon: {
-      marginLeft: '-10%',
+      marginTop: '40%',
+      marginLeft: '5%',
   },
   logotext: {
       marginTop: '20%',

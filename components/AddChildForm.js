@@ -512,8 +512,8 @@ export default class AddChild extends React.Component{
                             
                             <View style= {globalStyles.topView}>
                                 {this.state.pageOne && <View>
-                                    <View style={globalStyles.backgroundlogoimage}>
-                                        <Image source = {require("../assets/RBHlogo.png")} style={{opacity: 0.2,}}/>
+                                    <View style={globalStyles.backgroundlogoimageview}>
+                                        <Image source = {require("../assets/RBHsmall.png")} style={globalStyles.backgroundlogoimage}/>
                                     </View>
                                 {/* Child Photo */}
                                 
@@ -606,8 +606,8 @@ export default class AddChild extends React.Component{
                                 </View>}
                                 
                                 {this.state.pageTwo && <View>
-                                    <View style={globalStyles.backgroundlogoimage}>
-                                        <Image source = {require("../assets/RBHlogo.png")} style={{opacity: 0.2,}}/>
+                                    <View style={globalStyles.backgroundlogoimageview}>
+                                        <Image source = {require("../assets/RBHsmall.png")} style={globalStyles.backgroundlogoimage}/>
                                     </View>
                                 {/* Religion */}
                                 <Text style = {globalStyles.label}>Religion :</Text>
@@ -739,8 +739,8 @@ export default class AddChild extends React.Component{
 
 
                                 {this.state.pageThree && <View>
-                                    <View style={globalStyles.backgroundlogoimage}>
-                                        <Image source = {require("../assets/RBHlogo.png")} style={{opacity: 0.2,}}/>
+                                    <View style={globalStyles.backgroundlogoimageview}>
+                                        <Image source = {require("../assets/RBHsmall.png")} style={globalStyles.backgroundlogoimage}/>
                                     </View>
                                 {/* DOA */}
                                 <Text style = {globalStyles.label}>Date Of Admission :</Text>

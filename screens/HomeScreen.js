@@ -47,9 +47,9 @@ displayHealthRemainder = () => {
         return (
             <View style={globalStyles.homeView}>
                 {/* <Image source = {require("../assets/black.png")} style={{zIndex: -1, position: 'relative',}}/> */}
-                <View style={{ position: 'absolute', top:"20%",right: 0, left: 0, zIndex: -2 }}>
+                <View style={globalStyles.backgroundlogoimageview}>
                     {/* <ActivityIndicator animating={true} size="large" color="red" /> */}
-                    <Image source = {require("../assets/RBHlogo.png")} style={{opacity: 0.2,}}/>
+                    <Image source = {require("../assets/RBHsmall.png")} style={globalStyles.backgroundlogoimage}/>
                 </View>
                 <Button style={globalStyles.addChildBtn} title='Add Child' onPress={() => this.props.navigation.navigate('AddChild',{navigation: this.props.navigation})}></Button>
                 <View>

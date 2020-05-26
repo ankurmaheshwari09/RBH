@@ -201,8 +201,13 @@ export const globalStyles = StyleSheet.create({
         paddingTop: 5,
         fontWeight: 'bold',
     },
-    backgroundlogoimage: {
+    backgroundlogoimageview: {
         position: 'absolute', top:"20%",right: 0, left: 0, zIndex: -2,
+    },
+    backgroundlogoimage: {
+        opacity: 0.2,
+        marginTop: '30%',
+        marginLeft: '10%'
     },
     uploadpicbutton: {
         width: '50%',
