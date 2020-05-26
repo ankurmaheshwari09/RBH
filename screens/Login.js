@@ -51,8 +51,9 @@ export default class Login extends Component {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            console.log("*******");
+            console.log("*******Login json********");
             console.log(responseJson);
+            console.log("*************************")
             if(responseJson.authStatus == true) {
                 this.setState({ isLoggingIn: false, message: '' });
                 this.setState({showLoader: false,loaderIndex:0});

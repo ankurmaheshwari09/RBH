@@ -156,6 +156,7 @@ export const globalStyles = StyleSheet.create({
         color: 'black',
     },
     homeScreenText: {
+        top: '30%',
         padding: 30,
         fontSize: 15,
     },
@@ -199,6 +200,13 @@ export const globalStyles = StyleSheet.create({
         fontSize: 14,
         paddingTop: 5,
         fontWeight: 'bold',
+    },
+    backgroundlogoimage: {
+        position: 'absolute', top:"20%",right: 0, left: 0, zIndex: -2,
+    },
+    uploadpicbutton: {
+        width: '50%',
+        marginBottom: 5,
     },
     topView: {
         paddingTop: 5,

@@ -512,7 +512,11 @@ export default class AddChild extends React.Component{
                             
                             <View style= {globalStyles.topView}>
                                 {this.state.pageOne && <View>
+                                    <View style={globalStyles.backgroundlogoimage}>
+                                        <Image source = {require("../assets/RBHlogo.png")} style={{opacity: 0.2,}}/>
+                                    </View>
                                 {/* Child Photo */}
+                                
                                 <Text style = {globalStyles.label}>Child Image:</Text>
                                 {
                                     <Image source={{ uri: this.state.image }} style={globalStyles.uploadImage}/>
@@ -550,7 +554,6 @@ export default class AddChild extends React.Component{
 
                                 {/* Gender */}
                                 <Text style = {globalStyles.label}>Gender :</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.Gender && props.errors.Gender}</Text>
                                 {/* <Picker
                                     selectedValue = {props.values.Gender}
                                     onValueChange = {props.handleChange('Gender')}
@@ -572,6 +575,7 @@ export default class AddChild extends React.Component{
                                         formHorizontal={false}
                                         onPress={(value) => this._changeGender(value,props.handleChange('Gender'))}
                                 />
+                                <Text style = {globalStyles.errormsg}>{props.touched.Gender && props.errors.Gender}</Text>
 
                                 {/* DOB */}
                                 <Text style = {globalStyles.label}>Date Of Birth :</Text>
@@ -602,6 +606,9 @@ export default class AddChild extends React.Component{
                                 </View>}
                                 
                                 {this.state.pageTwo && <View>
+                                    <View style={globalStyles.backgroundlogoimage}>
+                                        <Image source = {require("../assets/RBHlogo.png")} style={{opacity: 0.2,}}/>
+                                    </View>
                                 {/* Religion */}
                                 <Text style = {globalStyles.label}>Religion :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.Religion && props.errors.Religion}</Text>
@@ -732,6 +739,9 @@ export default class AddChild extends React.Component{
 
 
                                 {this.state.pageThree && <View>
+                                    <View style={globalStyles.backgroundlogoimage}>
+                                        <Image source = {require("../assets/RBHlogo.png")} style={{opacity: 0.2,}}/>
+                                    </View>
                                 {/* DOA */}
                                 <Text style = {globalStyles.label}>Date Of Admission :</Text>
                                 <View style={globalStyles.dobView}>
