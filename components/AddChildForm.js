@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Text, TextInput, View, Picker, ScrollView,
-    KeyboardAvoidingView , Image, StyleSheet, Alert} from 'react-native';
+    KeyboardAvoidingView , Image, StyleSheet, Alert, TouchableOpacity} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Feather} from '@expo/vector-icons';
 import {Formik} from 'formik';
@@ -12,8 +12,11 @@ import { TouchableHighlight } from 'react-native-gesture-handler';
 import {base_url,getDataAsync} from '../constants/Base';
 import { ActivityIndicator } from 'react-native';
 import { getOrgId } from '../constants/LoginConstant';
+import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
 import Modal from 'react-native-modal';
 import { Ionicons } from '@expo/vector-icons';
+import * as Permissions from 'expo-permissions';
+import {guidGenerator} from '../constants/Base';
 
 const AddChildSchema = yup.object({
     // ChildPhoto: yup.object(),
@@ -35,87 +38,6 @@ const AddChildSchema = yup.object({
     ChildStatus: yup.string().required(),
 });
 
-const addChildStyles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 20,
-      backgroundColor: 'white',
-    },
-    label: {
-        fontSize: 14,
-        paddingTop: 5,
-        fontWeight: 'bold',
-    },
-    button: {
-        color: 'blue',
-        padding: 10,
-        borderRadius: 6,
-        marginBottom: 5,
-        fontSize: 18,
-        position: 'relative',
-        paddingTop: 10
-    },
-    title: {
-        marginLeft: '50%',
-        fontSize: 25
-    },
-    inputText: {
-        borderWidth: 1,
-        borderColor: '#ddd',
-        padding: 10,
-        marginBottom: 10,
-        fontSize: 18,
-        borderRadius: 6,
-        borderColor: 'lightgreen',
-    },
-    dropDown: {
-        borderColor: 'lightgreen',
-        borderWidth: 1,
-    },
-    image: {
-        marginTop: 10,
-        marginBottom: 10,
-        marginLeft: '25%',
-        width: 150,
-        height: 150,
-        borderRadius: 150 / 2,
-        overflow: "hidden",
-        borderWidth: 2,
-        borderColor: "lightgreen"
-    },
-    dobView: {
-        flex: 1,
-        flexDirection: 'row',
-    },
-    dobValue: {
-        borderWidth: 1,
-        borderColor: '#ddd',
-        padding: 10,
-        marginBottom: 10,
-        fontSize: 18,
-        borderRadius: 6,
-        flex: 3,
-        borderColor: 'lightgreen',
-    },
-    dobBtn: {
-        marginLeft: 2,
-        flex: 2,
-        fontSize: 40,
-    },
-    text: {
-        color: '#000000',
-        fontSize: 15,
-        fontWeight: 'bold',
-        borderColor: '#000000'
-        },
-    modalButton: {
-        color: 'blue',
-        padding: 10,
-        borderRadius: 6,
-        marginBottom: 5,
-        fontSize: 14,
-    }
-  });
 
 const defaultImg = require('../assets/person.png');
 
@@ -128,6 +50,7 @@ export default class AddChild extends React.Component{
         showdoa: false,
         showLoader: false,
         loaderIndex: 0,
+        gender: 2,
         dob: '',
         doa: '',
         religions: [],
@@ -145,17 +68,26 @@ export default class AddChild extends React.Component{
         isVisible: false,
         sucessDisplay: false,
         errorDisplay: false,
+        pageOne: true,
+        pageTwo: false,
+        pageThree: false,
+        currentPage: 1,
     };
 
     async _pickImage (handleChange) {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: true,
-            aspect: [3, 3],
-        });
-        console.log(result);
-        if (!result.cancelled) {
-            this.setState({ image: result.uri });
-            handleChange(result.uri)
+        const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+        if(status == 'granted'){
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1
+            });
+            console.log(result);
+            if (!result.cancelled) {
+                this.setState({ image: result.uri });
+                handleChange(result.uri)
+            }
         }
     }
 
@@ -197,6 +129,13 @@ export default class AddChild extends React.Component{
         handleChange(a);
     }
 
+    _changeGender = (value, handleChange) => {
+        console.log('gender change');
+        console.log(value);
+        this.setState({gender: value});
+        handleChange(value);
+    }
+
     showDatepickerDOB = () => {
         this.setState({showdob: true});
     };
@@ -221,6 +160,65 @@ export default class AddChild extends React.Component{
         this.addChildConstants();
         let orgId = getOrgId();
         this.setState({orgid: orgId});
+    }
+
+    changeprevstyle() {
+        if(this.state.currentPage == 1) {
+            return globalStyles.prevnextbuttonsgrey;
+        }
+        else {
+            return globalStyles.prevnextbuttons;
+        }
+    }
+
+    resetForm() {
+        this.setState({currentPage: 1});
+        this.setState({pageOne: true,pageTwo: false, pageThree: false});
+        this.setState({dob:'',doa:''});
+        this.setState({image : null});
+    }
+
+    changenextstyle() {
+        if(this.state.currentPage == 3) {
+            return globalStyles.prevnextbuttonsgrey;
+        }
+        else {
+            return globalStyles.prevnextbuttons;
+        }
+    }
+
+    changePage(type) {
+        let page = this.state.currentPage;
+        if(type == 'next') {
+            if(this.state.currentPage <=3){
+                if(this.state.currentPage == 1) {
+                    this.setState({currentPage: page + 1});
+                    this.setState({pageOne: false, pageTwo: true, pageThree: false});
+                }
+                if(this.state.currentPage == 2) {
+                    this.setState({currentPage: page + 1});
+                    this.setState({pageOne: false, pageTwo: false, pageThree: true});
+                }
+                if(this.state.currentPage == 3) {
+                    this.setState({pageOne: false, pageTwo: false, pageThree: true});
+                }
+            }
+        }
+        if(type == 'prev') {
+            if(this.state.currentPage >=1){
+                if(this.state.currentPage == 1) {
+                    this.setState({pageOne: true, pageTwo: false, pageThree: false});
+                }
+                if(this.state.currentPage == 2) {
+                    this.setState({currentPage: page - 1});
+                    this.setState({pageOne: true, pageTwo: false, pageThree: false});
+                }
+                if(this.state.currentPage == 3) {
+                    this.setState({currentPage: page - 1});
+                    this.setState({pageOne: false, pageTwo: true, pageThree: false});
+                }
+            }
+        }
     }
 
     _submitAddChildForm(values) {
@@ -360,16 +358,17 @@ export default class AddChild extends React.Component{
             else {
                 imageUri = this.state.image;
             }
+            var formdata = new FormData();
+            formdata.append('file', { uri: imageUri, name: `${guidGenerator()}.jpg`, type: 'image/jpg' });
             console.log(imageUri);
             fetch(photoUrl, {
                 method: 'PUT',
-                headers: {},
-                body: {
-                    "file": imageUri,
-                }
+                headers: {
+                    'content-type': 'multipart/form-data;boundary=----WebKitFormBoundaryyEmKNDsBKjB7QEqu',
+                },
+                body: formdata,
             })
             .then((response) => {       
-                console.log("succesfully uploaded image");
                 console.log("*****");
                 console.log(response.status);
                 console.log(response.text());
@@ -381,7 +380,8 @@ export default class AddChild extends React.Component{
                 else {
                     this.state.photoUploadMessage = "Error uploading image";
                 }
-                this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo+ ' '+ this.state.photoUploadMessage});
+                this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo+ '. '+ this.state.photoUploadMessage});
+                this.resetForm();
                 Alert.alert(
                     'Added Child',
                     this.state.submitAlertMessage,
@@ -406,6 +406,7 @@ export default class AddChild extends React.Component{
                 this.state.photoUploadMessage = "Image not uploaded succesfully";
                 this.setState({submitAlertMessage: 'Successfully added child with Child Number '+responseJson.childNo+ ' '+ this.state.photoUploadMessage});
                 // alert(this.state.submitAlertMessage);
+                this.resetForm();
                 Alert.alert(
                     'Added Child',
                     this.state.submitAlertMessage,
@@ -435,6 +436,7 @@ export default class AddChild extends React.Component{
         .catch((error) => {
             this.setState({submitAlertMessage: 'Unable to add child. Plesae contact the Admin.'});
             // alert(this.state.submitAlertMessage);
+            this.resetForm();
             Alert.alert(
                 'Failed To Add Child',
                 this.state.submitAlertMessage,
@@ -451,9 +453,20 @@ export default class AddChild extends React.Component{
     }
 
     render() {
+
+        const radio_props = [
+            {
+                label: 'Male',
+                value: '1',
+            },
+            {
+                label: 'Female',
+                value: '2',
+            }
+        ];
         
         return (
-            <View style = {addChildStyles.container}>
+            <View style = {globalStyles.container}>
                 
 
                 <Formik
@@ -497,28 +510,29 @@ export default class AddChild extends React.Component{
                         </View>
                         <ScrollView showsVerticalScrollIndicator={false}>
                             
-                            <View>
+                            <View style= {globalStyles.topView}>
+                                {this.state.pageOne && <View>
                                 {/* Child Photo */}
-                                <Text style = {addChildStyles.label}>Child Image :</Text>
+                                <Text style = {globalStyles.label}>Child Image:</Text>
                                 {
-                                    <Image source={{ uri: this.state.image }} style={addChildStyles.image} />
+                                    <Image source={{ uri: this.state.image }} style={globalStyles.uploadImage}/>
                                 }
                                 <Text style = {globalStyles.errormsg}>{props.touched.ChildPhoto && props.errors.ChildPhoto}</Text>
                                 <Button title="Upload Photo" onPress={() => this._pickImage(props.handleChange('ChildPhoto'))} />
 
                                 
                                 {/* Child Id */}
-                                {/* <Text style = {addChildStyles.label}>Child Id :</Text>
+                                {/* <Text style = {globalStyles.label}>Child Id :</Text>
                                 <TextInput
-                                    style = {addChildStyles.inputText}
+                                    style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('ChildID')} 
                                     value = {props.values.ChildID}
                                 /> */}
 
                                 {/* First Name */}
-                                <Text style = {addChildStyles.label}>FirstName :</Text>
+                                <Text style = {globalStyles.label}>FirstName :</Text>
                                 <TextInput
-                                    style = {addChildStyles.inputText}
+                                    style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('FirstName')}
                                     value = {props.values.FirstName}
                                     // onBlur = {props.handleBlur('PSOName')} this can be used for real-time validation
@@ -526,42 +540,54 @@ export default class AddChild extends React.Component{
                                 <Text style = {globalStyles.errormsg}>{props.touched.FirstName && props.errors.FirstName}</Text>
 
                                 {/* Last Name */}
-                                <Text style = {addChildStyles.label}>LastName :</Text>
+                                <Text style = {globalStyles.label}>LastName :</Text>
                                 <TextInput
-                                    style = {addChildStyles.inputText}
+                                    style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('LastName')}
                                     value = {props.values.LastName}
                                 />
                                 <Text style = {globalStyles.errormsg}>{props.touched.LastName && props.errors.LastName}</Text>
 
                                 {/* Gender */}
-                                <Text style = {addChildStyles.label}>Gender :</Text>
+                                <Text style = {globalStyles.label}>Gender :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.Gender && props.errors.Gender}</Text>
-                                <Picker
+                                {/* <Picker
                                     selectedValue = {props.values.Gender}
                                     onValueChange = {props.handleChange('Gender')}
-                                    style = {addChildStyles.dropDown}
+                                    style = {globalStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Gender' value = ''/>
                                     <Picker.Item label='Male' value = '1'/>
                                     <Picker.Item label='Female' value = '2'/>
-                                </Picker>
+                                </Picker> */}
+                                <RadioForm
+                                        style={{marginLeft: 10}}
+                                        radio_props={radio_props}
+                                        initial={this.state.gender}
+                                        buttonSize={10}
+                                        buttonOuterSize={20}
+                                        buttonColor={'black'}
+                                        buttonInnerColor={'black'}
+                                        selectedButtonColor={'blue'}
+                                        formHorizontal={false}
+                                        onPress={(value) => this._changeGender(value,props.handleChange('Gender'))}
+                                />
 
                                 {/* DOB */}
-                                <Text style = {addChildStyles.label}>Date Of Birth :</Text>
-                                <View style={addChildStyles.dobView}>
+                                <Text style = {globalStyles.label}>Date Of Birth :</Text>
+                                <View style={globalStyles.dobView}>
                                     <TextInput
-                                        style = {addChildStyles.inputText, addChildStyles.dobValue}
+                                        style = {globalStyles.inputText, globalStyles.dobValue}
                                         value = {this.state.dob}
                                         editable = {false}
                                         onValueChange = {props.handleChange('DOB')}
                                     />
                                     <TouchableHighlight onPress={this.showDatepickerDOB}>
                                         <View>
-                                            <Feather style={addChildStyles.dobBtn}  name="calendar"/>
+                                            <Feather style={globalStyles.dobBtn}  name="calendar"/>
                                         </View>
                                     </TouchableHighlight>
-                                    {/* <Button style= {addChildStyles.dobBtn} onPress={this.showDatepicker} title="Select DOB" /> */}
+                                    {/* <Button style= {globalStyles.dobBtn} onPress={this.showDatepicker} title="Select DOB" /> */}
                                     {this.state.showdob && 
                                         <DateTimePicker
                                             style={{width: 200}}
@@ -573,17 +599,18 @@ export default class AddChild extends React.Component{
                                     }
                                     <Text style = {globalStyles.errormsg}>{props.touched.DOB && props.errors.DOB}</Text>
                                 </View>
+                                </View>}
                                 
-
+                                {this.state.pageTwo && <View>
                                 {/* Religion */}
-                                <Text style = {addChildStyles.label}>Religion :</Text>
+                                <Text style = {globalStyles.label}>Religion :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.Religion && props.errors.Religion}</Text>
                                 <Picker
                                     selectedValue = {props.values.Religion}
                                     onValueChange = {value => {
                                         props.setFieldValue('Religion', value);
                                     }}
-                                    style = {addChildStyles.dropDown}
+                                    style = {globalStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Religion' value = ''/>
                                     { 
@@ -592,16 +619,17 @@ export default class AddChild extends React.Component{
                                         })
                                     }
                                 </Picker>
-
+                                
+                                
                                 {/* Community */}
-                                <Text style = {addChildStyles.label}>Community :</Text>
+                                <Text style = {globalStyles.label}>Community :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.Community && props.errors.Community}</Text>
                                 <Picker
                                     selectedValue = {props.values.Community}
                                     onValueChange = {value => {
                                         props.setFieldValue('Community', value);
                                     }}
-                                    style = {addChildStyles.dropDown}
+                                    style = {globalStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Community' value = ''/>
                                     {
@@ -612,14 +640,14 @@ export default class AddChild extends React.Component{
                                 </Picker>
 
                                 {/* Mother Tongue */}
-                                <Text style = {addChildStyles.label}>Mother Tongue :</Text>
+                                <Text style = {globalStyles.label}>Mother Tongue :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.MotherTongue && props.errors.MotherTongue}</Text>
                                 <Picker
                                     selectedValue = {props.values.MotherTongue}
                                     onValueChange = {value => {
                                         props.setFieldValue('MotherTongue', value);
                                     }}
-                                    style = {addChildStyles.dropDown}
+                                    style = {globalStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Mother Tongue' value = ''/>
                                     {
@@ -630,14 +658,14 @@ export default class AddChild extends React.Component{
                                 </Picker>
 
                                 {/* Parental Status */}
-                                <Text style = {addChildStyles.label}>Parental Status :</Text>
+                                <Text style = {globalStyles.label}>Parental Status :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.ParentalStatus && props.errors.ParentalStatus}</Text>
                                 <Picker
                                     selectedValue = {props.values.ParentalStatus}
                                     onValueChange = {value => {
                                         props.setFieldValue('ParentalStatus', value);
                                     }}
-                                    style = {addChildStyles.dropDown}
+                                    style = {globalStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Parental Status' value = ''/>
                                     {
@@ -648,14 +676,14 @@ export default class AddChild extends React.Component{
                                 </Picker>
 
                                 {/* Reason For Admission */}
-                                <Text style = {addChildStyles.label}>Reason For Admission :</Text>
+                                <Text style = {globalStyles.label}>Reason For Admission :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.ReasonForAdmission && props.errors.ReasonForAdmission}</Text>
                                 <Picker
                                     selectedValue = {props.values.ReasonForAdmission}
                                     onValueChange = {value => {
                                         props.setFieldValue('ReasonForAdmission', value);
                                     }}
-                                    style = {addChildStyles.dropDown}
+                                    style = {globalStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Reason For Admission' value = ''/>
                                     {
@@ -666,14 +694,14 @@ export default class AddChild extends React.Component{
                                 </Picker>
 
                                 {/* Previous Education Status */}
-                                <Text style = {addChildStyles.label}>Previous Education Status :</Text>
+                                <Text style = {globalStyles.label}>Previous Education Status :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.PreviousEducationStatus && props.errors.PreviousEducationStatus}</Text>
                                 <Picker
                                     selectedValue = {props.values.PreviousEducationStatus}
                                     onValueChange = {value => {
                                         props.setFieldValue('PreviousEducationStatus', value);
                                     }}
-                                    style = {addChildStyles.dropDown}
+                                    style = {globalStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Previous Education Status' value = ''/>
                                     {
@@ -684,14 +712,14 @@ export default class AddChild extends React.Component{
                                 </Picker>
 
                                 {/* Admitted By */}
-                                <Text style = {addChildStyles.label}>Admitted By :</Text>
+                                <Text style = {globalStyles.label}>Admitted By :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.AdmittedBy && props.errors.AdmittedBy}</Text>
                                 <Picker
                                     selectedValue = {props.values.AdmittedBy}
                                     onValueChange = {value => {
                                         props.setFieldValue('AdmittedBy', value);
                                     }}
-                                    style = {addChildStyles.dropDown}
+                                    style = {globalStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Admitted By' value = ''/>
                                     {
@@ -700,22 +728,25 @@ export default class AddChild extends React.Component{
                                         })
                                     }
                                 </Picker>
+                                </View>}
 
+
+                                {this.state.pageThree && <View>
                                 {/* DOA */}
-                                <Text style = {addChildStyles.label}>Date Of Admission :</Text>
-                                <View style={addChildStyles.dobView}>
+                                <Text style = {globalStyles.label}>Date Of Admission :</Text>
+                                <View style={globalStyles.dobView}>
                                     <TextInput
-                                        style = {addChildStyles.inputText, addChildStyles.dobValue}
+                                        style = {globalStyles.inputText, globalStyles.dobValue}
                                         value = {this.state.doa}
                                         editable = {false}
                                         onValueChange = {props.handleChange('DOA')}
                                     />
                                     <TouchableHighlight onPress={this.showDatepickerDOA}>
                                         <View>
-                                            <Feather style={addChildStyles.dobBtn}  name="calendar"/>
+                                            <Feather style={globalStyles.dobBtn}  name="calendar"/>
                                         </View>
                                     </TouchableHighlight>
-                                    {/* <Button style= {addChildStyles.dobBtn} onPress={this.showDatepicker} title="Select DOB" /> */}
+                                    {/* <Button style= {globalStyles.dobBtn} onPress={this.showDatepicker} title="Select DOB" /> */}
                                     {this.state.showdoa && 
                                         <DateTimePicker
                                             style={{width: 200}}
@@ -729,14 +760,14 @@ export default class AddChild extends React.Component{
                                 </View>
 
                                 {/* Referred Source */}
-                                <Text style = {addChildStyles.label}>Referred Source :</Text>
+                                <Text style = {globalStyles.label}>Referred Source :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.ReferredSource && props.errors.ReferredSource}</Text>
                                 <Picker
                                     selectedValue = {props.values.ReferredSource}
                                     onValueChange = {value => {
                                         props.setFieldValue('ReferredSource', value);
                                     }}
-                                    style = {addChildStyles.dropDown}
+                                    style = {globalStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Referred Source' value = ''/>
                                     {
@@ -747,24 +778,24 @@ export default class AddChild extends React.Component{
                                 </Picker>
 
                                 {/* Referred By */}
-                                <Text style = {addChildStyles.label}>Referred By :</Text>
+                                <Text style = {globalStyles.label}>Referred By :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.ReferredBy && props.errors.ReferredBy}</Text>
                                 <TextInput
-                                    style = {addChildStyles.inputText}
+                                    style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('ReferredBy')}
                                     value = {props.values.ReferredBy}
                                     // onBlur = {props.handleBlur('PSOName')} this can be used for real-time validation
                                 />
 
                                 {/* Child Status */}
-                                <Text style = {addChildStyles.label}>Child Status :</Text>
+                                <Text style = {globalStyles.label}>Child Status :</Text>
                                 <Text style = {globalStyles.errormsg}>{props.touched.ChildStatus && props.errors.ChildStatus}</Text>
                                 <Picker
                                     selectedValue = {props.values.ChildStatus}
                                     onValueChange = {value => {
                                         props.setFieldValue('ChildStatus', value);
                                     }}
-                                    style = {addChildStyles.dropDown}
+                                    style = {globalStyles.dropDown}
                                 >
                                     <Picker.Item label='Select Child Status' value = '' style={{borderColor: 'lightgreen'}}/>
                                     {
@@ -774,7 +805,23 @@ export default class AddChild extends React.Component{
                                     }
                                 </Picker>
 
-                                <Button style = {addChildStyles.button} title="Submit" onPress={props.handleSubmit} />
+                                <Button style = {globalStyles.button} title="Submit" onPress={props.handleSubmit} />
+                                </View>}
+                                <View style={globalStyles.prevnext}>
+                                    <View style={globalStyles.prevnextsubview}>
+                                        <TouchableOpacity onPress={(event) => { this.changePage('prev') }}>
+                                            <Text style={this.changeprevstyle()}>
+                                                <Feather name="skip-back"/>Prev
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={globalStyles.prevnextsubview}>
+                                        <TouchableOpacity onPress={(event) => { this.changePage('next')}}>
+                                            <Text style={this.changenextstyle()}>
+                                                Next<Feather name="skip-forward"/></Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
                             </View>
                         </ScrollView>  
                         </KeyboardAvoidingView>
@@ -785,13 +832,13 @@ export default class AddChild extends React.Component{
                 {/* <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} >
                     <View style={globalStyles.MainContainer} isVisible={this.state.successDisplay}>
                         <Ionicons name="md-checkmark-circle" size={60} color="green" />
-                        <Text style={addChildStyles.text}>{this.state.submitAlertMessage}</Text>
-                        <Button style = {addChildStyles.modalButton} title="Okay!" onPress={this.modalclickOKSuccess}></Button>
+                        <Text style={globalStyles.text}>{this.state.submitAlertMessage}</Text>
+                        <Button style = {globalStyles.modalButton} title="Okay!" onPress={this.modalclickOKSuccess}></Button>
                     </View>
                     <View style={globalStyles.MainContainer} isVisible={this.state.errorDisplay}>
                         <Ionicons name="md-warning" size={60} color="red" />``
-                        <Text style={addChildStyles.text}>{this.state.submitAlertMessage}</Text>
-                        <Button style = {addChildStyles.modalButton} title="Okay!" onPress={this.modalclickOKError}></Button>
+                        <Text style={globalStyles.text}>{this.state.submitAlertMessage}</Text>
+                        <Button style = {globalStyles.modalButton} title="Okay!" onPress={this.modalclickOKError}></Button>
                     </View>
                 </Modal> */}
             </View>

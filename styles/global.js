@@ -1,52 +1,67 @@
-import {StyleSheet,Dimensions} from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 export const globalStyles = StyleSheet.create({
+    maincontainer: {
+        flex: 1,
+        padding: 15,
+        backgroundColor: '#f0f0f0'
+    },
     container: {
         flex: 1,
         padding: 20,
+        backgroundColor: 'white',
     },
     formcontainer: {
-            flex: 1,
-            padding: 20,
-            backgroundColor: '#fff',
-            marginTop: 10
-        },
+        flex: 1,
+        padding: 20,
+        backgroundColor: '#fff',
+        marginTop: 10
+    },
     input: {
-        borderWidth: 3,
-        borderColor: '#ddd',
+        borderWidth: 1,
+        borderColor: '#000000',
         padding: 20,
         fontSize: 18,
         borderRadius: 6
     },
-    inputform: {
-            borderWidth: 3,
-            borderColor: '#ddd',
-            padding: 20,
-            fontSize: 18,
-            borderRadius: 6,
-            marginLeft: 10,
-            marginRight: 15,
-        },
-    inputText: {
-        borderWidth: 1,
-        backgroundColor: '#fafafa',
-        borderColor: '#000000',
-        padding: 10,
-        marginBottom: 10,
-        fontSize: 16,
-        borderRadius: 6,
-        minWidth: 120,
-        minHeight: 10
-    },
-    dropDown: {
-        backgroundColor: '#fafafa',
-        borderWidth: 1,
-        borderColor: '#000000',
+    touchableBox: {
         padding: 10,
         fontSize: 18,
         borderRadius: 6,
-        marginBottom: 1,
-
+        backgroundColor: '#fafafa',
+        marginBottom: 1
+    },
+    inputform: {
+        borderWidth: 3,
+        borderColor: '#ddd',
+        padding: 20,
+        fontSize: 18,
+        borderRadius: 6,
+        marginLeft: 10,
+        marginRight: 15,
+    },
+    inputText: {
+        borderWidth: 1,
+        // borderColor: '#ddd',
+        padding: 10,
+        marginBottom: 10,
+        fontSize: 18,
+        borderRadius: 6,
+        borderColor: 'black',
+    },
+    // dropDown: {
+    //     backgroundColor: '#fafafa',
+    //     borderWidth: 1,
+    //     borderColor: '#000000',
+    //     padding: 10,
+    //     fontSize: 18,
+    //     borderRadius: 6,
+    //     marginBottom: 1,
+    //     flexWrap: 'wrap'
+    // },
+    dropDown: {
+        borderColor: 'black',
+        borderWidth: 1,
     },
     text: {
         padding: 10,
@@ -90,7 +105,8 @@ export const globalStyles = StyleSheet.create({
         borderRadius: 6,
         fontSize: 18,
         position: 'relative',
-        paddingTop: 10
+        paddingTop: 10,
+        marginBottom: 5,
     },
     errormsg: {
         padding: 1,
@@ -99,7 +115,7 @@ export const globalStyles = StyleSheet.create({
         fontSize: 10,
     },
     keyboardavoid: {
-        flex: 1, 
+        flex: 1,
         flexDirection: 'column',
         justifyContent: 'center'
     },
@@ -124,7 +140,7 @@ export const globalStyles = StyleSheet.create({
         justifyContent: 'center'
     },
     homeView: {
-        flex:1,
+        flex: 1,
         padding: 10,
         alignItems: 'center',
         justifyContent: 'space-around'
@@ -144,33 +160,33 @@ export const globalStyles = StyleSheet.create({
         fontSize: 15,
     },
     errormsgform: {
-            padding: 1,
-            color: 'crimson',
-            fontWeight: 'bold',
-            fontSize: 10,
-            marginLeft: 10,
-            marginRight: 15
-        },
+        padding: 1,
+        color: 'crimson',
+        fontWeight: 'bold',
+        fontSize: 10,
+        marginLeft: 10,
+        marginRight: 15
+    },
     scrollContainer: {
         flex: 1,
         padding: 5
     },
-    segScrollView:{
+    segScrollView: {
         height: 0
     },
     segView: {
         height: 50
     },
-    spinnerTextStyle:{
+    spinnerTextStyle: {
         color: '#FF0000'
     },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',   
+        alignItems: 'center',
         alignSelf: 'center',
         backgroundColor: 'white',
-        width: Dimensions.get('window').width /2 + 50,
+        width: Dimensions.get('window').width / 2 + 50,
         maxHeight: Dimensions.get('window').height / 4,
         top: 150,
         borderRadius: 30
@@ -179,4 +195,86 @@ export const globalStyles = StyleSheet.create({
         justifyContent: 'space-between',
         flex: 1,
     },
+    label: {
+        fontSize: 14,
+        paddingTop: 5,
+        fontWeight: 'bold',
+    },
+    topView: {
+        paddingTop: 5,
+    },
+    uploadImage: {
+        marginTop: 10,
+        marginBottom: 10,
+        marginLeft: '25%',
+        width: 150,
+        height: 150,
+        borderRadius: 150 / 2,
+        overflow: "hidden",
+        borderWidth: 2,
+        borderColor: "black"
+    },
+    dobView: {
+        flex: 1,
+        flexDirection: 'row',
+    },
+    dobValue: {
+        borderWidth: 1,
+        borderColor: '#ddd',
+        padding: 10,
+        marginBottom: 10,
+        fontSize: 18,
+        borderRadius: 6,
+        flex: 3,
+        borderColor: 'black',
+    },
+    dobBtn: {
+        marginLeft: 2,
+        flex: 2,
+        fontSize: 40,
+    },
+    prevnext: {
+        flex: 1,
+        flexDirection: 'row',
+    },
+    prevnextsubview: {
+        width: '50%',
+    },
+    prevnextbuttons: {
+        marginTop: '10%',
+        fontSize: 16,
+        marginLeft: '40%',
+        color: 'green',
+    },
+    prevnextbuttonsgrey: {
+        marginTop: '10%',
+        fontSize: 16,
+        marginLeft: '40%',
+        color: 'grey',
+    },
+    modalButton: {
+        color: 'blue',
+        padding: 10,
+        borderRadius: 6,
+        marginBottom: 5,
+        fontSize: 14,
+    },
+    Header: {
+        padding: 5,
+        textAlign: "center",
+        color: '#000000',
+        fontSize: 25,
+        borderBottomColor: '#000000'
+    },
+    healthformheading: {
+        fontSize: 18,
+        alignSelf: 'center',
+        marginBottom: 15,
+        marginTop: 0,
+        backgroundColor:'#48BBEC',
+        color: 'white',
+        borderWidth: 1,
+        borderRadius: 8
+    }
+
 });

@@ -47,8 +47,18 @@ export default class GeneralInfoSegControl extends Component {
       this.setState({ search: null, loading: true });
       getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => this.setState({childData: data}))
       getDataAsync(base_url + '/child-health-all-records/' + this.state.child.childNo).then(data => {
-        if(JSON.stringify(data) !== JSON.stringify([]) && data !== null)
-          this.setState({childHealth: data[0]})
+        if(JSON.stringify(data) !== JSON.stringify([]) && data !== null){
+            let health = data[0];
+            for(let i = 1; i < data.length ; i++)
+            {
+              let vardate = new Date(data[i].healthDate)
+              let actual_date = new Date(health[i].healthDate)
+              if(vardate < actual_date){
+                health = data[i]
+              }
+            }
+            this.setState({childHealth: health})
+          }
         })
       getDataAsync(base_url + '/child-education/' + this.state.child.childNo).then(data => {
         if(data !== null && JSON.stringify(data) !== JSON.stringify([]))
@@ -75,26 +85,26 @@ export default class GeneralInfoSegControl extends Component {
             </View>
             <View>
               <TouchableOpacity style = {{borderBottomWidth: this.state.formIndex == 1 ? 3 : 0 ,borderBottomColor: this.state.formIndex == 1 ? 'grey' : '#f0f0f0'}} onPress = {() => this.setState({formIndex : 1})}>
-                <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:10}}>PrevEdu</Text>
+                <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:10}}>Child Addmission</Text>
               </TouchableOpacity>
             </View>
             <View>
               <TouchableOpacity style = {{borderBottomWidth: this.state.formIndex == 2 ? 3 : 0 ,borderBottomColor: this.state.formIndex == 2 ? 'grey' : '#f0f0f0'}} onPress = {() => this.setState({formIndex : 2})}>
-                <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:10}}>Health during addmission</Text>
+                <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:10}}>PrevEdu</Text>
               </TouchableOpacity>
             </View>
             <View>
               <TouchableOpacity style = {{borderBottomWidth: this.state.formIndex == 3 ? 3 : 0 ,borderBottomColor: this.state.formIndex == 3 ? 'grey' : '#f0f0f0'}} onPress = {() => this.setState({formIndex : 3})}>
-                <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:10}}>Child Addmission</Text>
+                <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:10}}>Health during addmission</Text>
               </TouchableOpacity>
             </View>
             </ScrollView>
             </View>
             <View style = {globalStyles.scrollContainer}>
               {formIndex === 0 && <GeneralInfoForm navigation = {this.props.navigation} childData = {this.state.childData}/>}
-              {formIndex === 1 && <PrevEduForm navigation = {this.props.navigation} prevEducation = {this.state.prevEducation}/>}
-              {formIndex === 2 && <HealtDuringAdd navigation = {this.props.navigation} childHealth = {this.state.childHealth}/>}
-              {formIndex === 3 && <EditChild navigation = {this.props.navigation} childData = {this.state.childData}/>}
+              {formIndex === 1 && <EditChild navigation = {this.props.navigation} childData = {this.state.childData}/>}
+              {formIndex === 2 && <PrevEduForm navigation = {this.props.navigation} prevEducation = {this.state.prevEducation}/>}
+              {formIndex === 3 && <HealtDuringAdd navigation = {this.props.navigation} childHealth = {this.state.childHealth}/>}
             </View>
         </View>
       )

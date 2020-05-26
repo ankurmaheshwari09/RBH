@@ -4,7 +4,7 @@ import React from 'react';
 import {  Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View, Dimensions } from 'react-native';
 import * as yup from "yup";
 import { globalStyles } from "../styles/global";
-import { TouchableHighlight } from 'react-native-gesture-handler';
+import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
@@ -13,7 +13,7 @@ import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
-import Select from 'react-select';
+import CheckBox from "react-native-check-box";
 
 const statusSchema = yup.object({
     childStatus: yup.string().required(),
@@ -39,6 +39,8 @@ export default class StatusScreen extends React.Component {
             loading: false,
             errorDisplay: false,
             sucessDisplay: false,
+            actionsTaken: [],
+            actionItemsModal: false,
             statusOptions: global.status,
             selectedOption: null
         }
@@ -82,10 +84,7 @@ export default class StatusScreen extends React.Component {
     }
 
     pickDob = (event, date, handleChange) => {
-        console.log(date);
         let a = moment(date).format('YYYY-MM-DD');
-        console.log(a);
-        console.log(typeof (a));
         this.setState({ date: a, show: false });
         handleChange(a);
     }
@@ -104,13 +103,13 @@ d
                "leavingReasonId": values.leavingReason,
                "reason": values.reasonDescription,
                "childLeftPlaceId": values.leftPlace,
-               "actionTakenId": values.actionTaken,
+               "actionTakenId": this.state.actionsTaken.sort().join(','),
                "childStayPlace": values.stay,
                "followedBy": values.followUpBy,
                "approvedBy": values.approvedBy
             
         });
-        console.log(values);
+        console.log(request_body);
         const path = `child-status/${this.state.child.childNo}`;
         UpdateApi.updateData(request_body, path).then((response) => {
             this.setState({ loading: false, isVisible: true });
@@ -119,7 +118,6 @@ d
                     console.log(res);
                 });
                 this.setState({ successDisplay: true });
-              
             } else {
                 throw Error(response.status);
             }
@@ -131,16 +129,16 @@ d
       
     }
 
-   
+
     componentWillUnmount() {
-        const { params } = this.props.navigation.state;
-        params.refreshChildList();
-        
+        if (this.state.successDisplay) {
+            const { params } = this.props.navigation.state;
+            params.refreshChildList();
+        }
     }
 
     handleChange = selectedOption => {
         this.setState({ selectedOption });
-        console.log(`Option selected:`, selectedOption);
     };
 
     render() {
@@ -154,11 +152,7 @@ d
                 value: 'futureProgram'
             }
         ];
-        const options = [
-            { value: 'chocolate', label: 'Chocolate' },
-            { value: 'strawberry', label: 'Strawberry' },
-            { value: 'vanilla', label: 'Vanilla' },
-        ];
+       
         return (
             <View style={globalStyles.container}>
                 <View >
@@ -173,21 +167,19 @@ d
                         leavingReason: '',
                         reasonDescription: '',
                         leftPlace: '',
-                        actionTaken: '',
                         stay: '',
                         followUpBy: '',
                         credentials: ''
                     }}
                     validationSchema={statusSchema}
                     onSubmit={(values, actions) => {
-                        console.log(values.leavingReason);
                         if (values.leavingReason == '' && this.state.showElements == true) {
                             this.setState({ leavingReasonError: true });
                         } if (values.reasonDescription == '' && this.state.showElements == true) {
                             this.setState({ reasonDescriptionError: true });
                         } if (values.leftPlace == '' && this.state.showElements == true) {
                             this.setState({ leftPlaceError: true });
-                        } if (values.actionTaken == '' && this.state.showElements == true) {
+                        } if (JSON.stringify(values.actionsTaken) == '[]' && this.state.showElements == true) {
                             this.setState({ actionTakenError: true });
                         } if (values.stay == '' && this.state.showElements == true) {
                             this.setState({ stayError: true });
@@ -195,7 +187,6 @@ d
                             this.setState({ followUpByError: true });
                         }
                         if (!(this.state.leavingReasonError || this.state.reasonDescriptionError || this.state.leftPlaceError || this.state.actionTakenError || this.state.stayError || this.state.followUpByError)) {
-                          //  console.log(values);
                             this.updateStatus(values);
                             actions.resetForm();
                             this.setState({ date: null, showElements: false, leavingReasonError: false, reasonDescriptionError: false, leftPlaceError: false, actionTakenError: false, stayError: false, followUpByError: false, credentialsError: false });
@@ -313,7 +304,7 @@ d
                                                 onChangeText={(reasonDescription) => { this.setState({ reasonDescriptionError: false }); props.setFieldValue('reasonDescription', reasonDescription) }}
                                                 //   defaultValue={this.state.text}
                                                 multiline={true}
-                                                numberOfLines={6}
+                                                numberOfLines={8}
                                                 placeholder={'Enter Reason Description'}
                                                 
                                             />
@@ -331,26 +322,36 @@ d
                                                 })}
                                             </Picker>
                                             {this.state.leftPlaceError ? < Text style={globalStyles.errormsg}>Left Place cannot be empty</Text> : null }
-
+                                            
                                             <Text style={globalStyles.text}>Action Taken:</Text>
-                                            <Picker
-                                                selectedValue={props.values.actionTaken}
-                                                style={globalStyles.dropDown}
-                                                //                                style={{height: 50, width: 100}}
-                                                onValueChange={(actionTaken) => { this.setState({ actionTakenError: false }); props.setFieldValue('actionTaken', actionTaken) }}
-                                                value={props.values.actionTaken}>
-                                                <Picker.Item label="Select Action Taken " value="" />
-                                                {global.actionTaken.map((item) => {
-                                                    return <Picker.Item key={item.actionId} label={item.actionTaken} value={item.actionId} />
-                                                })}
-                                            </Picker>
-                                            <Select
-                                                value={this.state.selectedOption}
-                                                onChange={this.handleChange}
-                                                options={options}
-                                            />
-                                            
-                                            
+                                            <TouchableOpacity onPress = {() => {
+                                                this.setState({
+                                                    actionItemsModal: true
+                                                })
+                                            }}>
+                                                <Text style={globalStyles.touchableBox}>Select Action</Text>
+                                            </TouchableOpacity>
+                                            <Modal style={styles.actionItemsModal} isVisible={this.state.actionItemsModal} onBackdropPress={() => this.setState({ actionItemsModal: false })}>
+                                                <View style = {{ flex: 1,justifyContent:'center'}}>
+                                                    {global.actionTaken.map((item) => {
+                                                        return <CheckBox 
+                                                                    style={{ flex: 1, padding: 10 }}
+                                                                    onClick = {() => {
+                                                                        let arr = this.state.actionsTaken
+                                                                        if(arr.indexOf(item.actionId) == -1){
+                                                                            arr.push(item.actionId)
+                                                                        } else{
+                                                                            arr.splice(arr.indexOf(item.actionId), 1)
+                                                                        }
+                                                                        this.setState({actionsTaken: arr})
+                                                                    }}
+                                                                    key = {item.actionId}
+                                                                    leftText={item.actionTaken}
+                                                                    isChecked = {this.state.actionsTaken.indexOf(item.actionId) !== -1}
+                                                                    />
+                                                    })}
+                                                </View>
+                                            </Modal>
                                             {this.state.actionTakenError ? < Text style={globalStyles.errormsg}>Action Taken is required</Text> : null}
 
                                             <Text style={globalStyles.text}>Place of Stay After Leaving RH:</Text>
@@ -399,7 +400,7 @@ d
                 <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
                     <View style={styles.MainContainer}>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName}/ >
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName} />
                     </View>
                 </Modal>
                 <LoadingDisplay loading={this.state.loading} />
@@ -429,6 +430,16 @@ const styles = StyleSheet.create({
         top: 150,
         borderRadius: 30
       //  margin: 90,
-
+    },
+    actionItemsModal:{
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        // width: Dimensions.get('window').width /2 + 50,
+        maxHeight: Dimensions.get('window').height / 2,
+        marginTop: 150,
+        //top: 150,
+        borderColor: 'black',
+        borderRadius: 30
     }
 });
