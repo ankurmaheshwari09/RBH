@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     Button, Text, TextInput, View, Picker, ScrollView,
-    KeyboardAvoidingView, StyleSheet, Dimensions
+    KeyboardAvoidingView
 } from 'react-native';
 import { Formik } from 'formik';
 import {globalStyles} from '../styles/global';
@@ -170,20 +170,20 @@ export default class CommunicationForm extends React.Component {
 //                        <KeyboardAvoidingView behavior="padding"
 //                            enabled style={globalStyles.keyboardavoid}
 //                            keyboardVerticalOffset={200}>
-                            <ScrollView>
+                            <ScrollView showsVerticalScrollIndicator = {false}>
 
                                 <View>
                                     <Text style={globalStyles.text}>Present(Local)Address Details:{"\n"}(Street No/Name,Village Name)</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.PresentAddress && props.errors.PresentAddress}</Text>
                                     <TextInput
-                                        style={globalStyles.input}
+                                        style={globalStyles.inputText}
                                         onChangeText={props.handleChange('PresentAddress')}
                                         value={props.values.PresentAddress}
                                     />
                                     <Text style={globalStyles.text}>Area/Town/City Name</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Area && props.errors.Area}</Text>
                                     <TextInput
-                                        style={globalStyles.input}
+                                        style={globalStyles.inputText}
                                         onChangeText={props.handleChange('Area')}
                                         value={props.values.Area}
                                     />
@@ -273,7 +273,7 @@ export default class CommunicationForm extends React.Component {
                                         <Text style={globalStyles.text}>Pin Code</Text>
                                         <Text style={globalStyles.errormsg}>{props.touched.Pincode && props.errors.Pincode}</Text>
                                         <TextInput
-                                            style={globalStyles.input}
+                                            style={globalStyles.inputText}
                                             onChangeText={props.handleChange('Pincode')}
                                             value={props.values.Pincode}
                                         />
@@ -283,21 +283,21 @@ export default class CommunicationForm extends React.Component {
                                     <Text style={globalStyles.text}>Mobile Number(Personal)</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Mobile && props.errors.Mobile}</Text>
                                     <TextInput
-                                        style={globalStyles.input}
+                                        style={globalStyles.inputText}
                                         onChangeText={props.handleChange('Mobile')}
                                         value={props.values.Mobile}
                                     />
                                     <Text style={globalStyles.text}>Phone Number(Relatives/Neighbours)</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.Phone && props.errors.Phone}</Text>
                                     <TextInput
-                                        style={globalStyles.input}
+                                        style={globalStyles.inputText}
                                         onChangeText={props.handleChange('Phone')}
                                         value={props.values.Phone}
                                     />
                                     <Text style={globalStyles.text}>Permanent(Native) Address</Text>
                                     <Text style={globalStyles.errormsg}>{props.touched.PermanentAddress && props.errors.PermanentAddress}</Text>
                                     <TextInput
-                                        style={globalStyles.input}
+                                        style={globalStyles.inputText}
                                         onChangeText={props.handleChange('PermanentAddress')}
                                         value={props.values.PermanentAddress}
                                     />
@@ -308,8 +308,8 @@ export default class CommunicationForm extends React.Component {
                     )}
 
                 </Formik>
-                <Modal style={Styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={Styles.MainContainer}>
+                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={globalStyles.MainContainer}>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Communication Status' childNo={this.state.child.firstName} />
                     </View>
@@ -320,20 +320,20 @@ export default class CommunicationForm extends React.Component {
     }
 }
 
-const Styles = StyleSheet.create({
-    MainContainer: {
-        justifyContent: 'space-between',
-        flex: 1,
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'center',
-        backgroundColor: 'white',
-        width: Dimensions.get('window').width / 2 + 50,
-        maxHeight: Dimensions.get('window').height / 4,
-        top: 150,
-        borderRadius: 30
-    }
-});
+// const Styles = StyleSheet.create({
+//     MainContainer: {
+//         justifyContent: 'space-between',
+//         flex: 1,
+//     },
+//     modalContainer: {
+//         flex: 1,
+//         justifyContent: 'center',
+//         alignItems: 'center',
+//         alignSelf: 'center',
+//         backgroundColor: 'white',
+//         width: Dimensions.get('window').width / 2 + 50,
+//         maxHeight: Dimensions.get('window').height / 4,
+//         top: 150,
+//         borderRadius: 30
+//     }
+// });
