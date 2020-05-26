@@ -1,8 +1,9 @@
 import React from 'react';
 import {
-    Button, Text, TextInput, View, Picker, ScrollView, Modal, StyleSheet, FlatList, TouchableOpacity,
-    KeyboardAvoidingView
+    Button, Text, TextInput, View, Picker, ScrollView, StyleSheet, FlatList, TouchableOpacity,
+    KeyboardAvoidingView, Dimensions
 } from 'react-native';
+import Modal from 'react-native-modal';
 import { Formik } from 'formik';
 import { globalStyles } from '../styles/global';
 import * as yup from 'yup';
@@ -162,10 +163,10 @@ export default class FamilyForm extends React.Component {
         })
             .then((response) => response.json())
             .then((responseJson) => {
-                this.setState({ loading: false });
+               
                 this.setState({ familyDetails: responseJson });
                 console.log("response.......", responseJson);
-               
+                this.setState({ successDisplay: true });
                // this.setState({ loading: true, loaderIndex: 0 });
                 fetch(base_url + '/child-family/' + this.state.child.childNo, {
                     method: 'GET',
@@ -176,16 +177,17 @@ export default class FamilyForm extends React.Component {
                 })
                     .then((res) => res.json())
                     .then((resJson) => {
-                        
+                        this.setState({ loading: false });
                         this.setState({
                             childFamilyList: resJson,
                             //display: [{ familyDisplay: this.state.childFamilyList }, { relationDisplay: this.state.relations.relation }],
                             // error: res.error || null,
                             loading: false,
                         });
-                       // this.setState({ loading: false });
+                        // this.setState({ loading: false });
+                        this.setState({ isVisibleMsg: true });
                         this.setState({ successDisplay: true });
-                        
+                        alert("submitted data");
                         console.log("ncdiuuir", this.state.childFamilyList);
                         // this.arrayholder = res;
                     })
@@ -245,7 +247,7 @@ export default class FamilyForm extends React.Component {
                             // error: res.error || null,
                             loading: false,
                         });
-                        this.setState({ isVisible: true });
+                        this.setState({ isVisibleMsg: true });
                         this.setState({ successDisplay: true });
                         console.log("ncdiuuir", this.state.childFamilyList);
                         // this.arrayholder = res;
@@ -253,7 +255,7 @@ export default class FamilyForm extends React.Component {
                     ;
             })
             .catch((error) => {
-                this.setState({ isVisible: true });
+                this.setState({ isVisibleMsg: true });
                 this.setState({ errorDisplay: true });
                 console.log(error);
                 this.setState({ loading: false, loaderIndex: 0 });
@@ -264,7 +266,7 @@ export default class FamilyForm extends React.Component {
     onPressForDelete(item) {
        // alert("Deleted family details with familyID :" + id);
         console.log(item);
-
+        this.setState({ loading: true, loaderIndex: 0 });
         console.log(".........id", item.familyNo);
         for (var i = 0; i < this.state.childFamilyList.length; i++) {
             console.log(".........", this.state.childFamilyList[i].familyNo);
@@ -320,16 +322,16 @@ export default class FamilyForm extends React.Component {
                                     // error: res.error || null,
                                     loading: false,
                                 });
-                                this.setState({ submitAlertMessage: 'Successfully deleted family with family Number ' + item.familyNo });
-                                alert(this.state.submitAlertMessage);
+                                this.setState({ isVisibleMsg: true });
+                                this.setState({ successDisplay: true });
                                 console.log("ncdiuuir", this.state.childFamilyList);
                                 // this.arrayholder = res;
                             })
                             ;
                     })
                     .catch((error) => {
-                        this.setState({ submitAlertMessage: 'Unable to delete child. Plesae contact the Admin.' });
-                        alert(this.state.submitAlertMessage);
+                        this.setState({ isVisibleMsg: true });
+                        this.setState({ errorDisplay: true });
                         console.log(error);
                         this.setState({ loading: false, loaderIndex: 0 });
                     });
@@ -360,14 +362,15 @@ export default class FamilyForm extends React.Component {
     render() {
         return (
             <View>
-                <Modal visible={this.state.isVisibleMsg} animationType='slide'>
+                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisibleMsg} onBackdropPress={() => this.setState({ isVisibleMsg: false })}>
                     <View style={globalStyles.MainContainer}>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                        <SuccessDisplay successDisplay={this.state.successDisplay} type='General Info' childNo={this.state.child.firstName} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Family Details' childNo={this.state.child.firstName} />
                     </View>
-               </Modal>
-                <Modal visible={this.state.modalVisible} animationType='slide'>
-                    <View style={styles.modalContent}>
+                </Modal>
+                
+                <Modal visible={this.state.modalVisible}>
+                    <View style={globalStyles.container}>
                         <MaterialIcons
                             name='close'
                             size={24}
@@ -375,7 +378,7 @@ export default class FamilyForm extends React.Component {
                             onPress={() => this.setModalVisible(!this.state.modalVisible)}
                         />
 
-                        <View style={globalStyles.container}>
+                       
 
                             <Formik
                                 initialValues={
@@ -510,15 +513,14 @@ export default class FamilyForm extends React.Component {
 
                             </Formik>
                             
-                        </View>
+                        
                     </View>
                 </Modal>
                 
                 <LoadingDisplay loading={this.state.loading} />
                 <Modal visible={this.state.modaledit} animationType='slide'>
-                    <View style={styles.modalContent}>
+                    
                         <View style={globalStyles.container}>
-
                             <Formik
                                 initialValues={
                                     {
@@ -652,14 +654,14 @@ export default class FamilyForm extends React.Component {
 
                             </Formik>
                           
-                        </View>
+                       
                     </View>
                 </Modal>
 
                 <MaterialIcons
                     name='add'
                     size={24}
-                    style={styles.modalToggle}
+                    style={{ ...styles.modalToggle, ...styles.modalClose }}
                     onPress={() => this.setModalVisible(true)}
                 />
                 
@@ -729,7 +731,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 10,
         borderWidth: 1,
-        borderColor: '#f2f2f2',
+        borderColor: '#000000',
         padding: 10,
         borderRadius: 10,
         alignSelf: 'center',
@@ -762,6 +764,7 @@ const styles = StyleSheet.create({
         
     }, bottom: {
         marginBottom: 150,
+        marginTop:10
     },
     green: {
         backgroundColor: '#ABEBC6',
