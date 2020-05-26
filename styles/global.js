@@ -266,4 +266,15 @@ export const globalStyles = StyleSheet.create({
         fontSize: 25,
         borderBottomColor: '#000000'
     },
+    healthformheading: {
+        fontSize: 18,
+        alignSelf: 'center',
+        marginBottom: 15,
+        marginTop: 0,
+        backgroundColor:'#48BBEC',
+        color: 'white',
+        borderWidth: 1,
+        borderRadius: 8
+    }
+
 });
