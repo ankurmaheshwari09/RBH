@@ -60,6 +60,7 @@ export const globalStyles = StyleSheet.create({
     //     flexWrap: 'wrap'
     // },
     dropDown: {
+        marginTop: -7,
         borderColor: 'black',
         borderWidth: 1,
     },
@@ -199,6 +200,7 @@ export const globalStyles = StyleSheet.create({
     label: {
         fontSize: 14,
         paddingTop: 5,
+        paddingBottom: 2,
         fontWeight: 'bold',
     },
     backgroundlogoimageview: {
@@ -207,7 +209,7 @@ export const globalStyles = StyleSheet.create({
     backgroundlogoimage: {
         opacity: 0.2,
         marginTop: '30%',
-        marginLeft: '10%'
+        marginLeft: '29%'
     },
     uploadpicbutton: {
         width: '50%',
