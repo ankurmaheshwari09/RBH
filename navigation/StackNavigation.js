@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation'
 
-import EducationScreen from '../screens/EducationScreen';
+import EducationScreen from './EducationNavigation';
 import StatusScreen from '../screens/StatusScreen';
 import HealthScreen from '../screens/HealthScreen';
 import ChildList from '../components/ChildList';
@@ -21,9 +21,8 @@ import FamilyScreen from '../screens/FamilyScreen';
 import CommunicationScreen from '../screens/CommunicationScreen';
 import FamilyInfoNavigation from './FamilyInfoNavigation';
 import CommunicationInfoNavigation from './CommunicationInfoNavigation';
-import childResultScreen from '../screens/ChildResultScreen';
-import HealthInfoNavigation from './HealthInfoNavigation'
-
+import childResultScreen from './ChildResultNavigation';
+import HealthInfoNavigation from './HealthInfoNavigation';
 
 // const Stack = createStackNavigator();
 // export default function StackNavigation() {
@@ -72,7 +71,7 @@ const screens = {
     FollowUp: {
         screen: FollowUpNavigation
     },
-    childresult: {
+    ChildResult: {
         screen: childResultScreen,
     },
 
