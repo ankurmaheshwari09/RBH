@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, View, StyleSheet, Button, Text } from 'react-native';
+import { Alert, View, StyleSheet,Image, Button, Text,ActivityIndicator, } from 'react-native';
 import { CustomHeader } from '../components/CustomHeader';
 import { globalStyles } from '../styles/global';
 import { generalInfoConstants } from '../constants/GeneralInfoConstants';
@@ -46,6 +46,11 @@ displayHealthRemainder = () => {
     render() {
         return (
             <View style={globalStyles.homeView}>
+                {/* <Image source = {require("../assets/black.png")} style={{zIndex: -1, position: 'relative',}}/> */}
+                <View style={globalStyles.backgroundlogoimageview}>
+                    {/* <ActivityIndicator animating={true} size="large" color="red" /> */}
+                    <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+                </View>
                 <Button style={globalStyles.addChildBtn} title='Add Child' onPress={() => this.props.navigation.navigate('AddChild',{navigation: this.props.navigation})}></Button>
                 <View>
                     <Text style={globalStyles.homeScreenText}>Rainbow Homes Child Reporting Tool</Text>

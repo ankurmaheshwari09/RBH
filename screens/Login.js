@@ -51,8 +51,9 @@ export default class Login extends Component {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            console.log("*******");
+            console.log("*******Login json********");
             console.log(responseJson);
+            console.log("*************************")
             if(responseJson.authStatus == true) {
                 this.setState({ isLoggingIn: false, message: '' });
                 this.setState({showLoader: false,loaderIndex:0});
@@ -99,7 +100,7 @@ export default class Login extends Component {
                                                     keyboardVerticalOffset={0}>
             <ScrollView showsVerticalScrollIndicator={false}>
             <View style={titlestyle.container}>
-                <Image source={ require('../assets/RBHlogo.png') } style = {titlestyle.logoicon}/>
+                <Image source={ require('../assets/RBHsmall.png') } style = {titlestyle.logoicon}/>
                 <Text style={titlestyle.header}>
                     Login
                 </Text>
@@ -165,7 +166,8 @@ const titlestyle = StyleSheet.create({
     borderColor: 'lightgreen',
   },
   logoicon: {
-      marginLeft: '-10%',
+      marginTop: '40%',
+      marginLeft: '5%',
   },
   logotext: {
       marginTop: '20%',

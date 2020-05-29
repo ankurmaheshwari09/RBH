@@ -121,270 +121,269 @@ export default class EducationScreen extends React.Component {
 
     }
     render() {
-        return (<View style={globalStyles.maincontainer}>
-            <Text style={globalStyles.Header}>Child Education:</Text>
+        return (<View style={globalStyles.container}>
+
             <Text> Child Name: {this.state.child.firstName}</Text>
-            <View style={globalStyles.container}>
-                <Formik
-                    initialValues={
-                        {
-                            Class: '',
-                            Medium: '',
-                            SchoolName: '',
-                            SchoolType: '',
-                            SchoolPlace: '',
-                            StartingDate: this.state.startingdate,
-                            EndingDate: this.state.endingdate,
-                            ChildStayType: '',
-                            BridgeCourse: '',
-                            CDetail: '',
-                            BridgeCourseSchoolName: '',
-                            ScholarshipSponsorship: '',
-                            scholorshiptype: '',
-                        }
+            <Formik
+                initialValues={
+                    {
+                        Class: '',
+                        Medium: '',
+                        SchoolName: '',
+                        SchoolType: '',
+                        SchoolPlace: '',
+                        StartingDate: this.state.startingdate,
+                        EndingDate: this.state.endingdate,
+                        ChildStayType: '',
+                        BridgeCourse: '',
+                        CDetail: '',
+                        BridgeCourseSchoolName: '',
+                        ScholarshipSponsorship: '',
+                        scholorshiptype: '',
                     }
-                    validationSchema={EducationFormSchema}
-                    onSubmit={async (values, actions) => {
-                        console.log(values);
-                        console.log("Submit method called here ");
-                        this.setState({ showLoader: true, loaderIndex: 10 });
-                        let result = this.updateEducationDetails(values);
-                        let alertMessage = this.state.submitAlertMessage;
-                        console.log(result);
-                        actions.resetForm();
-                    }}
-                >
-                    {props => (
-                        <KeyboardAvoidingView behavior="padding"
-                            enabled style={globalStyles.keyboardavoid}
-                            keyboardVerticalOffset={200}>
-                            <ScrollView>
+                }
+                validationSchema={EducationFormSchema}
+                onSubmit={async (values, actions) => {
+                    console.log(values);
+                    console.log("Submit method called here ");
+                    this.setState({ showLoader: true, loaderIndex: 10 });
+                    let result = this.updateEducationDetails(values);
+                    let alertMessage = this.state.submitAlertMessage;
+                    console.log(result);
+                    actions.resetForm();
+                }}
+            >
+                {props => (
+                    <KeyboardAvoidingView behavior="padding"
+                        enabled style={globalStyles.keyboardavoid}
+                        keyboardVerticalOffset={200}>
+                        <ScrollView>
 
-                                <View>
+                            <View>
 
-                                    <Text style={globalStyles.text}>Class:</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.Class && props.errors.Class}</Text>
-                                    <Picker
-                                        selectedValue={props.values.Class}
-                                        style={globalStyles.dropDown}
-                                        onValueChange={(Class) => props.setFieldValue('Class', Class)}
-                                        value={props.values.Class}
-                                    >
-                                        <Picker.Item label="Select Class" value="" />
-                                        {global.studyingclass.map((item) => {
-                                            return <Picker.Item key={item.studyingclassId} label={item.studyingclass} value={item.studyingclassId} />
-                                        })}
+                                <Text style={globalStyles.text}>Class:</Text>
+                                <Text style={globalStyles.errormsg}>{props.touched.Class && props.errors.Class}</Text>
+                                <Picker
+                                    selectedValue={props.values.Class}
+                                    style={globalStyles.dropDown}
+                                    onValueChange={(Class) => props.setFieldValue('Class', Class)}
+                                    value={props.values.Class}
+                                >
+                                    <Picker.Item label="Select Class" value="" />
+                                    {global.studyingclass.map((item) => {
+                                        return <Picker.Item key={item.studyingclassId} label={item.studyingclass} value={item.studyingclassId} />
+                                    })}
 
-                                    </Picker>
-                                    <Text style={globalStyles.text}>Medium:</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.Medium && props.errors.Medium}</Text>
-                                    <Picker
-                                        selectedValue={props.values.Medium}
-                                        style={globalStyles.dropDown}
-                                        onValueChange={(Medium) => props.setFieldValue('Medium', Medium)}
-                                        value={props.values.Medium}
-                                    >
-                                        <Picker.Item label="Select Medium" value="" />
-                                        {global.medium.map((item) => {
-                                            return <Picker.Item key={item.motherTongueId} label={item.motherTongue} value={item.motherTongueId} />
-                                        })}
+                                </Picker>
+                                <Text style={globalStyles.text}>Medium:</Text>
+                                <Text style={globalStyles.errormsg}>{props.touched.Medium && props.errors.Medium}</Text>
+                                <Picker
+                                    selectedValue={props.values.Medium}
+                                    style={globalStyles.dropDown}
+                                    onValueChange={(Medium) => props.setFieldValue('Medium', Medium)}
+                                    value={props.values.Medium}
+                                >
+                                    <Picker.Item label="Select Medium" value="" />
+                                    {global.medium.map((item) => {
+                                        return <Picker.Item key={item.motherTongueId} label={item.motherTongue} value={item.motherTongueId} />
+                                    })}
 
-                                    </Picker>
-                                    <Text style={globalStyles.text}>School Name:</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.SchoolName && props.errors.SchoolName}</Text>
+                                </Picker>
+                                <Text style={globalStyles.text}>School Name:</Text>
+                                <Text style={globalStyles.errormsg}>{props.touched.SchoolName && props.errors.SchoolName}</Text>
+                                <TextInput
+                                    style={globalStyles.input}
+                                    onChangeText={props.handleChange('SchoolName')}
+                                    value={props.values.SchoolName}
+                                />
+                                <Text style={globalStyles.text}>School Type:</Text>
+                                <Text style={globalStyles.errormsg}>{props.touched.SchoolType && props.errors.SchoolType}</Text>
+                                <Picker
+                                    selectedValue={props.values.SchoolType}
+                                    style={globalStyles.dropDown}
+                                    onValueChange={(SchoolType) => props.setFieldValue('SchoolType', SchoolType)}
+                                >
+                                    <Picker.Item label="Select SchoolType" value="" />
+                                    {global.schooltype.map((item) => {
+                                        return <Picker.Item key={item.schoolTypeID} label={item.schoolType} value={item.schoolTypeID} />
+                                    })}
+
+                                </Picker>
+                                <Text style={globalStyles.text}>School Place:</Text>
+                                <Text style={globalStyles.errormsg}>{props.touched.SchoolPlace && props.errors.SchoolPlace}</Text>
+                                <TextInput
+                                    style={globalStyles.input}
+                                    onChangeText={props.handleChange('SchoolPlace')}
+                                    value={props.values.SchoolPlace}
+                                />
+                                <Text style={globalStyles.text}>Starting Date:</Text>
+                                <Text style={globalStyles.errormsg}>{props.touched.StartingDate && props.errors.StartingDate}</Text>
+                                <View style={globalStyles.dobView}>
                                     <TextInput
-                                        style={globalStyles.input}
-                                        onChangeText={props.handleChange('SchoolName')}
-                                        value={props.values.SchoolName}
+                                        style={globalStyles.inputText, globalStyles.dobValue}
+                                        value={this.state.startingdate}
+                                        editable={true}
+                                        onValueChange={props.handleChange('StartingDate')}
                                     />
-                                    <Text style={globalStyles.text}>School Type</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.SchoolType && props.errors.SchoolType}</Text>
-                                    <Picker
-                                        selectedValue={props.values.SchoolType}
-                                        style={globalStyles.dropDown}
-                                        onValueChange={(SchoolType) => props.setFieldValue('SchoolType', SchoolType)}
-                                    >
-                                        <Picker.Item label="Select SchoolType" value="" />
-                                        {global.schooltype.map((item) => {
-                                            return <Picker.Item key={item.schoolTypeID} label={item.schoolType} value={item.schoolTypeID} />
-                                        })}
-
-                                    </Picker>
-                                    <Text style={globalStyles.text}>School Place:</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.SchoolPlace && props.errors.SchoolPlace}</Text>
-                                    <TextInput
-                                        style={globalStyles.input}
-                                        onChangeText={props.handleChange('SchoolPlace')}
-                                        value={props.values.SchoolPlace}
-                                    />
-                                    <Text style={globalStyles.text}>Starting Date:</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.StartingDate && props.errors.StartingDate}</Text>
-                                    <View style={globalStyles.dobView}>
-                                        <TextInput
-                                            style={globalStyles.inputText, globalStyles.dobValue}
-                                            value={this.state.startingdate}
-                                            editable={true}
-                                            onValueChange={props.handleChange('StartingDate')}
-                                        />
-                                        <TouchableHighlight onPress={this.showSDDatepicker}>
-                                            <View>
-                                                <Feather style={globalStyles.dobBtn} name="calendar" />
-                                            </View>
-                                        </TouchableHighlight>
-                                        {this.state.showSD &&
-                                            <DateTimePicker
-                                                style={{ width: 100 }}
-                                                mode="date" //The enum of date, datetime and time
-                                                value={new Date()}
-                                                mode={'date'}
-                                                onChange={(e, date) => this._pickStartDate(e, date, props.handleChange('StartingDate'))}
-                                            />
-                                        }
-                                    </View>
-                                    <Text style={globalStyles.text}>Ending Date:</Text>
-                                    <View style={globalStyles.dobView}>
-                                        <TextInput
-                                            style={globalStyles.inputText, globalStyles.dobValue}
-                                            value={this.state.endingdate}
-                                            editable={false}
-                                            onValueChange={props.handleChange('EndingDate')}
-                                        />
-                                        <TouchableHighlight onPress={this.showEDDatepicker}>
-                                            <View>
-                                                <Feather style={globalStyles.dobBtn} name="calendar" />
-                                            </View>
-                                        </TouchableHighlight>
-                                        <Text style={globalStyles.errormsg}>{props.touched.EndingDate && props.errors.EndingDate}</Text>
-                                        {this.state.showED &&
-                                            <DateTimePicker
-                                                style={{ width: 100 }}
-                                                mode="date" //The enum of date, datetime and time
-                                                value={new Date()}
-                                                mode={'date'}
-                                                onChange={(e, date) => this._pickEndDate(e, date, props.handleChange('EndingDate'))}
-                                            />
-                                        }
-                                    </View>
-                                    <Text style={globalStyles.text}>Child Stay Type:</Text>
-                                    <Picker
-                                        selectedValue={props.values.ChildStayType}
-                                        style={globalStyles.dropDown}
-                                        onValueChange={(ChildStayType) => props.setFieldValue('ChildStayType', ChildStayType)}
-                                    >
-                                        <Picker.Item label="Select Child Stay Type" value="" />
-                                        {global.childstaytype.map((item) => {
-                                            return <Picker.Item key={item.id} label={item.description} value={item.id} />
-                                        })}
-                                    </Picker>
-
-                                    <Text style={globalStyles.text}>Bridge course after school:</Text>
-                                    <Picker
-                                        selectedValue={props.values.BridgeCourse}
-                                        style={globalStyles.dropDown}
-                                        onValueChange={(itemValue, itemIndex) => {
-                                            props.setFieldValue('BridgeCourse', itemValue)
-                                            if (itemValue == 'Yes') {
-                                                this.setState({ showElements: true })
-                                            } else {
-                                                this.setState({ showElements: false })
-                                            }
-                                        }}
-
-                                        value={props.values.childStatus}>
-                                        <Picker.Item label="Select Bridge Course" value="" />
-                                        <Picker.Item label="Yes" value="Yes" />
-                                        <Picker.Item label="No" value="No" />
-
-                                    </Picker>
-                                    {this.state.showElements ? null :
+                                    <TouchableHighlight onPress={this.showSDDatepicker}>
                                         <View>
-                                            <Text style={globalStyles.text}>Class details:</Text>
-                                            <TextInput
-                                                style={globalStyles.input}
-                                                onChangeText={props.handleChange('CDetail')}
-                                                value={props.values.VPCDetail}
-                                            />
+                                            <Feather style={globalStyles.dobBtn} name="calendar" />
                                         </View>
+                                    </TouchableHighlight>
+                                    {this.state.showSD &&
+                                        <DateTimePicker
+                                            style={{ width: 100 }}
+                                            mode="date" //The enum of date, datetime and time
+                                            value={new Date()}
+                                            mode={'date'}
+                                            onChange={(e, date) => this._pickStartDate(e, date, props.handleChange('StartingDate'))}
+                                        />
                                     }
-
-                                    {this.state.showElements ?
-                                        <View>
-                                            <Text style={globalStyles.text}>Bridge Course School Name:</Text>
-                                            <Picker
-                                                selectedValue={props.values.BridgeCourseSchoolName}
-                                                style={globalStyles.dropDown}
-                                                onValueChange={props.handleChange('BridgeCourseSchoolName')}
-                                            >
-                                                <Picker.Item label="Select Bridge Course School Name" value="" />
-                                                <Picker.Item label="Rainbow" value="Rainbow" />
-                                                <Picker.Item label="Sneha Ghar" value="Sneha Ghar" />
-
-                                            </Picker>
-                                        </View>
-                                        : null}
-                                    <Text style={globalStyles.text}>Scholarship/Sponsorship:</Text>
-                                    <Picker
-                                        selectedValue={props.values.ScholarshipSponsorship}
-                                        style={globalStyles.dropDown}
-                                        onValueChange={(itemValue, itemIndex) => {
-                                            props.setFieldValue('ScholarshipSponsorship', itemValue)
-                                            if (itemValue == 'Yes') {
-                                                this.setState({ showSSElements: true })
-                                            } else {
-                                                this.setState({ showSSElements: false })
-                                            }
-                                        }}
-
-                                        value={props.values.ScholarshipSponsorship}>
-                                        <Picker.Item label="Select Scholarship/Sponsorship" value="" />
-                                        <Picker.Item label="Yes" value="Yes" />
-                                        <Picker.Item label="No" value="No" />
-
-                                    </Picker>
-
-                                    {this.state.showSSElements ? <View>
-                                        <Text style={globalStyles.text}>Scholorship Type:</Text>
-
-                                        <View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
-                                            {global.scholorshiptype.map((item) => {
-                                                return <CheckBox
-                                                    style={{ flex: 1, padding: 10 }}
-                                                    onClick={() => {
-                                                        let arr = this.state.scholoshiptype
-                                                        if (arr.indexOf(item.id) == -1) {
-                                                            arr.push(item.id)
-                                                        } else {
-                                                            arr.splice(arr.indexOf(item.id), 1)
-                                                        }
-                                                        this.setState({ scholorshiptype: arr })
-                                                    }}
-                                                    key={item.id}
-                                                    leftText={item.description}
-                                                    isChecked={this.state.scholoshiptype.indexOf(item.id) !== -1}
-                                                />
-                                            })}
-                                        </View>
-                                    </View>
-                                        : null}
-
-
-                                    <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
-
                                 </View>
-                            </ScrollView>
-                        </KeyboardAvoidingView>
+                                <Text style={globalStyles.text}>Ending Date:</Text>
+                                <View style={globalStyles.dobView}>
+                                    <TextInput
+                                        style={globalStyles.inputText, globalStyles.dobValue}
+                                        value={this.state.endingdate}
+                                        editable={false}
+                                        onValueChange={props.handleChange('EndingDate')}
+                                    />
+                                    <TouchableHighlight onPress={this.showEDDatepicker}>
+                                        <View>
+                                            <Feather style={globalStyles.dobBtn} name="calendar" />
+                                        </View>
+                                    </TouchableHighlight>
+                                    <Text style={globalStyles.errormsg}>{props.touched.EndingDate && props.errors.EndingDate}</Text>
+                                    {this.state.showED &&
+                                        <DateTimePicker
+                                            style={{ width: 100 }}
+                                            mode="date" //The enum of date, datetime and time
+                                            value={new Date()}
+                                            mode={'date'}
+                                            onChange={(e, date) => this._pickEndDate(e, date, props.handleChange('EndingDate'))}
+                                        />
+                                    }
+                                </View>
+                                <Text style={globalStyles.text}>Child Stay Type:</Text>
+                                <Picker
+                                    selectedValue={props.values.ChildStayType}
+                                    style={globalStyles.dropDown}
+                                    onValueChange={(ChildStayType) => props.setFieldValue('ChildStayType', ChildStayType)}
+                                >
+                                    <Picker.Item label="Select Child Stay Type" value="" />
+                                    {global.childstaytype.map((item) => {
+                                        return <Picker.Item key={item.id} label={item.description} value={item.id} />
+                                    })}
+                                </Picker>
 
-                    )}
+                                <Text style={globalStyles.text}>Bridge course after school:</Text>
+                                <Picker
+                                    selectedValue={props.values.BridgeCourse}
+                                    style={globalStyles.dropDown}
+                                    onValueChange={(itemValue, itemIndex) => {
+                                        props.setFieldValue('BridgeCourse', itemValue)
+                                        if (itemValue == 'Yes') {
+                                            this.setState({ showElements: true })
+                                        } else {
+                                            this.setState({ showElements: false })
+                                        }
+                                    }}
 
-                </Formik>
-                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={globalStyles.MainContainer}>
-                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName} />
-                    </View>
-                </Modal>
-                <LoadingDisplay loading={this.state.loading} />
-            </View >
+                                    value={props.values.childStatus}>
+                                    <Picker.Item label="Select Bridge Course" value="" />
+                                    <Picker.Item label="Yes" value="Yes" />
+                                    <Picker.Item label="No" value="No" />
+
+                                </Picker>
+                                {this.state.showElements ? null :
+                                    <View>
+                                        <Text style={globalStyles.text}>Class details:</Text>
+                                        <TextInput
+                                            style={globalStyles.input}
+                                            onChangeText={props.handleChange('CDetail')}
+                                            value={props.values.VPCDetail}
+                                        />
+                                    </View>
+                                }
+
+                                {this.state.showElements ?
+                                    <View>
+                                        <Text style={globalStyles.text}>Bridge Course School Name:</Text>
+                                        <Picker
+                                            selectedValue={props.values.BridgeCourseSchoolName}
+                                            style={globalStyles.dropDown}
+                                            onValueChange={props.handleChange('BridgeCourseSchoolName')}
+                                        >
+                                            <Picker.Item label="Select Bridge Course School Name" value="" />
+                                            <Picker.Item label="Rainbow" value="Rainbow" />
+                                            <Picker.Item label="Sneha Ghar" value="Sneha Ghar" />
+
+                                        </Picker>
+                                    </View>
+                                    : null}
+                                <Text style={globalStyles.text}>Scholarship/Sponsorship:</Text>
+                                <Picker
+                                    selectedValue={props.values.ScholarshipSponsorship}
+                                    style={globalStyles.dropDown}
+                                    onValueChange={(itemValue, itemIndex) => {
+                                        props.setFieldValue('ScholarshipSponsorship', itemValue)
+                                        if (itemValue == 'Yes') {
+                                            this.setState({ showSSElements: true })
+                                        } else {
+                                            this.setState({ showSSElements: false })
+                                        }
+                                    }}
+
+                                    value={props.values.ScholarshipSponsorship}>
+                                    <Picker.Item label="Select Scholarship/Sponsorship" value="" />
+                                    <Picker.Item label="Yes" value="Yes" />
+                                    <Picker.Item label="No" value="No" />
+
+                                </Picker>
+
+                                {this.state.showSSElements ? <View>
+                                    <Text style={globalStyles.text}>Scholorship Type:</Text>
+
+                                    <View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
+                                        {global.scholorshiptype.map((item) => {
+                                            return <CheckBox
+                                                style={{ flex: 1, padding: 10 }}
+                                                onClick={() => {
+                                                    let arr = this.state.scholoshiptype
+                                                    if (arr.indexOf(item.id) == -1) {
+                                                        arr.push(item.id)
+                                                    } else {
+                                                        arr.splice(arr.indexOf(item.id), 1)
+                                                    }
+                                                    this.setState({ scholorshiptype: arr })
+                                                }}
+                                                key={item.id}
+                                                leftText={item.description}
+                                                isChecked={this.state.scholoshiptype.indexOf(item.id) !== -1}
+                                            />
+                                        })}
+                                    </View>
+                                </View>
+                                    : null}
+
+
+                                <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
+
+                            </View>
+                        </ScrollView>
+                    </KeyboardAvoidingView>
+
+                )}
+
+            </Formik>
+            <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                <View style={globalStyles.MainContainer}>
+                    <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                    <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName} />
+                </View>
+            </Modal>
+            <LoadingDisplay loading={this.state.loading} />
+
         </View >
         );
     }
