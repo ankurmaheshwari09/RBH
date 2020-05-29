@@ -512,7 +512,11 @@ export default class AddChild extends React.Component{
                             
                             <View style= {globalStyles.topView}>
                                 {this.state.pageOne && <View>
+                                    <View style={globalStyles.backgroundlogoimageview}>
+                                        <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+                                    </View>
                                 {/* Child Photo */}
+                                
                                 <Text style = {globalStyles.label}>Child Image:</Text>
                                 {
                                     <Image source={{ uri: this.state.image }} style={globalStyles.uploadImage}/>
@@ -530,7 +534,7 @@ export default class AddChild extends React.Component{
                                 /> */}
 
                                 {/* First Name */}
-                                <Text style = {globalStyles.label}>FirstName :</Text>
+                                <Text style = {globalStyles.label}>First Name :</Text>
                                 <TextInput
                                     style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('FirstName')}
@@ -540,7 +544,7 @@ export default class AddChild extends React.Component{
                                 <Text style = {globalStyles.errormsg}>{props.touched.FirstName && props.errors.FirstName}</Text>
 
                                 {/* Last Name */}
-                                <Text style = {globalStyles.label}>LastName :</Text>
+                                <Text style = {globalStyles.label}>Last Name :</Text>
                                 <TextInput
                                     style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('LastName')}
@@ -550,7 +554,6 @@ export default class AddChild extends React.Component{
 
                                 {/* Gender */}
                                 <Text style = {globalStyles.label}>Gender :</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.Gender && props.errors.Gender}</Text>
                                 {/* <Picker
                                     selectedValue = {props.values.Gender}
                                     onValueChange = {props.handleChange('Gender')}
@@ -572,6 +575,7 @@ export default class AddChild extends React.Component{
                                         formHorizontal={false}
                                         onPress={(value) => this._changeGender(value,props.handleChange('Gender'))}
                                 />
+                                <Text style = {globalStyles.errormsg}>{props.touched.Gender && props.errors.Gender}</Text>
 
                                 {/* DOB */}
                                 <Text style = {globalStyles.label}>Date Of Birth :</Text>
@@ -602,9 +606,11 @@ export default class AddChild extends React.Component{
                                 </View>}
                                 
                                 {this.state.pageTwo && <View>
+                                    <View style={globalStyles.backgroundlogoimageview}>
+                                        <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+                                    </View>
                                 {/* Religion */}
                                 <Text style = {globalStyles.label}>Religion :</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.Religion && props.errors.Religion}</Text>
                                 <Picker
                                     selectedValue = {props.values.Religion}
                                     onValueChange = {value => {
@@ -619,11 +625,12 @@ export default class AddChild extends React.Component{
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.Religion && props.errors.Religion}</Text>
+                                
                                 
                                 
                                 {/* Community */}
                                 <Text style = {globalStyles.label}>Community :</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.Community && props.errors.Community}</Text>
                                 <Picker
                                     selectedValue = {props.values.Community}
                                     onValueChange = {value => {
@@ -638,10 +645,11 @@ export default class AddChild extends React.Component{
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.Community && props.errors.Community}</Text>
+                                
 
                                 {/* Mother Tongue */}
                                 <Text style = {globalStyles.label}>Mother Tongue :</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.MotherTongue && props.errors.MotherTongue}</Text>
                                 <Picker
                                     selectedValue = {props.values.MotherTongue}
                                     onValueChange = {value => {
@@ -656,10 +664,11 @@ export default class AddChild extends React.Component{
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.MotherTongue && props.errors.MotherTongue}</Text>
+                                
 
                                 {/* Parental Status */}
                                 <Text style = {globalStyles.label}>Parental Status :</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.ParentalStatus && props.errors.ParentalStatus}</Text>
                                 <Picker
                                     selectedValue = {props.values.ParentalStatus}
                                     onValueChange = {value => {
@@ -674,10 +683,11 @@ export default class AddChild extends React.Component{
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.ParentalStatus && props.errors.ParentalStatus}</Text>
+                                
 
                                 {/* Reason For Admission */}
                                 <Text style = {globalStyles.label}>Reason For Admission :</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.ReasonForAdmission && props.errors.ReasonForAdmission}</Text>
                                 <Picker
                                     selectedValue = {props.values.ReasonForAdmission}
                                     onValueChange = {value => {
@@ -692,10 +702,11 @@ export default class AddChild extends React.Component{
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.ReasonForAdmission && props.errors.ReasonForAdmission}</Text>
+                                
 
                                 {/* Previous Education Status */}
                                 <Text style = {globalStyles.label}>Previous Education Status :</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.PreviousEducationStatus && props.errors.PreviousEducationStatus}</Text>
                                 <Picker
                                     selectedValue = {props.values.PreviousEducationStatus}
                                     onValueChange = {value => {
@@ -710,10 +721,11 @@ export default class AddChild extends React.Component{
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.PreviousEducationStatus && props.errors.PreviousEducationStatus}</Text>
+                                
 
                                 {/* Admitted By */}
                                 <Text style = {globalStyles.label}>Admitted By :</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.AdmittedBy && props.errors.AdmittedBy}</Text>
                                 <Picker
                                     selectedValue = {props.values.AdmittedBy}
                                     onValueChange = {value => {
@@ -728,10 +740,15 @@ export default class AddChild extends React.Component{
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.AdmittedBy && props.errors.AdmittedBy}</Text>
+                                
                                 </View>}
 
 
                                 {this.state.pageThree && <View>
+                                    <View style={globalStyles.backgroundlogoimageview}>
+                                        <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+                                    </View>
                                 {/* DOA */}
                                 <Text style = {globalStyles.label}>Date Of Admission :</Text>
                                 <View style={globalStyles.dobView}>
@@ -761,7 +778,6 @@ export default class AddChild extends React.Component{
 
                                 {/* Referred Source */}
                                 <Text style = {globalStyles.label}>Referred Source :</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.ReferredSource && props.errors.ReferredSource}</Text>
                                 <Picker
                                     selectedValue = {props.values.ReferredSource}
                                     onValueChange = {value => {
@@ -776,20 +792,22 @@ export default class AddChild extends React.Component{
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.ReferredSource && props.errors.ReferredSource}</Text>
+                                
 
                                 {/* Referred By */}
                                 <Text style = {globalStyles.label}>Referred By :</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.ReferredBy && props.errors.ReferredBy}</Text>
                                 <TextInput
                                     style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('ReferredBy')}
                                     value = {props.values.ReferredBy}
                                     // onBlur = {props.handleBlur('PSOName')} this can be used for real-time validation
                                 />
+                                <Text style = {globalStyles.errormsg}>{props.touched.ReferredBy && props.errors.ReferredBy}</Text>
+                                
 
                                 {/* Child Status */}
                                 <Text style = {globalStyles.label}>Child Status :</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.ChildStatus && props.errors.ChildStatus}</Text>
                                 <Picker
                                     selectedValue = {props.values.ChildStatus}
                                     onValueChange = {value => {
@@ -804,6 +822,8 @@ export default class AddChild extends React.Component{
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.ChildStatus && props.errors.ChildStatus}</Text>
+                                
 
                                 <Button style = {globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                                 </View>}
