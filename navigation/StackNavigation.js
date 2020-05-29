@@ -22,8 +22,7 @@ import CommunicationScreen from '../screens/CommunicationScreen';
 import FamilyInfoNavigation from './FamilyInfoNavigation';
 import CommunicationInfoNavigation from './CommunicationInfoNavigation';
 import childResultScreen from './ChildResultNavigation';
-
-
+import HealthInfoNavigation from './HealthInfoNavigation';
 
 // const Stack = createStackNavigator();
 // export default function StackNavigation() {
@@ -52,7 +51,7 @@ const screens = {
         screen: StatusNavigator
     },
     Health: {
-        screen: HealthScreen
+        screen: HealthInfoNavigation
     },
     GeneralInfo: {
         screen: GeneralInfoStack
