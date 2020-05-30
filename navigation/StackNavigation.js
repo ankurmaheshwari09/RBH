@@ -13,7 +13,7 @@ import GeneralInfoForm from '../components/GeneralInfoForm';
 import InfoGeneral from '../screens/InfoGeneral';
 import GeneralInfoStack from './GeneralInfoNavigation';
 //import CommitteeScreen from '../screens/CommitteeScreen';
-import CommitteeSuggestionForm from '../components/CommitteeSuggestionForm';
+import CommitteeSuggestionNavigation from './CommitteeSuggestionNavigation';
 import StatusNavigator from './StatusNavigator';
 import FollowUpScreen from '../screens/FollowUpScreen';
 import FollowUpNavigation from './FollowUpNavigation';
@@ -66,7 +66,7 @@ const screens = {
         screen: CommunicationInfoNavigation
     },
     Committee: {
-        screen: CommitteeSuggestionForm
+        screen: CommitteeSuggestionNavigation
     },
     FollowUp: {
         screen: FollowUpNavigation

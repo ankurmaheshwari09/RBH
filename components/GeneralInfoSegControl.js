@@ -3,7 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollViewBase, ScrollView, TouchableOpacity, SafeAreaView
+  ScrollViewBase, ScrollView, TouchableOpacity, SafeAreaView, Image
 } from 'react-native'
 import GeneralInfoForm from './GeneralInfoForm';
 import HealtDuringAdd from './HealthDuringAddForm'
@@ -72,6 +72,9 @@ export default class GeneralInfoSegControl extends Component {
       const {formIndex} = this.state
       return (
         <View style = {globalStyles.container}>
+          <View style={globalStyles.backgroundlogoimageview}>
+            <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+          </View>
           <LoadingDisplay loading={this.state.loading} />
           <View style = {globalStyles.segView}>
           <ScrollView
