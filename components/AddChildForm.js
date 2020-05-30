@@ -509,7 +509,9 @@ export default class AddChild extends React.Component{
                             <ActivityIndicator animating={this.state.showLoader} size="large" color="red" />
                         </View>
                         <ScrollView showsVerticalScrollIndicator={false}>
-                            
+                            <View style={globalStyles.PageHeaderView}>
+                                <Text style={globalStyles.PageHeader}>Add New Child</Text>
+                            </View>
                             <View style= {globalStyles.topView}>
                                 {this.state.pageOne && <View>
                                     <View style={globalStyles.backgroundlogoimageview}>
@@ -523,15 +525,6 @@ export default class AddChild extends React.Component{
                                 }
                                 <Text style = {globalStyles.errormsg}>{props.touched.ChildPhoto && props.errors.ChildPhoto}</Text>
                                 <Button title="Upload Photo" onPress={() => this._pickImage(props.handleChange('ChildPhoto'))} />
-
-                                
-                                {/* Child Id */}
-                                {/* <Text style = {globalStyles.label}>Child Id :</Text>
-                                <TextInput
-                                    style = {globalStyles.inputText}
-                                    onChangeText = {props.handleChange('ChildID')} 
-                                    value = {props.values.ChildID}
-                                /> */}
 
                                 {/* First Name */}
                                 <Text style = {globalStyles.label}>First Name :</Text>
@@ -577,6 +570,14 @@ export default class AddChild extends React.Component{
                                 />
                                 <Text style = {globalStyles.errormsg}>{props.touched.Gender && props.errors.Gender}</Text>
 
+                                
+                                </View>}
+                                
+                                {this.state.pageTwo && <View>
+                                    <View style={globalStyles.backgroundlogoimageview}>
+                                        <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+                                    </View>
+
                                 {/* DOB */}
                                 <Text style = {globalStyles.label}>Date Of Birth :</Text>
                                 <View style={globalStyles.dobView}>
@@ -603,12 +604,7 @@ export default class AddChild extends React.Component{
                                     }
                                     <Text style = {globalStyles.errormsg}>{props.touched.DOB && props.errors.DOB}</Text>
                                 </View>
-                                </View>}
                                 
-                                {this.state.pageTwo && <View>
-                                    <View style={globalStyles.backgroundlogoimageview}>
-                                        <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
-                                    </View>
                                 {/* Religion */}
                                 <Text style = {globalStyles.label}>Religion :</Text>
                                 <Picker
@@ -723,6 +719,13 @@ export default class AddChild extends React.Component{
                                 </Picker>
                                 <Text style = {globalStyles.errormsg}>{props.touched.PreviousEducationStatus && props.errors.PreviousEducationStatus}</Text>
                                 
+                                </View>}
+
+
+                                {this.state.pageThree && <View>
+                                    <View style={globalStyles.backgroundlogoimageview}>
+                                        <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+                                    </View>
 
                                 {/* Admitted By */}
                                 <Text style = {globalStyles.label}>Admitted By :</Text>
@@ -742,13 +745,7 @@ export default class AddChild extends React.Component{
                                 </Picker>
                                 <Text style = {globalStyles.errormsg}>{props.touched.AdmittedBy && props.errors.AdmittedBy}</Text>
                                 
-                                </View>}
 
-
-                                {this.state.pageThree && <View>
-                                    <View style={globalStyles.backgroundlogoimageview}>
-                                        <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
-                                    </View>
                                 {/* DOA */}
                                 <Text style = {globalStyles.label}>Date Of Admission :</Text>
                                 <View style={globalStyles.dobView}>
@@ -827,20 +824,22 @@ export default class AddChild extends React.Component{
 
                                 <Button style = {globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                                 </View>}
+                            </View>
+                            <View style={{fliex:1,flexDirection:'column-reverse'}}>
                                 <View style={globalStyles.prevnext}>
-                                    <View style={globalStyles.prevnextsubview}>
-                                        <TouchableOpacity onPress={(event) => { this.changePage('prev') }}>
-                                            <Text style={this.changeprevstyle()}>
-                                                <Feather name="skip-back"/>Prev
-                                            </Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                    <View style={globalStyles.prevnextsubview}>
-                                        <TouchableOpacity onPress={(event) => { this.changePage('next')}}>
-                                            <Text style={this.changenextstyle()}>
-                                                Next<Feather name="skip-forward"/></Text>
-                                        </TouchableOpacity>
-                                    </View>
+                                        <View style={globalStyles.prevnextsubview}>
+                                            <TouchableOpacity onPress={(event) => { this.changePage('prev') }}>
+                                                <Text style={this.changeprevstyle()}>
+                                                    <Feather name="skip-back"/>Prev
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <View style={globalStyles.prevnextsubview}>
+                                            <TouchableOpacity onPress={(event) => { this.changePage('next')}}>
+                                                <Text style={this.changenextstyle()}>
+                                                    Next<Feather name="skip-forward"/></Text>
+                                            </TouchableOpacity>
+                                        </View>
                                 </View>
                             </View>
                         </ScrollView>  
