@@ -4,7 +4,7 @@ import {React} from 'react';
 import GeneralInfoSegControl from '../components/GeneralInfoSegControl'
 
 const screens = {
-    Modify: {
+    "General Information": {
         screen: GeneralInfoSegControl
     }
 }
