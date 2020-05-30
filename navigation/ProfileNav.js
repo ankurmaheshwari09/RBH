@@ -10,7 +10,7 @@ const screens = {
     },
 }
 
-const ProfileStack = createStackNavigator(screens, {
+const HomeStack = createStackNavigator(screens, {
     defaultNavigationOptions: {
         headerStyle: {
             height: 50
@@ -20,4 +20,4 @@ const ProfileStack = createStackNavigator(screens, {
     
 })
 
-export default createAppContainer(ProfileStack)
+export default createAppContainer(HomeStack)

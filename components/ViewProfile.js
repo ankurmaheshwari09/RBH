@@ -158,12 +158,13 @@ export default class ViewProfile extends React.Component {
     }
 
     render() {
-        return (<View style={globalStyles.formcontainer}>
-              {/*Background Image*/}
-              <View style={globalStyles.backgroundlogoimageview}>
-                    <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
-                </View>
+        return (
+             
             <View style={globalStyles.container}>
+                    {/*Background Image*/}
+                    <View style={globalStyles.backgroundlogoimageview}>
+                        <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
+                    </View>
                 <Formik
                 enableReinitialize
                     initialValues={
@@ -190,11 +191,11 @@ export default class ViewProfile extends React.Component {
                         //this.props.navigation.push('ViewProfile', values)
                     }}
                 >
-        {props => (
-            <KeyboardAvoidingView behavior="padding"
-            enabled style={globalStyles.keyboardavoid}
-            keyboardVerticalOffset={200}>
-            <ScrollView>
+              {props => (
+                <KeyboardAvoidingView behavior="padding"
+                enabled style={globalStyles.keyboardavoid}
+                keyboardVerticalOffset={200}>
+                <ScrollView>
 
                 <View>
                     
@@ -215,13 +216,13 @@ export default class ViewProfile extends React.Component {
                         numberOfLines={6}
                     />
                     <Text style={globalStyles.errormsg}>{props.touched.Description && props.errors.Description}</Text>
-                    <Text style={globalStyles.padding}></Text>
+                    {/* <Text style={globalStyles.padding}></Text> */}
                     <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
 
                                                     
-                </View>
-            </ScrollView>
-            </KeyboardAvoidingView>
+                    </View>
+                </ScrollView>
+                </KeyboardAvoidingView>
 
                     )}
 
@@ -234,7 +235,6 @@ export default class ViewProfile extends React.Component {
             </Modal>
             <LoadingDisplay loading={this.state.loading} />
             </View >
-        </View >
         );
     }
 }

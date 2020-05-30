@@ -250,12 +250,13 @@ export default class CommitteeScreen extends React.Component {
 
     render() {
         console.log('calling render',this.state.suggestion);
-        return (<View style={globalStyles.formcontainer}>
-              {/*Background Image*/}
-              <View style={globalStyles.backgroundlogoimageview}>
-                    <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
-                </View>
+        return (     
             <View style={globalStyles.container}>
+
+                        {/*Background Image*/}
+                       <View style={globalStyles.backgroundlogoimageview}>
+                            <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
+                        </View>
                 <Formik     
                    enableReinitialize
                     initialValues={
@@ -336,7 +337,7 @@ export default class CommitteeScreen extends React.Component {
                             numberOfLines={6}
                         /> 
                      <Text style={globalStyles.errormsg}>{props.touched.Suggestion && props.errors.Suggestion}</Text>
-                     <Text style={globalStyles.padding}></Text> 
+                     {/* <Text style={globalStyles.padding}></Text>  */}
                       <Text style={globalStyles.label}>Select Staff:</Text>                   
              {
               this.state.staffMembers.map((staffMember,index) => {
@@ -394,7 +395,7 @@ export default class CommitteeScreen extends React.Component {
                 </Modal>
                 <LoadingDisplay loading={this.state.loading} />
             </View >
-        </View >
+
         );
     }
 }
