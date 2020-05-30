@@ -103,7 +103,15 @@ export default class CommitteeScreen extends React.Component {
     //     submitted = submitted.concat(committeeStaff[i].staffNo);
     //    }
     //    this.setState({staffMembers: submitted});
-     return this.state.staffMembers.map((member) => {
+    let selectedStaffNumber = [];
+    this.state.updateSelectedStaff.map((newStaff)=>{
+        selectedStaffNumber.push(newStaff.staffNo);
+    })
+    this.setState({updateSelectedStaff : selectedStaffNumber});
+
+     let result = this.state.staffMembers.map((member) => {
+         console.log(member.staffNo,'staff')
+         console.log(this.state.updateSelectedStaff,'from db staff');
         if(this.state.updateSelectedStaff.includes(member.staffNo)){    
                 member.isSelected = true;
                 console.log('true');
@@ -114,6 +122,8 @@ export default class CommitteeScreen extends React.Component {
         }
         return member;
         });  
+        this.setState({staffMembers: result});
+        
     } 
 
 
@@ -307,7 +317,7 @@ export default class CommitteeScreen extends React.Component {
                             </View>
 
                         <Text style={globalStyles.label}>Enter/Update Suggestion:</Text>
-                        <Text style={globalStyles.errormsg}>{props.touched.Suggestion && props.errors.Suggestion}</Text>
+                        
                         <TextInput
                             style={globalStyles.inputText}
                             onChangeText={props.handleChange('Suggestion')}
@@ -316,9 +326,13 @@ export default class CommitteeScreen extends React.Component {
                             multiline={true}
                             numberOfLines={6}
                         /> 
-                      <Text style={globalStyles.padding}></Text>                       
+                     <Text style={globalStyles.errormsg}>{props.touched.Suggestion && props.errors.Suggestion}</Text>
+                      <Text style={globalStyles.label}>Select Staff:</Text>      
+                      <Text style={globalStyles.padding}></Text>                 
              {
               this.state.staffMembers.map((staffMember,index) => {
+                  console.log(staffMember.isSelected,'staff selected');
+                  console.log('entered');
                return(
                 <React.Fragment key={staffMember.staffNo}>
                 <CheckBox    style={styles.checkBoxStyle}
@@ -344,7 +358,7 @@ export default class CommitteeScreen extends React.Component {
                         this.setState({selectedStaff: temp});
                     }
                     console.log(this.state.selectedStaff,'selected staff');
-                   
+                    
                     }}
                     isChecked={staffMember.isSelected}     
                     rightText={staffMember.firstName + " " + staffMember.lastName}  

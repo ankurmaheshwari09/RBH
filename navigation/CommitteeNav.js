@@ -1,20 +1,16 @@
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 import { React } from 'react';
-import CommitteeDisplay from '../screens/CommitteeDisplay';
+//import CommitteeDisplay from '../screens/CommitteeDisplay';
 import CommitteeSuggestionForm from '../components/CommitteeSuggestionForm';
 
 const screens = {
-    CommitteeScreen: {
+    'CommitteeSuggestion': {
         screen: CommitteeSuggestionForm
     },
-    CommitteeDisplay: {
-        screen: CommitteeDisplay
-    },
-    
 }
 
-const HomeStack = createStackNavigator(screens, {
+const CommitteeStack = createStackNavigator(screens, {
     defaultNavigationOptions: {
         headerStyle: {
             height: 50
@@ -23,4 +19,4 @@ const HomeStack = createStackNavigator(screens, {
     }
 })
 
-export default createAppContainer(HomeStack)
+export default createAppContainer(CommitteeStack)

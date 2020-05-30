@@ -9,10 +9,10 @@ import HealthScreen from '../screens/HealthScreen';
 import ChildList from '../components/ChildList';
 import ViewProfile from '../components/ViewProfile';
 import ProfileNav from './ProfileNav';
+import CommitteeNav from  './CommitteeNav';
 import GeneralInfoForm from '../components/GeneralInfoForm';
 import InfoGeneral from '../screens/InfoGeneral';
 import GeneralInfoStack from './GeneralInfoNavigation';
-//import CommitteeScreen from '../screens/CommitteeScreen';
 import CommitteeSuggestionForm from '../components/CommitteeSuggestionForm';
 import StatusNavigator from './StatusNavigator';
 import FollowUpScreen from '../screens/FollowUpScreen';
@@ -58,7 +58,7 @@ const screens = {
         screen: GeneralInfoStack
     },
     Profile: {
-        screen: ViewProfile
+        screen: ProfileNav
     },
     Family: {
         screen: FamilyInfoNavigation
@@ -67,7 +67,7 @@ const screens = {
         screen: CommunicationInfoNavigation
     },
     Committee: {
-        screen: CommitteeSuggestionForm
+        screen: CommitteeNav
     },
     FollowUp: {
         screen: FollowUpNavigation

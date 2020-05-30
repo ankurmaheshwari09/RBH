@@ -174,7 +174,7 @@ export default class ViewProfile extends React.Component {
                             let result = this._submitProfile(values);
                             console.log(result);
                         }
-                        this.props.navigation.push('ViewProfile', values)
+                        //this.props.navigation.push('ViewProfile', values)
                     }}
                 >
         {props => (
@@ -209,7 +209,7 @@ export default class ViewProfile extends React.Component {
             <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
                 <View style={globalStyles.MainContainer}>
                     <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                    <SuccessDisplay successDisplay={this.state.successDisplay} type='Profile' childNo={this.state.child.firstName} />
+                    <SuccessDisplay successDisplay={this.state.successDisplay} type='Profile' childNo={this.state.child.firstName}/>
                 </View>
             </Modal>
             <LoadingDisplay loading={this.state.loading} />
