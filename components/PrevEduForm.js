@@ -80,7 +80,7 @@ export default class PrevEduForm extends React.Component{
     }
     render() {
         return (
-            <View style = {globalStyles.container}>
+            <View style = {globalStyles.scrollContainer}>
                 <Formik
                     initialValues = {
                         {
@@ -111,24 +111,23 @@ export default class PrevEduForm extends React.Component{
                                     showsVerticalScrollIndicator = {false}
                                 >
                                     <View>
-                                        <Text style = {globalStyles.text}>Drop Out Reason:</Text>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.dropoutReason && props.errors.dropoutReason }</Text>
+                                        <Text style = {globalStyles.label}>Drop Out Reason:</Text>
                                         <TextInput
                                         style = {globalStyles.inputText}
                                         onChangeText = {props.handleChange('dropoutReason')}
                                         value = {props.values.dropoutReason}
                                         />
+                                        <Text style = {globalStyles.errormsg}>{ props.touched.dropoutReason && props.errors.dropoutReason }</Text>
 
-                                        <Text style = {globalStyles.text}>Year Of Studied:</Text>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.yearOfStudied && props.errors.yearOfStudied }</Text>
+                                        <Text style = {globalStyles.label}>Year Of Studied:</Text>
                                         <TextInput
                                         style = {globalStyles.inputText}
                                         onChangeText = {props.handleChange('yearOfStudied')}
                                         value = {props.values.yearOfStudied}
                                         />
+                                        <Text style = {globalStyles.errormsg}>{ props.touched.yearOfStudied && props.errors.yearOfStudied }</Text>
 
-                                        <Text style = {globalStyles.text}>Medium:</Text>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.medium && props.errors.medium }</Text>
+                                        <Text style = {globalStyles.label}>Medium:</Text>
                                         <Picker
                                         selectedValue = {props.values.medium}
                                         style = {globalStyles.dropDown}
@@ -142,17 +141,17 @@ export default class PrevEduForm extends React.Component{
                                             })}
                                     
                                         </Picker>
+                                        <Text style = {globalStyles.errormsg}>{ props.touched.medium && props.errors.medium }</Text>
 
-                                        <Text style = {globalStyles.text}>School Name:</Text>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.schoolName && props.errors.schoolName }</Text>
+                                        <Text style = {globalStyles.label}>School Name:</Text>
                                         <TextInput
                                         style = {globalStyles.inputText}
                                         onChangeText = {props.handleChange('schoolName')}
                                         value = {props.values.schoolName}
                                         />
+                                        <Text style = {globalStyles.errormsg}>{ props.touched.schoolName && props.errors.schoolName }</Text>
 
-                                        <Text style = {globalStyles.text}>School Type:</Text>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.schooltype && props.errors.schooltype }</Text>
+                                        <Text style = {globalStyles.label}>School Type:</Text>
                                         <Picker
                                         selectedValue = {props.values.schooltype}
                                         style = {globalStyles.dropDown}
@@ -166,9 +165,9 @@ export default class PrevEduForm extends React.Component{
                                             })}
                                     
                                         </Picker>
+                                        <Text style = {globalStyles.errormsg}>{ props.touched.schooltype && props.errors.schooltype }</Text>
 
-                                        <Text style = {globalStyles.text}>Class:</Text>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.class && props.errors.class }</Text>
+                                        <Text style = {globalStyles.label}>Class:</Text>
                                         <Picker
                                         selectedValue = {props.values.class}
                                         style = {globalStyles.dropDown}
@@ -182,14 +181,16 @@ export default class PrevEduForm extends React.Component{
                                             })}
                                     
                                         </Picker>
+                                        <Text style = {globalStyles.errormsg}>{ props.touched.class && props.errors.class }</Text>
 
-                                        <Text style = {globalStyles.text}>School Place:</Text>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.schoolPlace && props.errors.schoolPlace }</Text>
+                                        <Text style = {globalStyles.label}>School Place:</Text>
                                         <TextInput
                                         style = {globalStyles.inputText}
                                         onChangeText = {props.handleChange('schoolPlace')}
                                         value = {props.values.schoolPlace}
                                         />
+                                        <Text style = {globalStyles.errormsg}>{ props.touched.schoolPlace && props.errors.schoolPlace }</Text>
+
                                         <Button style = {globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                                     </View>
                                 </ScrollView>

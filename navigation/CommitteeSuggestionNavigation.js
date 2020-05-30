@@ -1,11 +1,11 @@
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer} from 'react-navigation'
 import {React} from 'react';
-import GeneralInfoSegControl from '../components/GeneralInfoSegControl'
+import CommitteeSuggestionForm from '../components/CommitteeSuggestionForm';
 
 const screens = {
-    "General Information": {
-        screen: GeneralInfoSegControl
+    "Committee Suggestions": {
+        screen: CommitteeSuggestionForm
     }
 }
 
