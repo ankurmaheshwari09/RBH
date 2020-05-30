@@ -12,7 +12,7 @@ const screens = {
 
 const FollowUpStack = createStackNavigator(screens, {
     defaultNavigationOptions: {
-
+        title: 'Add Followups',
         headerStyle: {
             height: 50,
         },

@@ -1,6 +1,9 @@
-import { base_url, getDataAsync } from './Base'
+import { base_url, getDataAsync } from './Base';
+import { getOrgId } from '../constants/LoginConstant';
 
 export function statusConstants() {
+
+        let orgId = getOrgId();
 
         global.status;
         getDataAsync(base_url + '/child-statuses').then(data => {  global.status = data })
@@ -15,7 +18,7 @@ export function statusConstants() {
         getDataAsync(base_url + '/action-taken-list').then(data => {  global.actionTaken = data })
 
         global.staff;
-        getDataAsync(base_url + '/home-staff-list').then(data => {  global.staff = data })
+        getDataAsync(base_url + '/home-staff-list/'+ orgId).then(data => { global.staff = data })
 
 }
 
