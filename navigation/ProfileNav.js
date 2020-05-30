@@ -5,7 +5,7 @@ import { React } from 'react';
 import ViewProfile from '../components/ViewProfile';
 
 const screens = {
-    'View Profile': {
+    "View Profile": {
         screen: ViewProfile
     },
 }

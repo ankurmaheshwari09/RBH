@@ -10,6 +10,7 @@ import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
+import { containerCSS } from 'react-select/src/components/containers';
 
 const GeneralInfoFormSchema = yup.object({
     identificationPlace1: yup.string().required(),
@@ -71,7 +72,7 @@ export default class GeneralInfoForm extends React.Component{
     render() {
         return (
             
-            <View style = {globalStyles.container}>
+            <View style = {globalStyles.scrollContainer}>
                 
                 <Formik
                 enableReinitialize
@@ -108,8 +109,7 @@ export default class GeneralInfoForm extends React.Component{
                             
                             <View>
                                 
-                                <Text style = {globalStyles.text}>IdentificationPlace 1:</Text>
-                                <Text style = {globalStyles.errormsg}>{ props.touched.identificationPlace1 && props.errors.identificationPlace1 }</Text>
+                                <Text style = {globalStyles.label}>IdentificationPlace 1:</Text>
                                 <Picker
                                 selectedValue = {props.values.identificationPlace1}
                                 style = {globalStyles.dropDown}
@@ -123,10 +123,9 @@ export default class GeneralInfoForm extends React.Component{
                                     })}
                                     
                                 </Picker>
-                                
-                                <Text style = {globalStyles.text}>MarkType1:</Text>
-                                <Text style = {globalStyles.errormsg}>{ props.touched.markType1 && props.errors.markType1 }</Text>
+                                <Text style = {globalStyles.errormsg}>{ props.touched.identificationPlace1 && props.errors.identificationPlace1 }</Text>
 
+                                <Text style = {globalStyles.label}>MarkType1:</Text>
                                 <Picker
                                 selectedValue = {props.values.markType1}
                                 style = {globalStyles.dropDown}
@@ -141,8 +140,9 @@ export default class GeneralInfoForm extends React.Component{
                                     })}
                                     
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{ props.touched.markType1 && props.errors.markType1 }</Text>
 
-                                <Text style = {globalStyles.text}>IdentificationPlace2:</Text>
+                                <Text style = {globalStyles.label}>IdentificationPlace2:</Text>
                                 <Picker
                                 selectedValue = {props.values.identificationPlace2}
                                 style = {globalStyles.dropDown}
@@ -156,8 +156,9 @@ export default class GeneralInfoForm extends React.Component{
                                     })}
                                     
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{ props.touched.identificationPlace2 && props.errors.identificationPlace2}</Text>
 
-                                <Text style = {globalStyles.text}>MarkType2:</Text>
+                                <Text style = {globalStyles.label}>MarkType2:</Text>
                                 <Picker
                                 selectedValue = {props.values.markType2}
                                 style = {globalStyles.dropDown}
@@ -172,8 +173,9 @@ export default class GeneralInfoForm extends React.Component{
                                     })}
                                     
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{ props.touched.markType2 && props.errors.markType2}</Text>
 
-                                <Text style = {globalStyles.text}>Special Need:</Text>
+                                <Text style = {globalStyles.label}>Special Need:</Text>
                                 <Picker
                                 selectedValue = {props.values.specialNeed}
                                 style = {globalStyles.dropDown}
@@ -187,8 +189,9 @@ export default class GeneralInfoForm extends React.Component{
                                     })}
                                     
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{ props.touched.specialNeed && props.errors.specialNeed }</Text>
 
-                                <Text style = {globalStyles.text}>Occupation On Street:</Text>
+                                <Text style = {globalStyles.label}>Occupation On Street:</Text>
                                 <Picker
                                 selectedValue = {props.values.occupationOnStreet}
                                 style = {globalStyles.dropDown}
@@ -202,28 +205,33 @@ export default class GeneralInfoForm extends React.Component{
                                     })}
                                     
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{ props.touched.occupationOnStreet && props.errors.occupationOnStreet }</Text>
 
-                                <Text style = {globalStyles.text}>Duration On Street:</Text>
+                                <Text style = {globalStyles.label}>Duration On Street:</Text>
                                 <TextInput
                                     style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('durationOnStreet')} //This will update the IdentificationMArk value in 'values'
                                     value = {props.values.durationOnStreet} //value updated in 'values' is reflected here
                                 />
-                                <Text style = {globalStyles.text}>Previously Stayed Organisation Name</Text>
+                                <Text style = {globalStyles.errormsg}>{ props.touched.durationOnStreet && props.errors.durationOnStreet }</Text>
+                                
+                                <Text style = {globalStyles.label}>Previously Stayed Organisation Name:</Text>
                                 <TextInput
                                     style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('psoName')}
                                     value = {props.values.psoName}
                                 />
+                                <Text style = {globalStyles.errormsg}>{ props.touched.psoName && props.errors.psoName }</Text>
 
-                                <Text style = {globalStyles.text}>CWC Reference No:</Text>
+                                <Text style = {globalStyles.label}>CWC Reference No:</Text>
                                 <TextInput
                                     style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('cwcRefNo')}
                                     value = {props.values.cwcRefNo}
                                 />
+                                <Text style = {globalStyles.errormsg}>{ props.touched.cwcRefNo && props.errors.cwcRefNo }</Text>
 
-                                <Text style = {globalStyles.text}>CWC Stay Reason:</Text>
+                                <Text style = {globalStyles.label}>CWC Stay Reason:</Text>
                                 <Picker
                                 selectedValue = {props.values.cwcStayReason}
                                 style = {globalStyles.dropDown}
@@ -237,6 +245,7 @@ export default class GeneralInfoForm extends React.Component{
                                     })}
                                     
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{ props.touched.cwcStayReason && props.errors.cwcStayReason }</Text>
                                 
                                 <Button style = {globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                             </View>

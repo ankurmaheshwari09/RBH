@@ -28,8 +28,19 @@ export const globalStyles = StyleSheet.create({
         padding: 10,
         fontSize: 18,
         borderRadius: 6,
+       
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: 'black'
+    },
+    disabledBox: {
+        padding: 10,
+        fontSize: 18,
+        borderRadius: 6,
         backgroundColor: '#fafafa',
-        marginBottom: 1
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: 'black'
     },
     inputform: {
         borderWidth: 3,
@@ -60,6 +71,7 @@ export const globalStyles = StyleSheet.create({
     //     flexWrap: 'wrap'
     // },
     dropDown: {
+        marginTop: -7,
         borderColor: 'black',
         borderWidth: 1,
     },
@@ -156,6 +168,7 @@ export const globalStyles = StyleSheet.create({
         color: 'black',
     },
     homeScreenText: {
+        top: '30%',
         padding: 30,
         fontSize: 15,
     },
@@ -198,7 +211,21 @@ export const globalStyles = StyleSheet.create({
     label: {
         fontSize: 14,
         paddingTop: 5,
+        paddingBottom: 2,
+        paddingLeft: 5,
         fontWeight: 'bold',
+    },
+    backgroundlogoimageview: {
+        position: 'absolute', top:"20%",right: 0, left: 0, zIndex: -2,
+    },
+    backgroundlogoimage: {
+        opacity: 0.2,
+        marginTop: '30%',
+        marginLeft: '29%'
+    },
+    uploadpicbutton: {
+        width: '50%',
+        marginBottom: 5,
     },
     topView: {
         paddingTop: 5,
@@ -266,4 +293,15 @@ export const globalStyles = StyleSheet.create({
         fontSize: 25,
         borderBottomColor: '#000000'
     },
+    healthformheading: {
+        fontSize: 18,
+        alignSelf: 'center',
+        marginBottom: 15,
+        marginTop: 0,
+        backgroundColor:'#48BBEC',
+        color: 'white',
+        borderWidth: 1,
+        borderRadius: 8
+    }
+
 });

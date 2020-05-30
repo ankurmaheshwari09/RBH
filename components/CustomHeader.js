@@ -1,5 +1,5 @@
 import  React, { Component } from 'react';
-import { View, Text,StyleSheet, SafeAreaView, TouchableOpacity, Button } from 'react-native';
+import { View, Text,StyleSheet, SafeAreaView, TouchableOpacity,Alert, Button } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import {Feather} from '@expo/vector-icons';
 import { logOut } from '../constants/LoginConstant';
@@ -34,7 +34,14 @@ const styles = StyleSheet.create({
 export default class CustomHeader extends Component {
 
     Logout() {
-        logOut();
+        Alert.alert(
+            "Confirm",
+            "Are you sure you want to logout?",
+            [
+                { text: 'OK', onPress: () => logOut() },
+            ],
+            { cancelable: true },
+        );
     }
 
     render () {

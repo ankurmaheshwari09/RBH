@@ -3,7 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollViewBase, ScrollView, TouchableOpacity, SafeAreaView
+  ScrollViewBase, ScrollView, TouchableOpacity, SafeAreaView, Image
 } from 'react-native'
 import GeneralInfoForm from './GeneralInfoForm';
 import HealtDuringAdd from './HealthDuringAddForm'
@@ -49,12 +49,13 @@ export default class GeneralInfoSegControl extends Component {
       getDataAsync(base_url + '/child-health-all-records/' + this.state.child.childNo).then(data => {
         if(JSON.stringify(data) !== JSON.stringify([]) && data !== null){
             let health = data[0];
+            let required_date = new Date(health.healthDate)
             for(let i = 1; i < data.length ; i++)
             {
               let vardate = new Date(data[i].healthDate)
-              let actual_date = new Date(health[i].healthDate)
-              if(vardate < actual_date){
+              if(vardate < required_date){
                 health = data[i]
+                required_date = new Date(health.healthDate)
               }
             }
             this.setState({childHealth: health})
@@ -71,6 +72,9 @@ export default class GeneralInfoSegControl extends Component {
       const {formIndex} = this.state
       return (
         <View style = {globalStyles.container}>
+          <View style={globalStyles.backgroundlogoimageview}>
+            <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+          </View>
           <LoadingDisplay loading={this.state.loading} />
           <View style = {globalStyles.segView}>
           <ScrollView
@@ -80,7 +84,7 @@ export default class GeneralInfoSegControl extends Component {
           >
             <View>
               <TouchableOpacity style = {{borderBottomWidth: this.state.formIndex == 0 ? 3 : 0 ,borderBottomColor: this.state.formIndex == 0 ? 'grey' : '#f0f0f0'}} onPress = {() => this.setState({formIndex : 0})}>
-                <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:10}}>GeneralInfo</Text>
+                <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:10}}>General Info.</Text>
               </TouchableOpacity>
             </View>
             <View>
@@ -90,12 +94,12 @@ export default class GeneralInfoSegControl extends Component {
             </View>
             <View>
               <TouchableOpacity style = {{borderBottomWidth: this.state.formIndex == 2 ? 3 : 0 ,borderBottomColor: this.state.formIndex == 2 ? 'grey' : '#f0f0f0'}} onPress = {() => this.setState({formIndex : 2})}>
-                <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:10}}>PrevEdu</Text>
+                <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:10}}>Previous Education</Text>
               </TouchableOpacity>
             </View>
             <View>
               <TouchableOpacity style = {{borderBottomWidth: this.state.formIndex == 3 ? 3 : 0 ,borderBottomColor: this.state.formIndex == 3 ? 'grey' : '#f0f0f0'}} onPress = {() => this.setState({formIndex : 3})}>
-                <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:10}}>Health during addmission</Text>
+                <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:10}}>Health During Addmission</Text>
               </TouchableOpacity>
             </View>
             </ScrollView>

@@ -1,12 +1,18 @@
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer} from 'react-navigation'
 import {React} from 'react';
-import GeneralInfoSegControl from '../components/GeneralInfoSegControl'
+import SegmentedHealthView from '../components/SegmentedHealthView'
+import HealthScreen from '../screens/HealthScreen';
+//import GeneralInfoSegControl from '../components/GeneralInfoSegControl'
+//import InfoGeneral from '../screens/InfoGeneral';
 
 const screens = {
-    "General Information": {
-        screen: GeneralInfoSegControl
-    }
+    Modify: {
+        screen: SegmentedHealthView
+    },
+    HealthScreen: {
+        screen: HealthScreen
+    },
 }
 
 const HomeStack = createStackNavigator(screens, {

@@ -1,8 +1,6 @@
 import React from 'react';
 import {
-    Button, Text, TextInput, View, ScrollView,
-    KeyboardAvoidingView, Field,
-} from 'react-native';
+    Button, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, View, Dimensions, Image } from 'react-native';
 import { Formik } from 'formik';
 import {globalStyles} from '../styles/global';
 import * as yup from 'yup';
@@ -141,15 +139,30 @@ export default class ViewProfile extends React.Component {
         }
     }
 
-    componentWillUnmount() {
-        const { params } = this.props.navigation.state;
-        if(this.state.refreshPage){
-            params.refreshChildList();
-        }  
+    // componentWillUnmount() {
+    //     const { params } = this.props.navigation.state;
+    //     if(this.state.refreshPage){
+    //         params.refreshChildList();
+    //     }  
+    // }
+
+    navigateToChildListScreen() {
+        this.setState({ isVisible: false }, () => {
+            if (this.state.successDisplay) {
+                this.props.navigation.navigate('ViewChild');
+                const { params } = this.props.navigation.state;
+                params.refreshChildList();
+            }
+        })
+       
     }
 
     render() {
         return (<View style={globalStyles.formcontainer}>
+              {/*Background Image*/}
+              <View style={globalStyles.backgroundlogoimageview}>
+                    <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
+                </View>
             <View style={globalStyles.container}>
                 <Formik
                 enableReinitialize
@@ -185,7 +198,13 @@ export default class ViewProfile extends React.Component {
 
                 <View>
                     
-                    <Text style={globalStyles.label}>Child Name : {this.state.child.firstName}</Text>
+                    <Text style={globalStyles.label}>Child Name : </Text>
+                    <TextInput
+                        style={globalStyles.disabledBox}
+                        value={this.state.child.firstName} //value updated in 'values' is reflected here
+                        editable={false}
+                        selectTextOnFocus={false}
+                    />
                     <Text style={globalStyles.padding}></Text>
                     <Text style={globalStyles.label}>Enter/Update Description about child:</Text>
                     <TextInput
@@ -195,7 +214,8 @@ export default class ViewProfile extends React.Component {
                         multiline={true}
                         numberOfLines={6}
                     />
-                        <Text style={globalStyles.padding}></Text>
+                    <Text style={globalStyles.errormsg}>{props.touched.Description && props.errors.Description}</Text>
+                    <Text style={globalStyles.padding}></Text>
                     <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
 
                                                     
@@ -206,7 +226,7 @@ export default class ViewProfile extends React.Component {
                     )}
 
         </Formik>
-            <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+            <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.navigateToChildListScreen()}>
                 <View style={globalStyles.MainContainer}>
                     <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                     <SuccessDisplay successDisplay={this.state.successDisplay} type='Profile' childNo={this.state.child.firstName}/>
