@@ -4,18 +4,25 @@ import {
     KeyboardAvoidingView, Field, StyleSheet
 } from 'react-native';
 import { Formik } from 'formik';
-import { globalStyles } from '../styles/samplestyles';
+import { globalStyles } from '../styles/global';
 import * as yup from 'yup';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 import CheckBox from 'react-native-check-box';
-import { ActivityIndicator } from 'react-native';
+//import { ActivityIndicator } from 'react-native';
 import {base_url,getDataAsync} from '../constants/Base';
+//import UpdateApi from "../constants/UpdateApi";
+import Modal from 'react-native-modal';
+import { getOrgId } from '../constants/LoginConstant';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
+
 const CommitteeFormSchema = yup.object({
     Suggestion: yup.string().required(),
-    StartingDate: yup.string().required(),
+    MeetingDate: yup.string().required(),
 })
 
 export default class CommitteeScreen extends React.Component {
@@ -26,10 +33,17 @@ export default class CommitteeScreen extends React.Component {
             showSSElements: false,
             updateDetails: false,
             submitAlertMessage: '',
+            suggestion: '',
             staffMembers: [],
             selectedStaff: [],
+            selectedStaffArray: [],
+            updateSelectedStaff: [],
             committeeSuggestionNo: '',
             child: this.props.navigation.getParam('child'),
+            sucessDisplay: false,
+            errorDisplay: false,
+            loading: false,
+            isVisible: false,
         }
         this.getStaffMembers =this.getStaffMembers.bind(this);
         this.populateSelectedStaff = this.populateSelectedStaff.bind(this);
@@ -37,14 +51,13 @@ export default class CommitteeScreen extends React.Component {
         this._updateCommitteeSuggestionForm = this._updateCommitteeSuggestionForm.bind(this);
         this._pickDate = this._pickDate.bind(this);
         this.showSDDatepicker = this.showSDDatepicker.bind(this);
-
+        this.selectedStaffAsObjects = this.selectedStaffAsObjects.bind(this);
 
     }
     state = {
         showSD: false,
-        startingdate: '',
+        meetingdate: '',
     };
-
     
     _pickDate = (event, date, handleChange) => {
         console.log(date);
@@ -52,7 +65,7 @@ export default class CommitteeScreen extends React.Component {
         console.log(a);
         console.log(typeof (a));
         this.setState({
-            startingdate: a, showSD: false
+            meetingdate: a, showSD: false
         });
         handleChange(a);
     }
@@ -61,9 +74,18 @@ export default class CommitteeScreen extends React.Component {
     showSDDatepicker = () => {
         this.setState({ showSD: true });
     };
+    
+   
+    selectedStaffAsObjects = (staffArray)=>{
+        let tmp = [];
+        for(var i=0; i<staffArray.length;i++){
+            tmp.push({"staffNo":staffArray[i]});
+        }
+        return tmp;
+    }
 
     getStaffMembers = () => {
-         this.state.staffMembers.map((member) => {
+         return this.state.staffMembers.map((member) => {
             if(this.state.selectedStaff.includes(member.staffNo)){    
                     member.isSelected = true;
             }
@@ -75,23 +97,38 @@ export default class CommitteeScreen extends React.Component {
             
     };
 
-    populateSelectedStaff = (committeeSuggestion) => {
-        var joined = this.state.selectedStaff.concat(committeeSuggestion[0].staffNo);
-       this.setState({selectedStaff: joined});
+    populateSelectedStaff = () => {
+    //    let submitted = [];
+    //    for(var i=0; i< committeeStaff.length;i++){
+    //     submitted = submitted.concat(committeeStaff[i].staffNo);
+    //    }
+    //    this.setState({staffMembers: submitted});
+     return this.state.staffMembers.map((member) => {
+        if(this.state.updateSelectedStaff.includes(member.staffNo)){    
+                member.isSelected = true;
+                console.log('true');
+        }
+        else{
+                member.isSelected = false;     
+                console.log('false');
+        }
+        return member;
+        });  
     } 
 
 
-    componentDidMount() {
+    async componentDidMount() {
         console.log(this.state.child.childNo);
+        let orgId = getOrgId();
         Promise.all([
-        fetch(base_url+"/admission-all-committee-suggestions/"+this.state.child.childNo,{
+        await fetch(base_url+"/admission-all-committee-suggestions/"+this.state.child.childNo,{
             method: 'GET',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             }
         }), 
-        fetch(base_url+"/home-staff-list/59",{
+        await fetch(base_url+"/home-staff-list/"+orgId,{
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -101,96 +138,116 @@ export default class CommitteeScreen extends React.Component {
     ])
         .then(([response1, response2])=>{return Promise.all([response1.json(), response2.json()]) })
         .then(([responseJson1, responseJson2])=>{
-            console.log(responseJson1,'it is response for getting stored details');
-            console.log(responseJson2,'it is response for staff list');
+            //console.log(responseJson1,'it is response for getting stored details');
+            //console.log(responseJson2,'it is response for staff list');
             this.setState({staffMembers: responseJson2})
-            //this.setState({staffMembers: [...this.state.staffMembers, this.getStaffMembers()]})
             console.log(this.getStaffMembers(),'returning members');
-            console.log(this.state.staffMembers,'staff members list');
+            //console.log(this.state.staffMembers,'staff members list');
             if(responseJson1 == null)
             {
                 this.state.updateDetails=false;
+                console.log('null response');
             }
             else{
                 this.state.updateDetails=true;
-                this.setState({ committeeSuggestionNo:responseJson1[0].committeeSuggestionNo});
-                this.populateSelectedStaff(responseJson2);
+                console.log('have response');
+                console.log(responseJson1[0],'responseeeeeeeee');
+                let formatted_date = moment(responseJson1[0].committeeSuggestionDate).format("YYYY-MM-DD");
+                console.log(formatted_date,'date');
+                console.log(responseJson1[0].committeeSuggestionText,'suggestionnn' );
+                this.setState({committeeSuggestionNo:responseJson1[0].committeeSuggestionNo,
+                    suggestion: responseJson1[0].committeeSuggestionText,
+                    meetingdate: formatted_date,
+                    updateSelectedStaff: responseJson1[0].staffNumber});
+                   
+                console.log(this.state.suggestion,'state suggestion');  
+                console.log(this.populateSelectedStaff(),'populate');
              }
     });
     }
 
-    _submitCommitteeSuggestionForm(values) {
+    async _submitCommitteeSuggestionForm(values) {
+        console.log(this.selectedStaffAsObjects(this.state.selectedStaff),'array turned objects');
+        this.setState({ loading: true });
         let request_body = JSON.stringify({
                 "committeeSuggestionText": values.Suggestion,
-                "committeeSuggestionDate": values.StartingDate,
+                "committeeSuggestionDate": values.MeetingDate,
                 "childNo": this.state.child.childNo,
-                "staffNo": 889
+                "staffNo": 1,
+                "staffNumber": this.selectedStaffAsObjects(this.state.selectedStaff)
         });
+        console.log(request_body,'req body');
         let result = {};
-        fetch(base_url+"/admission-committee-suggestion", {
+        let response = await fetch(base_url+"/admission-committee-suggestion", {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
             body: request_body,
-        })
-        .then((response) => response.json())
-        .then((responseJson) => {
-            console.log(responseJson);
-            this.setState({submitAlertMessage: 'Successfully added suggestions given by committee for '+responseJson.childNo});
-            alert(this.state.submitAlertMessage);
-            this.setState({ showElements: false, showSSElements: false});
-        })
-        .catch((error) => {
-            this.setState({submitAlertMessage: 'Unable to add Details. Plesae contact the Admin.'});
-            alert(this.state.submitAlertMessage);
-            console.log(error);
-            this.setState({showElements: false, showSSElements: false});
         });
+        let responseJson = await response.json();
+        
+        this.setState({ loading: false, isVisible: true,
+            suggestion: values.Suggestion,
+            meetingdate: values.MeetingDate });
+        if(response.ok){
+            console.log(responseJson);
+            this.setState({ successDisplay: true });
+        }
+        else{
+            console.log(error);
+            this.setState({ errorDisplay: true });
+        }
+          
     }
 
-    _updateCommitteeSuggestionForm(values) {
+    async _updateCommitteeSuggestionForm(values) {
+       // console.log(this.selectedStaffAsObjects(this.state.selectedStaff),'array turned objects');
+        this.setState({ loading: true });
         let request_body = JSON.stringify({
+                "childNo": this.state.child.childNo,
+                "committeeSuggestionDate": values.MeetingDate, 
                 "committeeSuggestionNo": this.state.committeeSuggestionNo,
                 "committeeSuggestionText": values.Suggestion,
-                "committeeSuggestionDate": values.StartingDate,
-                "childNo": this.state.child.childNo,
-                "staffNo": 889
+                "staffNo": 1,
+                "staffNumber": this.selectedStaffAsObjects(this.state.selectedStaff)
         });
+        console.log(request_body,'req body');
         let result = {};
-        fetch(base_url+"/admission-committee-suggestion/"+this.state.committeeSuggestionNo, {
+        let response = await fetch(base_url+"/admission-committee-suggestion/"+this.state.committeeSuggestionNo, {
             method: 'PUT',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
             body: request_body,
-        })
-        .then((response) => response.json())
-        .then((responseJson) => {
-            console.log(responseJson);
-            this.setState({submitAlertMessage: 'Successfully updated suggestions given by committee for '+responseJson.childNo});
-            alert(this.state.submitAlertMessage);
-            this.setState({ showElements: false, showSSElements: false});
-        })
-        .catch((error) => {
-            this.setState({submitAlertMessage: 'Unable to update Details. Plesae contact the Admin.'});
-            alert(this.state.submitAlertMessage);
-            console.log(error);
-            this.setState({date: null, showElements: false, showSSElements: false});
         });
+        let responseJson = await response.json();
+            this.setState({ loading: false, isVisible: true,
+                suggestion: values.Suggestion,
+                meetingdate: values.MeetingDate});
+            if(response.ok) {
+                console.log(responseJson);
+                this.setState({ successDisplay: true });
+            }
+            else{
+                console.log(error);
+                this.setState({ errorDisplay: true });
+            }
     }
 
 
     render() {
-        return (<View style={globalStyles.container1}>
+        console.log('calling render',this.state.suggestion);
+        return (<View style={globalStyles.formcontainer}>
             <View style={globalStyles.container}>
-                <Formik
+                <Formik     
+                   enableReinitialize
                     initialValues={
                         {
-                            Suggestion: '',
-                            StartingDate: this.state.startingdate,
+                            Suggestion: this.state.suggestion,
+                            MeetingDate: this.state.meetingdate
                             
                         }
                     }
@@ -198,6 +255,7 @@ export default class CommitteeScreen extends React.Component {
                     onSubmit={async (values, actions) => {
                         //actions.resetForm();
                         console.log(values);
+                        //this.setState({meetingdate: '', suggestion: ''});
                         let checkUpdate =  this.state.updateDetails;
                         if(checkUpdate)
                         {
@@ -211,7 +269,7 @@ export default class CommitteeScreen extends React.Component {
                             console.log(result);
                         }
 
-                        this.props.navigation.push('CommitteeSuggestionForm', values)
+                        //this.props.navigation.push('CommitteeSuggestionForm', values)
                     }}
                 >
         {props => (
@@ -221,45 +279,44 @@ export default class CommitteeScreen extends React.Component {
                 <ScrollView>
 
                     <View>
-                        
-                    <Text style={globalStyles.text}>Child Name : {this.state.child.firstName}</Text>
-                    <Text style={globalStyles.padding}></Text>
-                        <Text style={globalStyles.text}>Suggestion:</Text>
-                        <Text style={globalStyles.errormsg}>{props.touched.Suggestion && props.errors.Suggestion}</Text>
-                        <TextInput
-                            style={globalStyles.input}
-                            onChangeText={props.handleChange('Suggestion')}
-                            value={props.values.Suggestion}
-                        />
-                        
-                        
-                        <Text style={globalStyles.text}>Select Date:</Text>
+                        <Text style={globalStyles.label}>Child Name : {this.state.child.firstName}</Text>
+                        <Text style={globalStyles.padding}></Text>                   
+                        <Text style={globalStyles.label}>Select Meeting Date:</Text>
                         <View style={globalStyles.dobView}>
                             <TextInput
                                 style={globalStyles.inputText, globalStyles.dobValue}
-                                value={this.state.startingdate}
-                                editable={true}
-                                onValueChange={props.handleChange('StartingDate')}
+                                value={props.values.MeetingDate}
+                                onValueChange={props.handleChange('MeetingDate')}                                    
                             />
                             <TouchableHighlight onPress={this.showSDDatepicker}>
                                 <View>
                                     <Feather style={globalStyles.dobBtn} name="calendar" />
                                 </View>
                             </TouchableHighlight>
-                            {/* <Text style={globalStyles.errormsg}>{props.touched.StartingDate && props.errors.StartingDate}</Text> */}
+            
                             {this.state.showSD &&
                                 <DateTimePicker
                                     style={{ width: 100 }}
                                     mode="date" //The enum of date, datetime and time
                                     value={ new Date() }
                                     mode= { 'date' }
-                                    
-                                    onChange={(e,date) => this._pickDate(e,date,props.handleChange('StartingDate'))}
+                                    onChange={(e,date) => this._pickDate(e,date,props.handleChange('MeetingDate'))}
                                 />
                             }
-                        </View>
-                         
+                            <Text style={globalStyles.errormsg}>{props.touched.MeetingDate && props.errors.MeetingDate}</Text>
+                            </View>
 
+                        <Text style={globalStyles.label}>Enter/Update Suggestion:</Text>
+                        <Text style={globalStyles.errormsg}>{props.touched.Suggestion && props.errors.Suggestion}</Text>
+                        <TextInput
+                            style={globalStyles.inputText}
+                            onChangeText={props.handleChange('Suggestion')}
+                            //onChangeText={(Suggestion)=> { props.setFieldValue('Suggestion', Suggestion) }}
+                            value={props.values.Suggestion}
+                            multiline={true}
+                            numberOfLines={6}
+                        /> 
+                      <Text style={globalStyles.padding}></Text>                       
              {
               this.state.staffMembers.map((staffMember,index) => {
                return(
@@ -267,13 +324,27 @@ export default class CommitteeScreen extends React.Component {
                 <CheckBox    style={styles.checkBoxStyle}
                     onClick={()=>{
                     let tempStaffMembers = [...this.state.staffMembers];
-                    console.log(tempStaffMembers);
-                    console.log(tempStaffMembers[index].isSelected);
+                    //console.log(tempStaffMembers);
+                    console.log(tempStaffMembers[index].isSelected,'before');
                     tempStaffMembers[index].isSelected = !tempStaffMembers[index].isSelected;
-                    console.log(tempStaffMembers[index].isSelected);
+                    console.log(tempStaffMembers[index].isSelected,'after');
                     this.setState({
                     staffMembers: tempStaffMembers
                     });
+                    //console.log(this.state.staffMembers,'after selected');
+                    let temp = this.state.selectedStaff;
+                    if(this.state.staffMembers[index].isSelected==true){
+                        console.log('okkk');
+                        temp.push(staffMember.staffNo)
+                        this.setState({selectedStaff: temp});
+                    }
+                    else{
+                        console.log('nooo');
+                        temp.splice(temp.indexOf(staffMember.staffNo),1)
+                        this.setState({selectedStaff: temp});
+                    }
+                    console.log(this.state.selectedStaff,'selected staff');
+                   
                     }}
                     isChecked={staffMember.isSelected}     
                     rightText={staffMember.firstName + " " + staffMember.lastName}  
@@ -286,12 +357,19 @@ export default class CommitteeScreen extends React.Component {
              <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
 
              </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
+             </ScrollView>
+        </KeyboardAvoidingView>
 
                     )}
 
                 </Formik>
+                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={globalStyles.MainContainer}>
+                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='suggestions given by committee' childNo={this.state.child.firstName} />
+                    </View>
+                </Modal>
+                <LoadingDisplay loading={this.state.loading} />
             </View >
         </View >
         );
@@ -310,5 +388,26 @@ const styles = StyleSheet.create({
         marginTop: 2,
         marginLeft: 30,
         paddingRight:240
-     }
-     })
+     },
+    dobView: {
+            flex: 1,
+            flexDirection: 'row',
+        },
+    dobValue: {
+        borderWidth: 1,
+        borderColor: '#ddd',
+        padding: 10,
+        marginBottom: 10,
+        fontSize: 18,
+        borderRadius: 6,
+        flex: 3,
+        marginLeft: 10,
+        marginRight: 15
+    },
+    dobBtn: {
+        marginLeft: 2,
+        flex: 2,
+        fontSize: 40,
+        marginRight: 15
+    },
+});

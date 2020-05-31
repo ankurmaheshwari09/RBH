@@ -1,44 +1,19 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import {createStackNavigator} from 'react-navigation-stack';
-import {createAppContainer} from 'react-navigation'
+import { createStackNavigator } from 'react-navigation-stack';
+import { createAppContainer } from 'react-navigation'
 
-import EducationScreen from '../screens/EducationScreen';
-import StatusScreen from '../screens/StatusScreen';
-import HealthScreen from '../screens/HealthScreen';
+import EducationScreen from './EducationNavigation';
 import ChildList from '../components/ChildList';
 import ViewProfile from '../components/ViewProfile';
-import ProfileNav from './ProfileNav';
-import GeneralInfoForm from '../components/GeneralInfoForm';
-import InfoGeneral from '../screens/InfoGeneral';
 import GeneralInfoStack from './GeneralInfoNavigation';
-//import CommitteeScreen from '../screens/CommitteeScreen';
-import CommitteeSuggestionForm from '../components/CommitteeSuggestionForm';
+import CommitteeSuggestionNavigation from './CommitteeSuggestionNavigation';
 import StatusNavigator from './StatusNavigator';
-import FollowUpScreen from '../screens/FollowUpScreen';
 import FollowUpNavigation from './FollowUpNavigation';
-import FamilyScreen from '../screens/FamilyScreen';
-import CommunicationScreen from '../screens/CommunicationScreen';
 import FamilyInfoNavigation from './FamilyInfoNavigation';
 import CommunicationInfoNavigation from './CommunicationInfoNavigation';
-
-
-
-// const Stack = createStackNavigator();
-// export default function StackNavigation() {
-//     return (
-//         <NavigationContainer>
-//             <Stack.Navigator>
-//                 <Stack.Screen name="ChildList" component={ChildList} />
-//                 <Stack.Screen name="About" component={EducationScreen} />
-//                 <Stack.Screen name="Status" component={StatusScreen} />
-//                 <Stack.Screen name="Health" component={HealthScreen} />
-//             </Stack.Navigator>
-//         </NavigationContainer>
-//     );
-// }
-
-
+import childResultScreen from './ChildResultNavigation';
+import HealthInfoNavigation from './HealthInfoNavigation';
 
 const screens = {
     ViewChild: {
@@ -50,31 +25,34 @@ const screens = {
     Status: {
         screen: StatusNavigator
     },
-    Health:{
-        screen: HealthScreen
+    Health: {
+        screen: HealthInfoNavigation
     },
-    GeneralInfo:{
+    GeneralInfo: {
         screen: GeneralInfoStack
     },
-    Profile:{
+    Profile: {
         screen: ViewProfile
     },
-        Family: {
+    Family: {
         screen: FamilyInfoNavigation
     },
     Communication: {
         screen: CommunicationInfoNavigation
     },
-    Committee:{
-        screen: CommitteeSuggestionForm
+    Committee: {
+        screen: CommitteeSuggestionNavigation
     },
     FollowUp: {
         screen: FollowUpNavigation
-    }
+    },
+    ChildResult: {
+        screen: childResultScreen,
+    },
 
 };
 
 
-const HomeStack = createStackNavigator(screens, {headerMode: 'none'});
+const HomeStack = createStackNavigator(screens, { headerMode: 'none' });
 
 export default createAppContainer(HomeStack)

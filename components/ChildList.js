@@ -1,16 +1,22 @@
 import React, { Component } from 'react'
-import {View, Text, TouchableOpacity, TextInput, StyleSheet, ToolbarAndroid, Button,FlatList,Image,Dimensions} from 'react-native'
-import {Card,CardImage,CardContent} from 'react-native-cards'
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ToolbarAndroid, Button, FlatList, Image, Dimensions, PixelRatio } from 'react-native'
+import { Card, CardImage, CardContent } from 'react-native-cards'
 import Modal from 'react-native-modal';
 import { SearchBar } from 'react-native-elements';
 import moment from 'moment';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { getOrgId } from '../constants/LoginConstant';
+import { Ionicons } from '@expo/vector-icons';
+import { base_url, getDataAsync } from '../constants/Base';
+import ScalableText from 'react-native-text';
 
 export default class ChildList extends Component {
     constructor(props) {
         super(props);
+        console.log(PixelRatio.get(), 'ffffffffff');
+        console.log(Dimensions.get('window').width / 5, 'lllllp');
         this.state = {
             dataSource: {},
             isVisible: false,
@@ -19,6 +25,7 @@ export default class ChildList extends Component {
             selectedChild: null,
             loading: false,
             data: [],
+            checkProfileAlert: false,
             error: null,
             search: null,
             errorDisplay: false,
@@ -26,6 +33,7 @@ export default class ChildList extends Component {
                 { key: 'Status', page: 'ChildStatus' },
                 { key: 'Health', page: 'Health' },
                 { key: 'Education', page: 'Education' },
+                { key: 'Child Result', page: 'ChildResult' },
                 { key: 'Family', page: 'Family' },
                 { key: 'Communication', page: 'Communication' },
                 { key: 'General Info', page: 'GeneralInfo' },
@@ -33,22 +41,25 @@ export default class ChildList extends Component {
                 { key: 'Committee', page: 'Committee' },
                 { key: 'Follow Up', page: 'FollowUpBy' },
             ],
-            modalItemsForCurrentItem:null
+            modalItemsForCurrentItem: null
         };
         this.arrayholder = [];
-        this.onPress =this.onPress.bind(this);
-       this.navigateToOtherScreen =this.navigateToOtherScreen.bind(this);
-        this.closeModal =this.closeModal.bind(this);
+        this.onPress = this.onPress.bind(this);
+        this.navigateToOtherScreen = this.navigateToOtherScreen.bind(this);
+        this.closeModal = this.closeModal.bind(this);
         this.onPressForList = this.onPressForList.bind(this);
         this.searchFilterFunction = this.searchFilterFunction.bind(this);
         this.renderHeader = this.renderHeader.bind(this);
         this.getStyles = this.getStyles.bind(this);
         this.getData = this.getData.bind(this);
         this.getModalItems = this.getModalItems.bind(this);
+        this.checkStatusDateExpired = this.checkStatusDateExpired.bind(this);
+        this.getAddedData = this.getAddedData.bind(this);
+        //  this.setStyles = this.setStyles.bind(this);
         // this.show =this.show.bind(this);
     }
-    componentDidMount() {
-       this.getData();
+    async componentDidMount() {
+        await this.getData();
     }
 
 
@@ -57,35 +68,103 @@ export default class ChildList extends Component {
             loading: false,
             search: null,
             errorDisplay: false
-        }, () => { this.getData() });
+        });
     }
-    getData() {
-        console.log('inside get');
-        this.setState({ search: null, loading: true });
-        fetch('https://rest-service.azurewebsites.net/api/v1/children/45', {
-            method: 'GET',
-        })
 
-            .then(res => {
-                if (res.ok) {
+    // This function adds a new property to object
+    async getAddedData(data) {
 
-                    res.json().then((data) => {
-                        this.setState({
-                            data: data,
-                            loading: false,
-                        });
-
-                        this.arrayholder = data;
-                    });
-                } else {
-                    console.log(res.status);
-                    throw Error(res.status);
+        let result = data.map(async childData => {
+            let res = await fetch(base_url + "/child-profile-all-description/" + childData.childNo, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
                 }
             })
-            .catch(error => {
-                this.setState({ loading: false, errorDisplay: true });
-            });  
+            let responseJson = await res.json();
+            if (res.ok) {
+
+                if (responseJson == null) {
+                    childData.changeProfile = true;
+                    this.setState({ checkProfileAlert: true });
+                }
+                else {
+                    let date_modified = responseJson[0].modified_ON;
+                    let dm = moment(date_modified).format("YYYY-MM-DD");
+                    let dm1 = moment(new Date()).format("YYYY-MM-DD");
+                    let a = new Date(dm);
+                    let b = new Date(dm1);
+                    let diffInDate = b - a;
+                    let daysTillToday = Math.floor(diffInDate / (1000 * 60 * 60 * 24));
+                    //  console.log(daysTillToday, childData.childNo, 'daysTillToday');
+                    if (daysTillToday >= 365) {
+                        childData.changeProfile = true;
+                        this.setState({ checkProfileAlert: true });
+                    } else {
+                        this.setState({ checkProfileAlert: false });
+                        childData.changeProfile = false;
+                    }
+                }
+            }
+            else {
+                console.log(res.status);
+                throw Error(res.status);
+            }
+            return childData;
+        });
+
+        let final_result = await Promise.all(result)
+        //console.log(final_result,'finished adding data');
+        this.setState({ data: final_result, loading: false });
+
+    };
+    async getData() {
+        console.log('inside get');
+        let orgId = getOrgId();
+        const path = 'https://rest-service.azurewebsites.net/api/v1/children/' + orgId;
+        console.log(path, 'lllll');
+        this.setState({ search: null, loading: true });
+        try {
+            let const1 = await fetch(path, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            let response = await const1.json();
+            response = this.setCounterForItemsInList(response);
+            // console.log(response, 'ddddddddddd');
+            if (const1.ok) {
+                await this.getAddedData(response);
+                //console.log(this.state.data,'final');
+
+                if (this.state.checkProfileAlert) {
+                    console.log('alert');
+                    alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
+                }
+                this.arrayholder = response;
+            } else {
+                console.log(response.status);
+                throw Error(response.status);
+            }
+        }
+        catch (error) {
+            console.log(error, 'error in getting data');
+            //  this.setState({ loading: false, errorDisplay: true });
+        }
     }
+
+
+    setCounterForItemsInList(items) {
+        let count = 0;
+        items.map((item) => {
+            item.counter = count;
+            count = count + 1;
+        });
+        return items;
+    }
+
     onPress(item) {
         let list = this.getModalItems(item);
         this.setState({
@@ -99,20 +178,20 @@ export default class ChildList extends Component {
         // console.log(this.state.navItems);
         this.props.navigation.navigate(screen, { child: this.state.selectedChild, refreshChildList: this.getData.bind(this) });
     }
-    closeModal(){
+    closeModal() {
         this.setState({
             isVisible: false,
         });
     }
-    onPressForList(screen){
+    onPressForList(screen) {
 
         this.closeModal();
-       // this.setState({page: page});
-       this.navigateToOtherScreen(screen);
+        // this.setState({page: page});
+        this.navigateToOtherScreen(screen);
     }
     searchFilterFunction = text => {
 
-       // console.log(text);
+        // console.log(text);
         this.setState({ search: text });
         if ('' == text) {
             this.setState({
@@ -129,36 +208,90 @@ export default class ChildList extends Component {
                     || admissionDate.includes(text)
                     || item.childStatus.childStatus.includes(text));
             });
+            if (this.state.data.length === 0) {
+                alert("Please refresh if new child is added");
+            }
         }
     }
     renderHeader = () => {
         return (
-            <SearchBar
-                placeholder="Type Here..."
-                lightTheme
-                round
-                onChangeText={text => this.searchFilterFunction(text)}
-                value={this.state.search}
-                
-            />
+            <View style={{ flexDirection: 'row' }}>
+                <SearchBar
+                    placeholder="Type Here..."
+                    lightTheme
+                    round
+                    onChangeText={text => this.searchFilterFunction(text)}
+                    value={this.state.search}
+                    inputContainerStyle={{ width: Number((Dimensions.get('window').width - 50).toFixed(0)) }}
+                />
+                <TouchableOpacity style={styles.container} onPress={(event) => { this.refresh() }}>
+                    <Ionicons name="md-refresh" size={35} color="black" />
+                </TouchableOpacity>
+            </View>
         );
     };
 
-    getStyles(status) {
-        
+    getStyles(status, childMap, childNo) {
+
+        let index = this.state.data.findIndex((item) => item.childNo == childNo);
+
         if (status == 'Observation') {
-            return styles.blue;
+            if (this.checkStatusDateExpired(childMap, status)) {
+                this.state.data[index].style = styles.red;
+                return styles.red;
+            } else {
+                this.state.data[index].style = styles.blue;
+                return styles.blue;
+            }
         } else if (status == 'Present') {
             return styles.green;
-        } else if (status == 'Closed' ) {
-            return styles.red;
+        } else if (status == 'Closed') {
+            return styles.pink;
         } else if (status == 'Absent') {
-            return styles.yellow;
+            if (this.checkStatusDateExpired(childMap, status)) {
+                this.state.data[index].style = styles.red;
+                return styles.red;
+            } else {
+                this.state.data[index].style = styles.yellow;
+                return styles.yellow;
+            }
         }
+
+
+
     }
 
+    checkStatusDateExpired(childMap, status) {
+
+        let date = childMap.map((item) => {
+            if (item.childStatusID.childStatus == status) {
+
+                return moment(item.childStatusDate).format('YYYY-MM-DD');
+            } else {
+                return '';
+            }
+        });
+        date.sort();
+        date.reverse();
+
+        let diff = this.getDiffBetweenDates(new Date(date[0]), new Date());
+        //   console.log(diff.toFixed(0));
+        return diff >= 30 ? true : false;
+    }
+    getDiffBetweenDates(date1, date2) {
+
+        // To calculate the time difference of two dates 
+        var Difference_In_Time = date2.getTime() - date1.getTime();
+
+        // To calculate the no. of days between two dates 
+        var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+
+        //  console.log(Difference_In_Days);
+
+        return Difference_In_Days;
+    }
     getModalItems(item) {
-        console.log('modal items');
+
         let updatedList = this.state.modalItems;
         if (item.childStatus.childStatus !== 'Closed') {
             updatedList = this.state.modalItems.filter(item => item.key !== 'Follow Up');
@@ -166,6 +299,50 @@ export default class ChildList extends Component {
         return updatedList;
     }
 
+    getImageUri(picture, gender) {
+
+        if (picture === null || picture === "") {
+            if (gender === 1) {
+                return require('../assets/girl.jpg');
+            } else {
+                return require('../assets/boy.jpg');
+            }
+        } else {
+            return { uri: "http://app.rainbowhome.in/ChildImage/" + picture };
+        }
+    }
+    getImageStyle(style) {
+        // console.log(style.backgroundColor,'......................');
+        if (style === styles.red) {
+            return styles.imageWithBorder;
+        } else {
+            return styles.image;
+        }
+    }
+
+    getContainerStyles(item) {
+        if (item.counter % 2 === 0) {
+            return styles.childOnLeft;
+        } else {
+            return styles.childOnRight;
+        }
+    }
+
+    async refresh() {
+        await this.getData();
+    }
+
+    calculateCharLength(firstName, lastName) {
+        let firstNameLen = firstName.length;
+        let lastNameLen = lastName.length;
+        const total = firstNameLen + lastNameLen;
+        console.log(firstNameLen + lastNameLen, 'llllll');
+        if (total > 15) {
+            return false;
+        } else {
+            return true;
+        }
+    }
     render() {
 
         return (
@@ -178,16 +355,23 @@ export default class ChildList extends Component {
                         data={this.state.data}
                         renderItem={({ item }) => (
                             <View style={{
-                                flex: 1 / 2, flexDirection: 'column', margin: 1, justifyContent: 'space-evenly'
+                                flex: 1 / 2, flexDirection: 'column', justifyContent: 'space-evenly'
                             }}>
-                                <TouchableOpacity style={styles.container} onPress={(event) => { this.onPress(item) }}>
+                                <TouchableOpacity style={this.getContainerStyles(item)} onPress={(event) => { this.onPress(item) }}>
                                     {/*react-native-elements Card*/}
-                                    <Card style={this.getStyles(item.childStatus.childStatus)}>
-                                        <CardImage resizeMode="cover" resizeMethod="resize" source={{ uri: "https://picsum.photos/id/1/300/300" }} />
-                                        <CardContent style={styles.paragraph}>
+                                    <Card style={this.getStyles(item.childStatus.childStatus, item.childMaps, item.childNo)} >
+
+                                        <View>
+                                            <Image
+                                                source={this.getImageUri(item.picture, item.gender)}
+                                                style={this.getImageStyle(item.style)}
+                                            />
+                                        </View>
+
+                                        <View style={styles.paragraph}>
                                             <View style={{ flexDirection: 'row' }}>
                                                 <Text style={styles.heading}>Name:</Text >
-                                                <Text style={styles.cardContent}>{`${item.firstName} ${item.lastName}`}  </Text>
+                                                <Text style={styles.cardContent}>{`${item.firstName} ${item.lastName}`}</Text>
                                             </View>
                                             <View style={{ flexDirection: 'row' }}>
                                                 <Text style={styles.heading}>Adm Date:</Text >
@@ -199,26 +383,39 @@ export default class ChildList extends Component {
                                             </View>
                                             <View style={{ flexDirection: 'row' }}>
                                                 <Text style={styles.heading}>Status:</Text >
-                                                <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>
+                                                {item.childStatus.childStatus == 'Closed' ? <Text style={styles.cardContent}>Exit</Text> :
+                                                    <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>}
+                                                {item.style == styles.red ? < Ionicons name="md-warning" size={20} color="red" /> : null}
                                             </View>
-                                        </CardContent>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text style={styles.heading}>Profile Update: </Text >
+                                                {item.changeProfile ? <Text style={styles.cardContent}>Yes</Text> :
+                                                    <Text style={styles.cardContent}>No</Text>}
+                                            </View>
+                                        </View>
+
                                     </Card>
                                 </TouchableOpacity>
                             </View>
                         )}
+
                         //Setting the number of column
                         numColumns={2}
                         keyExtractor={item => item.childNo}
                         ListHeaderComponent={this.renderHeader}
                     />
                 }
-                <Modal  style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={styles.MainContainer}>
+                <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={styles.optionsContainer}>
                         <FlatList data={this.state.modalItemsForCurrentItem} renderItem={({ item }) => (
-
-                            < TouchableOpacity style={styles.styleContents} onPress={(event) => this.onPressForList(item.page)}>
-                            <Text style={styles.item}>{item.key}</Text>
-                            </TouchableOpacity>
+                            <View style={{
+                                flex: 1 , flexDirection: 'column', justifyContent: 'space-evenly'
+                            }}>
+                               
+                                <TouchableOpacity style={styles.styleContents} onPress={(event) => this.onPressForList(item.page)}>
+                                    <Text style={styles.item}> { item.key }</Text>
+                                </TouchableOpacity>
+                            </View>
 
                         )}
                         />
@@ -231,42 +428,62 @@ export default class ChildList extends Component {
 
 const styles = StyleSheet.create({
     MainContainer: {
-        justifyContent: 'space-between',
+        justifyContent: 'space-evenly',
         flex: 1,
         paddingTop: 10,
-
-    },
-    imageThumbnail: {
-        margin: 20
-    },
-    paragraph:{
-        padding: 20,
-        textAlign: 'left',
-        /*borderWidth: 1,
-        borderColor: 'red'*/
-    },
-    container : {
-      //  width : 400,
-        height: 250,
-        
-      /*  marginLeft : 10,
-        marginTop: 10,
-        marginRight: 10,*/
-      //  borderRadius : 30,
-        // backgroundColor : '#FFFFFF',
-    },
-    modalContainer: {
-        backgroundColor : '#696969',
-        width: Dimensions.get('window').width / 2,
-        maxHeight:Dimensions.get('window').height / 2,
-        margin: 90,
        
     },
+   optionsContainer: {
+        justifyContent: 'space-evenly',
+        flex: 1,
+       
+    },
+    image: {
+        height: 150,
+        width: Number((Dimensions.get('window').width / 2).toFixed(1)) - 15,
+        resizeMode: 'cover'
+    },
+    imageWithBorder: {
+        height: 150,
+        width: Number((Dimensions.get('window').width / 2).toFixed(1)) - 21,
+        resizeMode: 'cover'
+    },
+    paragraph: {
+        padding: 15,
+        textAlign: 'left',
+
+    },
+    container: {
+        width: 50,
+        // height: 300,
+        /*  marginLeft : 10,
+          marginTop: 10,
+          marginRight: 10,*/
+        //  borderRadius : 30,
+        backgroundColor: 'rgb(225, 232, 238)',
+        paddingTop: 10
+    },
+    childOnRight: {
+        height: 300,
+        paddingRight: 5
+    },
+    childOnLeft: {
+        height: 300,
+        paddingLeft: 5
+    },
+    modalContainer: {
+        backgroundColor: '#696969',
+        width: Dimensions.get('window').width / 2 + 50,
+        maxHeight: Dimensions.get('window').height / 2,
+        marginTop: Dimensions.get('window').height / 5,
+        marginLeft: Dimensions.get('window').width / 5
+    },
     item: {
-        padding: 10,
+        padding: 5,
         fontSize: 18,
-        height: 44,
-        color: 'white'
+      //  height: 44,
+        color: 'white',
+        flexWrap: 'wrap'
 
     },
     styleContents: {
@@ -278,27 +495,39 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 15,
         fontFamily: 'sans-serif-medium',
-       // fontWeight: 'bold',
+        // fontWeight: 'bold',
     },
     cardContent: {
         color: 'black',
         paddingLeft: 3,
         fontFamily: 'sans-serif',
+        /*flexWrap: 'wrap',
+        flex: 1,
+        width: 50*/
     },
-    red: {
+    extraContent: {
+        color: 'black',
+        fontFamily: 'sans-serif',
+    },
+    pink: {
         backgroundColor: '#ff80b3',
-      //  borderWidth: 5
+        //  borderWidth: 5
     },
     blue: {
         backgroundColor: '#AED6F1',
-      //  borderWidth: 5
+        //  borderWidth: 5
     },
     green: {
         backgroundColor: '#ABEBC6',
-      //  borderWidth: 5,
+        //  borderWidth: 5,
     },
     yellow: {
         backgroundColor: '#ffff99',
-      //  borderWidth: 5
+        //  borderWidth: 5
+    },
+    red: {
+        backgroundColor: '#ffcccc',
+        borderColor: '#ff0000',
+        borderWidth: 3
     }
 });

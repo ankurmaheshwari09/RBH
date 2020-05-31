@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Text, TextInput, View, Picker, ScrollView,
-    KeyboardAvoidingView,StyleSheet} from 'react-native';
+    KeyboardAvoidingView} from 'react-native';
 import {Formik} from 'formik';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -8,7 +8,12 @@ import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
-import {base_url} from '../constants/Base';
+import {base_url, putDataAsync} from '../constants/Base';
+import UpdateApi from "../constants/UpdateApi";
+import Modal from 'react-native-modal';
+import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { ErrorDisplay } from '../utils/ErrorDispaly';
+import { SuccessDisplay } from "../utils/SuccessDisplay";
 
 const ChildGrowthSchema = yup.object({
     AssessmentDate: yup.string().required(),
@@ -29,7 +34,11 @@ this.state ={
 AssessmentOn:'',
 showAD: false,
 submitAlertMessage: '',
-child: this.props.navigation.getParam('child')
+child: this.props.navigation.getParam('child'),
+isVisible: false,
+loading: false,
+errorDisplay: false,
+sucessDisplay: false
 }
 }
 showAssessmentDatePicker = () => {
@@ -50,6 +59,7 @@ _pickAssessmentDate = (event, date, handleChange) => {
     }
 
     submitChildGrowthForm(values) {
+        this.setState({ loading: true });
         let request_body = JSON.stringify({
                 "childNo": this.state.child.childNo,
                 "healthDate":values.AssessmentDate,
@@ -70,13 +80,14 @@ _pickAssessmentDate = (event, date, handleChange) => {
         })
         .then((response) => response.json())
         .then((responseJson) => {
+            this.setState({ successDisplay: true });
+            this.setState({ loading: false, isVisible: true });
             console.log(responseJson);
             this.setState({submitAlertMessage: 'Successfully added child growth details '});
-            alert(this.state.submitAlertMessage);
         })
         .catch((error) => {
             this.setState({submitAlertMessage: 'Unable to add child growth details. Please contact the Admin.'});
-            alert(this.state.submitAlertMessage);
+            this.setState({ errorDisplay: true });
             console.log(error);
         });
     }
@@ -85,7 +96,7 @@ _pickAssessmentDate = (event, date, handleChange) => {
         return (
 
             <View style={globalStyles.formcontainer}>
-             <Text style ={Styles.healthformheading}>        Child Growth Form         </Text>
+             <Text style ={globalStyles.healthformheading}>        Child Growth Form         </Text>
                 <Formik
                 initialValues = {
                     {
@@ -108,25 +119,23 @@ _pickAssessmentDate = (event, date, handleChange) => {
                     AssessmentOn:''
                     });
                      this.submitChildGrowthForm(values);
-//                    console.log(result);
-//                    alert("Data Has been submitted")
                     actions.resetForm();
 
                 }}
                 >
    {props => (
-               <ScrollView>
+               <ScrollView showsVerticalScrollIndicator = {false}>
                <View >
-               <Text style = {globalStyles.textform}>AssessmentDate</Text>
-                    <View style={Styles.dobView}>
+               <Text style = {globalStyles.textform}>Assessment Date</Text>
+                    <View style={globalStyles.dobView}>
                                              <TextInput
-                                              style={globalStyles.inputform, Styles.dobValue}
+                                              style={globalStyles.inputform, globalStyles.dobValue}
                                               value={this.state.AssessmentOn}
                                               onValueChange={props.handleChange('AssessmentDate')}
                                               />
                                              <TouchableHighlight onPress={this.showAssessmentDatePicker}>
                                                <View>
-                                               <Feather style={Styles.dobBtn} name="calendar" />
+                                               <Feather style={globalStyles.dobBtn} name="calendar" />
                                                </View>
                                                </TouchableHighlight>
                                                <Text style={globalStyles.errormsgform}>{props.touched.AssessmentDate && props.errors.AssessmentDate}</Text>
@@ -141,17 +150,17 @@ _pickAssessmentDate = (event, date, handleChange) => {
                                                                                 }
                     </View>
 
-               <Text style = {globalStyles.textform}>Height(Cm)</Text>
-                    <TextInput  style={globalStyles.inputform} value = {props.values.Height} onChangeText={props.handleChange("Height")} onBlur={props.handleBlur("Height")}></TextInput>
+               <Text style = {globalStyles.text}>Height(Cm)</Text>
+                    <TextInput  style={globalStyles.inputText} value = {props.values.Height} onChangeText={props.handleChange("Height")} onBlur={props.handleBlur("Height")}></TextInput>
                     <Text style={globalStyles.errormsgform}>
                     {props.touched.Height && props.errors.Height}
                     </Text>
-               <Text style = {globalStyles.textform}>Weight(Kg)</Text>
-                    <TextInput style={globalStyles.inputform}  value = {props.values.Weight} onChangeText={props.handleChange("Weight")} onBlur={props.handleBlur("Weight")}></TextInput>
+               <Text style = {globalStyles.text}>Weight(Kg)</Text>
+                    <TextInput style={globalStyles.inputText}  value = {props.values.Weight} onChangeText={props.handleChange("Weight")} onBlur={props.handleBlur("Weight")}></TextInput>
                     <Text style={globalStyles.errormsgform}>
                     {props.touched.Weight && props.errors.Weight}
                     </Text>
-               <Text style = {globalStyles.textform}>GeneralHealth</Text>
+               <Text style = {globalStyles.text}>General Health</Text>
                    <Picker
                     selectedValue = {props.values.GeneralHealth}
                     onValueChange = {value => {
@@ -167,14 +176,14 @@ _pickAssessmentDate = (event, date, handleChange) => {
                     <Text style={globalStyles.errormsgform}>
                     {props.touched.GeneralHealth && props.errors.GeneralHealth}
                     </Text>
-               <Text style = {globalStyles.textform}>Comments</Text>
-                    <TextInput style={globalStyles.inputform} multiline={true} value = {props.values.Comments} onChangeText={props.handleChange("Comments")} onBlur={props.handleBlur("Comments")}></TextInput>
+               <Text style = {globalStyles.text}>Comments</Text>
+                    <TextInput style={globalStyles.inputText} multiline={true} value = {props.values.Comments} onChangeText={props.handleChange("Comments")} onBlur={props.handleBlur("Comments")}></TextInput>
                     <Text style={globalStyles.errormsgform}>
                     {props.touched.Comments && props.errors.Comments}
                     </Text>
 
-               <Text style = {globalStyles.textform}>HealthStatus</Text>
-                     <TextInput  style={globalStyles.inputform} value = {props.values.HealthStatus}  onBlur={props.handleBlur("HealthStatus")}></TextInput>
+               <Text style = {globalStyles.text}>Health Status</Text>
+                     <TextInput  style={globalStyles.inputText} value = {props.values.HealthStatus}  onBlur={props.handleBlur("HealthStatus")}></TextInput>
                       <Text style={globalStyles.errormsgform}>
                       {props.touched.HealthStatus && props.errors.HealthStatus}
                       </Text>
@@ -184,41 +193,14 @@ _pickAssessmentDate = (event, date, handleChange) => {
               )
    }
     </Formik>
+    <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                        <View style={globalStyles.MainContainer}>
+                            <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                            <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName}/ >
+                        </View>
+    </Modal>
+    <LoadingDisplay loading={this.state.loading}/>
     </View>
     );
     }
 }
-const Styles = StyleSheet.create({
- dobView: {
-        flex: 1,
-        flexDirection: 'row',
-    },
-    dobValue: {
-        borderWidth: 1,
-        borderColor: '#ddd',
-        padding: 10,
-        marginBottom: 10,
-        fontSize: 18,
-        borderRadius: 6,
-        flex: 3,
-        marginLeft: 10,
-        marginRight: 15
-    },
-    dobBtn: {
-        marginLeft: 2,
-        flex: 2,
-        fontSize: 40,
-        marginRight: 15
-    },
-    healthformheading: {
-                   fontSize: 18,
-                   alignSelf: 'center',
-                   marginBottom: 35,
-                   marginTop: 10,
-                   backgroundColor:'#48BBEC',
-                   color: 'white',
-                   borderWidth: 1,
-                   borderRadius: 8
-        },
-
-});

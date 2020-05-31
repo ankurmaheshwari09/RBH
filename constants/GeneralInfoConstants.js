@@ -6,7 +6,7 @@ export function generalInfoConstants(){
     getDataAsync(base_url + '/identifications').then(data => {global.identification = data})
 
     global.markTypes;
-    getDataAsync(base_url + '/mark-types').then(data => {console.log(data);global.markTypes = data})
+    getDataAsync(base_url + '/mark-types').then(data => {global.markTypes = data})
 
     global.specialNeed;
     getDataAsync(base_url + '/differently-abled-groups').then(data => {global.specialNeed = data})
@@ -27,6 +27,5 @@ export function generalInfoConstants(){
     getDataAsync(base_url + '/school-type').then(data => {global.schoolType = data})
 
     global.class;
-    getDataAsync(base_url + '/studying-class').then(data => { console.log(data); global.class = data })
-
+    getDataAsync(base_url + '/studying-class').then(data => {global.class = data})
 }
