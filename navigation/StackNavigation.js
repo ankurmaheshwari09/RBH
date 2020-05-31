@@ -5,7 +5,7 @@ import { createAppContainer } from 'react-navigation'
 
 import EducationScreen from './EducationNavigation';
 import ChildList from '../components/ChildList';
-import ViewProfile from '../components/ViewProfile';
+import ProfileNav from './ProfileNav';
 import GeneralInfoStack from './GeneralInfoNavigation';
 import CommitteeSuggestionNavigation from './CommitteeSuggestionNavigation';
 import StatusNavigator from './StatusNavigator';
@@ -32,7 +32,7 @@ const screens = {
         screen: GeneralInfoStack
     },
     Profile: {
-        screen: ViewProfile
+        screen: ProfileNav
     },
     Family: {
         screen: FamilyInfoNavigation
