@@ -1,11 +1,12 @@
 import React from 'react';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { View, Text, StyleSheet} from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { globalStyles } from '../styles/global';
 
 export function SuccessDisplay(props) {
     if (props.successDisplay) {
+        
         return (
             <View style={styles.container}>
                 <Ionicons name="md-checkmark-circle" size={60} color="green" />
@@ -23,13 +24,13 @@ const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         alignSelf: 'center',
-        top: 50,
+        top: Dimensions.get('window').height / 20,
         justifyContent: 'center'
     },
     text: {
         color: '#000000',
         fontSize: 15,
-        fontWeight: 'bold',
         borderColor: '#000000'
         },
 });
+
