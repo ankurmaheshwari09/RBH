@@ -29,8 +29,19 @@ export const globalStyles = StyleSheet.create({
         padding: 10,
         fontSize: 18,
         borderRadius: 6,
+       
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: 'black'
+    },
+    disabledBox: {
+        padding: 10,
+        fontSize: 18,
+        borderRadius: 6,
         backgroundColor: '#fafafa',
-        marginBottom: 1
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: 'black'
     },
     inputform: {
         borderWidth: 3,
@@ -211,6 +222,7 @@ export const globalStyles = StyleSheet.create({
         fontSize: 14,
         paddingTop: 5,
         paddingBottom: 2,
+        paddingLeft: 5,
         fontWeight: 'bold',
     },
     backgroundlogoimageview: {

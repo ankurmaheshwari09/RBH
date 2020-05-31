@@ -16,6 +16,7 @@ export default class ChildList extends Component {
     constructor(props) {
         super(props);
         console.log(PixelRatio.get(), 'ffffffffff');
+        console.log(Dimensions.get('window').width / 5, 'lllllp');
         this.state = {
             dataSource: {},
             isVisible: false,
@@ -32,7 +33,7 @@ export default class ChildList extends Component {
                 { key: 'Status', page: 'ChildStatus' },
                 { key: 'Health', page: 'Health' },
                 { key: 'Education', page: 'Education' },
-                { key: 'ChildResult', page: 'ChildResult' },
+                { key: 'Child Result', page: 'ChildResult' },
                 { key: 'Family', page: 'Family' },
                 { key: 'Communication', page: 'Communication' },
                 { key: 'General Info', page: 'GeneralInfo' },
@@ -208,7 +209,7 @@ export default class ChildList extends Component {
                     || item.childStatus.childStatus.includes(text));
             });
             if (this.state.data.length === 0) {
-                alert("Please Click refresh button if youo cannot find the child which was added");
+                alert("Please refresh if new child is added");
             }
         }
     }
@@ -405,12 +406,16 @@ export default class ChildList extends Component {
                     />
                 }
                 <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={styles.MainContainer}>
+                    <View style={styles.optionsContainer}>
                         <FlatList data={this.state.modalItemsForCurrentItem} renderItem={({ item }) => (
-
-                            < TouchableOpacity style={styles.styleContents} onPress={(event) => this.onPressForList(item.page)}>
-                                <Text style={styles.item}>{item.key}</Text>
-                            </TouchableOpacity>
+                            <View style={{
+                                flex: 1 , flexDirection: 'column', justifyContent: 'space-evenly'
+                            }}>
+                               
+                                <TouchableOpacity style={styles.styleContents} onPress={(event) => this.onPressForList(item.page)}>
+                                    <Text style={styles.item}> { item.key }</Text>
+                                </TouchableOpacity>
+                            </View>
 
                         )}
                         />
@@ -426,7 +431,12 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         flex: 1,
         paddingTop: 10,
-
+       
+    },
+   optionsContainer: {
+        justifyContent: 'space-evenly',
+        flex: 1,
+       
     },
     image: {
         height: 150,
@@ -463,16 +473,17 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         backgroundColor: '#696969',
-        width: Dimensions.get('window').width / 2,
+        width: Dimensions.get('window').width / 2 + 50,
         maxHeight: Dimensions.get('window').height / 2,
-        margin: 90,
-
+        marginTop: Dimensions.get('window').height / 5,
+        marginLeft: Dimensions.get('window').width / 5
     },
     item: {
-        padding: 10,
+        padding: 5,
         fontSize: 18,
-        height: 44,
-        color: 'white'
+      //  height: 44,
+        color: 'white',
+        flexWrap: 'wrap'
 
     },
     styleContents: {

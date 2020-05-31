@@ -523,8 +523,8 @@ export default class AddChild extends React.Component{
                                 {
                                     <Image source={{ uri: this.state.image }} style={globalStyles.uploadImage}/>
                                 }
-                                <Text style = {globalStyles.errormsg}>{props.touched.ChildPhoto && props.errors.ChildPhoto}</Text>
                                 <Button title="Upload Photo" onPress={() => this._pickImage(props.handleChange('ChildPhoto'))} />
+                                <Text style = {globalStyles.errormsg}>{props.touched.ChildPhoto && props.errors.ChildPhoto}</Text>
 
                                 {/* First Name */}
                                 <Text style = {globalStyles.label}>First Name :</Text>
