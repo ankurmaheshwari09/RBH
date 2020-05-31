@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView
+    Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView, Image
 } from 'react-native';
 import { Formik } from 'formik';
 import { globalStyles } from '../styles/global';
@@ -55,6 +55,9 @@ export default class ChildResultScreen extends React.Component {
     }
     render() {
         return (<View style={globalStyles.container}>
+            <View style={globalStyles.backgroundlogoimageview}>
+                <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
+            </View>
             <Text> Child Name: {this.state.child.firstName}</Text>
 
             <Formik
