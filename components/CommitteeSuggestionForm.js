@@ -107,18 +107,18 @@ export default class CommitteeScreen extends React.Component {
     this.state.updateSelectedStaff.map((newStaff)=>{
         selectedStaffNumber.push(newStaff.staffNo);
     })
-    this.setState({updateSelectedStaff : selectedStaffNumber});
+    this.setState({updateSelectedStaff: selectedStaffNumber, selectedStaff: selectedStaffNumber});
 
      let result = this.state.staffMembers.map((member) => {
          console.log(member.staffNo,'staff')
          console.log(this.state.updateSelectedStaff,'from db staff');
         if(this.state.updateSelectedStaff.includes(member.staffNo)){    
                 member.isSelected = true;
-                console.log('true');
+                // console.log('true');
         }
         else{
                 member.isSelected = false;     
-                console.log('false');
+                // console.log('false');
         }
         return member;
         });  
@@ -290,7 +290,7 @@ export default class CommitteeScreen extends React.Component {
             <KeyboardAvoidingView behavior="padding"
                 enabled style={globalStyles.keyboardavoid}
                 keyboardVerticalOffset={200}>
-                <ScrollView>
+                <ScrollView showsVerticalScrollIndicator={false}>
 
                     <View>
                         <Text style={globalStyles.label}>Child Name : </Text>
@@ -341,8 +341,6 @@ export default class CommitteeScreen extends React.Component {
                       <Text style={globalStyles.label}>Select Staff:</Text>                   
              {
               this.state.staffMembers.map((staffMember,index) => {
-                  console.log(staffMember.isSelected,'staff selected');
-                  console.log('entered');
                return(
                 <React.Fragment key={staffMember.staffNo}>
                 <CheckBox    style={styles.checkBoxStyle}
