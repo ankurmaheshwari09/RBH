@@ -33,7 +33,7 @@ export default class ChildList extends Component {
                 { key: 'Status', page: 'ChildStatus' },
                 { key: 'Health', page: 'Health' },
                 { key: 'Education', page: 'Education' },
-                { key: 'Child Result', page: 'ChildResult' },
+                { key: 'Result', page: 'ChildResult' },
                 { key: 'Family', page: 'Family' },
                 { key: 'Communication', page: 'Communication' },
                 { key: 'General Info', page: 'GeneralInfo' },
@@ -409,11 +409,11 @@ export default class ChildList extends Component {
                     <View style={styles.optionsContainer}>
                         <FlatList data={this.state.modalItemsForCurrentItem} renderItem={({ item }) => (
                             <View style={{
-                                flex: 1 , flexDirection: 'column', justifyContent: 'space-evenly'
+                                flex: 1, flexDirection: 'column', justifyContent: 'space-evenly'
                             }}>
-                               
+
                                 <TouchableOpacity style={styles.styleContents} onPress={(event) => this.onPressForList(item.page)}>
-                                    <Text style={styles.item}> { item.key }</Text>
+                                    <Text style={styles.item}> {item.key}</Text>
                                 </TouchableOpacity>
                             </View>
 
@@ -431,12 +431,12 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         flex: 1,
         paddingTop: 10,
-       
+
     },
-   optionsContainer: {
+    optionsContainer: {
         justifyContent: 'space-evenly',
         flex: 1,
-       
+
     },
     image: {
         height: 150,
@@ -481,7 +481,7 @@ const styles = StyleSheet.create({
     item: {
         padding: 5,
         fontSize: 18,
-      //  height: 44,
+        //  height: 44,
         color: 'white',
         flexWrap: 'wrap'
 
