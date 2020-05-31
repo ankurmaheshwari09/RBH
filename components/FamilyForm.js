@@ -679,7 +679,7 @@ export default class FamilyForm extends React.Component {
                 <View style={styles.bottom}>
                 <FlatList
                     data={this.state.childFamilyList}
-                    
+                    showsVerticalScrollIndicator={false}
                     renderItem={({ item, index }) => (
                        
                         <View style={{ flexDirection: 'column'}}>
