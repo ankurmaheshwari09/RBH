@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import { AuthSession } from 'expo';
 
 export const globalStyles = StyleSheet.create({
     maincontainer: {
@@ -70,6 +71,15 @@ export const globalStyles = StyleSheet.create({
     //     marginBottom: 1,
     //     flexWrap: 'wrap'
     // },
+    PageHeaderView: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    PageHeader: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
     dropDown: {
         marginTop: -7,
         borderColor: 'black',
@@ -228,6 +238,7 @@ export const globalStyles = StyleSheet.create({
         marginBottom: 5,
     },
     topView: {
+        flex: 4,
         paddingTop: 5,
     },
     uploadImage: {
