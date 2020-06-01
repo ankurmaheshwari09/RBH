@@ -125,7 +125,6 @@ export default class EducationScreen extends React.Component {
             <View style={globalStyles.backgroundlogoimageview}>
                 <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
             </View>
-            <Text> Child Name: {this.state.child.firstName}</Text>
             <Formik
                 initialValues={
                     {
@@ -159,67 +158,83 @@ export default class EducationScreen extends React.Component {
                     <KeyboardAvoidingView behavior="padding"
                         enabled style={globalStyles.keyboardavoid}
                         keyboardVerticalOffset={200}>
-                        <ScrollView>
+                        <ScrollView showsVerticalScrollIndicator={false}>
 
                             <View>
+                                {/*Child Name*/}
+                                <Text style={globalStyles.label}>Child Name: </Text>
+                                <TextInput
+                                    style={globalStyles.disabledBox}
+                                    value={this.state.child.firstName} //value updated in 'values' is reflected here
+                                    editable={false}
+                                    selectTextOnFocus={false}
+                                />
 
-                                <Text style={globalStyles.text}>Class:</Text>
-                                <Text style={globalStyles.errormsg}>{props.touched.Class && props.errors.Class}</Text>
+                                {/*Child Class*/}
+                                <Text style={globalStyles.label}>Class:</Text>
                                 <Picker
                                     selectedValue={props.values.Class}
                                     style={globalStyles.dropDown}
                                     onValueChange={(Class) => props.setFieldValue('Class', Class)}
                                     value={props.values.Class}
                                 >
-                                    <Picker.Item label="Select Class" value="" />
+                                    <Picker.Item color='grey' label="Select Class" value="" />
                                     {global.studyingclass.map((item) => {
                                         return <Picker.Item key={item.studyingclassId} label={item.studyingclass} value={item.studyingclassId} />
                                     })}
-
                                 </Picker>
-                                <Text style={globalStyles.text}>Medium:</Text>
-                                <Text style={globalStyles.errormsg}>{props.touched.Medium && props.errors.Medium}</Text>
+                                <Text style={globalStyles.errormsg}>{props.touched.Class && props.errors.Class}</Text>
+
+                                {/*Child Medium*/}
+                                <Text style={globalStyles.label}>Medium:</Text>
                                 <Picker
                                     selectedValue={props.values.Medium}
                                     style={globalStyles.dropDown}
                                     onValueChange={(Medium) => props.setFieldValue('Medium', Medium)}
                                     value={props.values.Medium}
                                 >
-                                    <Picker.Item label="Select Medium" value="" />
+                                    <Picker.Item color='grey' label="Select Medium" value="" />
                                     {global.medium.map((item) => {
                                         return <Picker.Item key={item.motherTongueId} label={item.motherTongue} value={item.motherTongueId} />
                                     })}
-
                                 </Picker>
-                                <Text style={globalStyles.text}>School Name:</Text>
-                                <Text style={globalStyles.errormsg}>{props.touched.SchoolName && props.errors.SchoolName}</Text>
+                                <Text style={globalStyles.errormsg}>{props.touched.Medium && props.errors.Medium}</Text>
+
+                                {/*School Name*/}
+                                <Text style={globalStyles.label}>School Name:</Text>
                                 <TextInput
                                     style={globalStyles.input}
                                     onChangeText={props.handleChange('SchoolName')}
                                     value={props.values.SchoolName}
                                 />
-                                <Text style={globalStyles.text}>School Type:</Text>
-                                <Text style={globalStyles.errormsg}>{props.touched.SchoolType && props.errors.SchoolType}</Text>
+                                <Text style={globalStyles.errormsg}>{props.touched.SchoolName && props.errors.SchoolName}</Text>
+
+                                {/*School Type*/}
+                                <Text style={globalStyles.label}>School Type:</Text>
                                 <Picker
                                     selectedValue={props.values.SchoolType}
                                     style={globalStyles.dropDown}
                                     onValueChange={(SchoolType) => props.setFieldValue('SchoolType', SchoolType)}
                                 >
-                                    <Picker.Item label="Select SchoolType" value="" />
+                                    <Picker.Item color='grey' label="Select SchoolType" value="" />
                                     {global.schooltype.map((item) => {
                                         return <Picker.Item key={item.schoolTypeID} label={item.schoolType} value={item.schoolTypeID} />
                                     })}
 
                                 </Picker>
-                                <Text style={globalStyles.text}>School Place:</Text>
-                                <Text style={globalStyles.errormsg}>{props.touched.SchoolPlace && props.errors.SchoolPlace}</Text>
+                                <Text style={globalStyles.errormsg}>{props.touched.SchoolType && props.errors.SchoolType}</Text>
+
+                                {/*School Place*/}
+                                <Text style={globalStyles.label}>School Place:</Text>
                                 <TextInput
                                     style={globalStyles.input}
                                     onChangeText={props.handleChange('SchoolPlace')}
                                     value={props.values.SchoolPlace}
                                 />
-                                <Text style={globalStyles.text}>Starting Date:</Text>
-                                <Text style={globalStyles.errormsg}>{props.touched.StartingDate && props.errors.StartingDate}</Text>
+                                <Text style={globalStyles.errormsg}>{props.touched.SchoolPlace && props.errors.SchoolPlace}</Text>
+
+                                {/*Starting Date*/}
+                                <Text style={globalStyles.label}>Starting Date:</Text>
                                 <View style={globalStyles.dobView}>
                                     <TextInput
                                         style={globalStyles.inputText, globalStyles.dobValue}
@@ -242,7 +257,10 @@ export default class EducationScreen extends React.Component {
                                         />
                                     }
                                 </View>
-                                <Text style={globalStyles.text}>Ending Date:</Text>
+                                <Text style={globalStyles.errormsg}>{props.touched.StartingDate && props.errors.StartingDate}</Text>
+
+                                {/*Ending Date*/}
+                                <Text style={globalStyles.label}>Ending Date:</Text>
                                 <View style={globalStyles.dobView}>
                                     <TextInput
                                         style={globalStyles.inputText, globalStyles.dobValue}
@@ -255,7 +273,6 @@ export default class EducationScreen extends React.Component {
                                             <Feather style={globalStyles.dobBtn} name="calendar" />
                                         </View>
                                     </TouchableHighlight>
-                                    <Text style={globalStyles.errormsg}>{props.touched.EndingDate && props.errors.EndingDate}</Text>
                                     {this.state.showED &&
                                         <DateTimePicker
                                             style={{ width: 100 }}
@@ -266,19 +283,24 @@ export default class EducationScreen extends React.Component {
                                         />
                                     }
                                 </View>
-                                <Text style={globalStyles.text}>Child Stay Type:</Text>
+                                <Text></Text>
+
+                                {/*Child Stay Type*/}
+                                <Text style={globalStyles.label}>Child Stay Type:</Text>
                                 <Picker
                                     selectedValue={props.values.ChildStayType}
                                     style={globalStyles.dropDown}
                                     onValueChange={(ChildStayType) => props.setFieldValue('ChildStayType', ChildStayType)}
                                 >
-                                    <Picker.Item label="Select Child Stay Type" value="" />
+                                    <Picker.Item color='grey' label="Select Child Stay Type" value="" />
                                     {global.childstaytype.map((item) => {
                                         return <Picker.Item key={item.id} label={item.description} value={item.id} />
                                     })}
                                 </Picker>
+                                <Text></Text>
 
-                                <Text style={globalStyles.text}>Bridge course after school:</Text>
+                                {/*Bridge course after school*/}
+                                <Text style={globalStyles.label}>Bridge course after school:</Text>
                                 <Picker
                                     selectedValue={props.values.BridgeCourse}
                                     style={globalStyles.dropDown}
@@ -292,14 +314,28 @@ export default class EducationScreen extends React.Component {
                                     }}
 
                                     value={props.values.childStatus}>
-                                    <Picker.Item label="Select Bridge Course" value="" />
+                                    <Picker.Item color='grey' label="Select Bridge Course" value="" />
                                     <Picker.Item label="Yes" value="Yes" />
                                     <Picker.Item label="No" value="No" />
-
                                 </Picker>
-                                {this.state.showElements ? null :
+                                <Text></Text>
+
+                                {/*Choosing between bridge course school name and class details*/}
+                                {this.state.showElements ? <View>
+                                    <Text style={globalStyles.label}>Bridge Course School Name:</Text>
+                                    <Picker
+                                        selectedValue={props.values.BridgeCourseSchoolName}
+                                        style={globalStyles.dropDown}
+                                        onValueChange={props.handleChange('BridgeCourseSchoolName')}
+                                    >
+                                        <Picker.Item color='grey' label="Select Bridge Course School Name" value="" />
+                                        <Picker.Item label="Rainbow" value="Rainbow" />
+                                        <Picker.Item label="Sneha Ghar" value="Sneha Ghar" />
+
+                                    </Picker>
+                                </View> :
                                     <View>
-                                        <Text style={globalStyles.text}>Class details:</Text>
+                                        <Text style={globalStyles.label}>Class details:</Text>
                                         <TextInput
                                             style={globalStyles.input}
                                             onChangeText={props.handleChange('CDetail')}
@@ -307,23 +343,10 @@ export default class EducationScreen extends React.Component {
                                         />
                                     </View>
                                 }
+                                <Text></Text>
 
-                                {this.state.showElements ?
-                                    <View>
-                                        <Text style={globalStyles.text}>Bridge Course School Name:</Text>
-                                        <Picker
-                                            selectedValue={props.values.BridgeCourseSchoolName}
-                                            style={globalStyles.dropDown}
-                                            onValueChange={props.handleChange('BridgeCourseSchoolName')}
-                                        >
-                                            <Picker.Item label="Select Bridge Course School Name" value="" />
-                                            <Picker.Item label="Rainbow" value="Rainbow" />
-                                            <Picker.Item label="Sneha Ghar" value="Sneha Ghar" />
-
-                                        </Picker>
-                                    </View>
-                                    : null}
-                                <Text style={globalStyles.text}>Scholarship/Sponsorship:</Text>
+                                {/*Scholarship/Sponsorship*/}
+                                <Text style={globalStyles.label}>Scholarship/Sponsorship:</Text>
                                 <Picker
                                     selectedValue={props.values.ScholarshipSponsorship}
                                     style={globalStyles.dropDown}
@@ -337,14 +360,16 @@ export default class EducationScreen extends React.Component {
                                     }}
 
                                     value={props.values.ScholarshipSponsorship}>
-                                    <Picker.Item label="Select Scholarship/Sponsorship" value="" />
+                                    <Picker.Item color='grey' label="Select Scholarship/Sponsorship" value="" />
                                     <Picker.Item label="Yes" value="Yes" />
                                     <Picker.Item label="No" value="No" />
 
                                 </Picker>
+                                <Text></Text>
 
+                                {/*Scholorship Type if scholorship is yes*/}
                                 {this.state.showSSElements ? <View>
-                                    <Text style={globalStyles.text}>Scholorship Type:</Text>
+                                    <Text style={globalStyles.label}>Scholorship Type:</Text>
 
                                     <View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
                                         {global.scholorshiptype.map((item) => {
