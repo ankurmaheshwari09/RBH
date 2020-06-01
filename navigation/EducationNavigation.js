@@ -12,7 +12,7 @@ const screens = {
 
 const StatusStack = createStackNavigator(screens, {
     defaultNavigationOptions: {
-
+        title: 'Child Education',
         headerStyle: {
             height: 50,
         },
