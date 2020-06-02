@@ -36,6 +36,7 @@ export default class StatusScreen extends React.Component {
             followUpByError: false,
             child: this.props.navigation.getParam('child'),
             isVisible: false,
+            isMailModelVisible: false,
             loading: false,
             errorDisplay: false,
             sucessDisplay: false,
@@ -96,6 +97,7 @@ export default class StatusScreen extends React.Component {
 
     updateStatus(values) {
         this.setState({ loading: true });
+        console.log(values);
         let request_body = JSON.stringify({
            
                "childStatusID": values.ChildStatus,
@@ -152,6 +154,11 @@ export default class StatusScreen extends React.Component {
        
     }
 
+    onCreateCredentialsSelected() {
+        console.log("inside");
+        this.setState({ isMailModelVisible: true });
+    }
+
     render() {
         const radio_props = [
             {
@@ -182,7 +189,8 @@ export default class StatusScreen extends React.Component {
                         leftPlace: '',
                         stay: '',
                         followUpBy: '',
-                        credentials: ''
+                        credentials: '',
+                        notificationRecipient: ''
                     }}
                     validationSchema={statusSchema}
                     onSubmit={(values, actions) => {
@@ -430,10 +438,20 @@ export default class StatusScreen extends React.Component {
                                                 buttonOuterSize={20}
                                                 buttonColor={'black'}
                                                 buttonInnerColor={'black'}
-                                                selectedButtonColor={'black'}
-                                                onPress={(value) => { props.setFieldValue('credentials',value) }}
+                                                    selectedButtonColor={'black'}
+                                                    onPress={(value) => { props.setFieldValue('credentials', value); this.onCreateCredentialsSelected(); }}
                                                 />
                                             </View>
+                                            <Modal style={styles.emailContainer} isVisible={this.state.isMailModelVisible} onBackdropPress={() => this.setState({ isMailModelVisible: false })}>
+                                                    <View>
+                                                    <Text style={globalStyles.label}>Enter Child Email / Phone number:</Text>
+                                                    <TextInput
+                                                        style={globalStyles.inputText}
+                                                        onChangeText={(input) => { props.setFieldValue('notificationRecipient', input) }}
+                                                        value={props.values.notificationRecipient} //value updated in 'values' is reflected here
+                                                    />
+                                                </View>
+                                            </Modal>
                                         </View>
                                         : null}
                                     <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />                                    
@@ -448,6 +466,7 @@ export default class StatusScreen extends React.Component {
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName} />
                     </View>
                 </Modal>
+                
                 <LoadingDisplay loading={this.state.loading} />
             </View>
         );
@@ -476,10 +495,20 @@ const styles = StyleSheet.create({
         borderRadius: 30
       //  margin: 90,
     },
+    emailContainer: {
+        alignItems: 'center',
+        backgroundColor: '#e1e1e1',
+        width: Dimensions.get('window').width / 2 + 50,
+        maxHeight: Dimensions.get('window').height / 4,
+        marginTop: Dimensions.get('window').height / 3,
+        marginLeft: Dimensions.get('window').width / 5,
+        borderRadius: 30
+        //  margin: 90,
+    },
     actionItemsModal:{
         flex: 1,
         justifyContent: 'center',
-        backgroundColor: 'white',
+        backgroundColor: '#e1e1e1',
         // width: Dimensions.get('window').width /2 + 50,
         maxHeight: Dimensions.get('window').height / 2,
         marginTop: 150,
