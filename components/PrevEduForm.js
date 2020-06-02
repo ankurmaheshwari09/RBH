@@ -135,7 +135,7 @@ export default class PrevEduForm extends React.Component{
                                             props.setFieldValue('medium', value)
                                         }}
                                         >
-                                            <Picker.Item label="Select Medium" value="" />
+                                            <Picker.Item color = 'grey' label="Select Medium" value="" />
                                             {global.medium.map((item) => {
                                                 return <Picker.Item key = {item.motherTongueId} label = {item.motherTongue} value = {item.motherTongueId}/>
                                             })}
@@ -159,7 +159,7 @@ export default class PrevEduForm extends React.Component{
                                             props.setFieldValue('schooltype', value)
                                         }}
                                         >
-                                            <Picker.Item label="Select School Type" value="" />
+                                            <Picker.Item color = 'grey' label="Select School Type" value="" />
                                             {global.schoolType.map((item) => {
                                                 return <Picker.Item key = {item.schoolTypeID} label = {item.schoolType} value = {item.schoolTypeID}/>
                                             })}
@@ -175,7 +175,7 @@ export default class PrevEduForm extends React.Component{
                                             props.setFieldValue('class', value)
                                         }}
                                         >
-                                            <Picker.Item label="Select Class" value="" />
+                                            <Picker.Item color = 'grey' label="Select Class" value="" />
                                             {global.class.map((item) => {
                                                 return <Picker.Item key = {item.studyingclassId} label = {item.studyingclass} value = {item.studyingclassId}/>
                                             })}
