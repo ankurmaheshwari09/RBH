@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Text, TextInput, View, Picker, ScrollView,
+import {Button, Text, TextInput, View, Picker, ScrollView, Image,
     KeyboardAvoidingView} from 'react-native';
 import {Formik} from 'formik';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -96,7 +96,9 @@ _pickAssessmentDate = (event, date, handleChange) => {
         return (
 
             <View style={globalStyles.formcontainer}>
-             <Text style ={globalStyles.healthformheading}>        Child Growth Form         </Text>
+            <View style={globalStyles.backgroundlogoimageview}>
+                <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+            </View>
                 <Formik
                 initialValues = {
                     {
@@ -126,10 +128,10 @@ _pickAssessmentDate = (event, date, handleChange) => {
    {props => (
                <ScrollView showsVerticalScrollIndicator = {false}>
                <View >
-               <Text style = {globalStyles.textform}>Assessment Date</Text>
+               <Text style = {globalStyles.label}>Assessment Date:</Text>
                     <View style={globalStyles.dobView}>
                                              <TextInput
-                                              style={globalStyles.inputform, globalStyles.dobValue}
+                                              style={globalStyles.inputText, globalStyles.dobValue}
                                               value={this.state.AssessmentOn}
                                               onValueChange={props.handleChange('AssessmentDate')}
                                               />
@@ -138,7 +140,7 @@ _pickAssessmentDate = (event, date, handleChange) => {
                                                <Feather style={globalStyles.dobBtn} name="calendar" />
                                                </View>
                                                </TouchableHighlight>
-                                               <Text style={globalStyles.errormsgform}>{props.touched.AssessmentDate && props.errors.AssessmentDate}</Text>
+
                                                                                 {this.state.showAD &&
                                                                                     <DateTimePicker
                                                                                         style={{ width: 100 }}
@@ -149,18 +151,17 @@ _pickAssessmentDate = (event, date, handleChange) => {
                                                                                     />
                                                                                 }
                     </View>
+                    <Text style={globalStyles.errormsgform}>{props.touched.AssessmentDate && props.errors.AssessmentDate}</Text>
 
-               <Text style = {globalStyles.text}>Height(Cm)</Text>
+               <Text style = {globalStyles.label}>Height(Cm):</Text>
                     <TextInput  style={globalStyles.inputText} value = {props.values.Height} onChangeText={props.handleChange("Height")} onBlur={props.handleBlur("Height")}></TextInput>
-                    <Text style={globalStyles.errormsgform}>
-                    {props.touched.Height && props.errors.Height}
-                    </Text>
-               <Text style = {globalStyles.text}>Weight(Kg)</Text>
+                    <Text style={globalStyles.errormsgform}>{props.touched.Height && props.errors.Height}</Text>
+               <Text style = {globalStyles.label}>Weight(Kg):</Text>
                     <TextInput style={globalStyles.inputText}  value = {props.values.Weight} onChangeText={props.handleChange("Weight")} onBlur={props.handleBlur("Weight")}></TextInput>
                     <Text style={globalStyles.errormsgform}>
                     {props.touched.Weight && props.errors.Weight}
                     </Text>
-               <Text style = {globalStyles.text}>General Health</Text>
+               <Text style = {globalStyles.label}>General Health:</Text>
                    <Picker
                     selectedValue = {props.values.GeneralHealth}
                     onValueChange = {value => {
@@ -168,7 +169,7 @@ _pickAssessmentDate = (event, date, handleChange) => {
                                                }}
                     style = {globalStyles.dropDown}
                     >
-                       <Picker.Item label="Select General Health" value="" />
+                       <Picker.Item color='grey' label="Select General Health" value="" />
                        {global.generalHealth.map((item) => {
                             return <Picker.Item key = {item.generalHealthID} label = {item.generalHealth} value = {item.generalHealthID}/>
                        })}
@@ -176,13 +177,13 @@ _pickAssessmentDate = (event, date, handleChange) => {
                     <Text style={globalStyles.errormsgform}>
                     {props.touched.GeneralHealth && props.errors.GeneralHealth}
                     </Text>
-               <Text style = {globalStyles.text}>Comments</Text>
+               <Text style = {globalStyles.label}>Comments:</Text>
                     <TextInput style={globalStyles.inputText} multiline={true} value = {props.values.Comments} onChangeText={props.handleChange("Comments")} onBlur={props.handleBlur("Comments")}></TextInput>
                     <Text style={globalStyles.errormsgform}>
                     {props.touched.Comments && props.errors.Comments}
                     </Text>
 
-               <Text style = {globalStyles.text}>Health Status</Text>
+               <Text style = {globalStyles.label}>Health Status:</Text>
                      <TextInput  style={globalStyles.inputText} value = {props.values.HealthStatus}  onBlur={props.handleBlur("HealthStatus")}></TextInput>
                       <Text style={globalStyles.errormsgform}>
                       {props.touched.HealthStatus && props.errors.HealthStatus}
