@@ -54,7 +54,7 @@ export default class EditChild extends React.Component{
         errorDisplay: false,
         loading: false,
         isVisible: false,
-        photoUploadMessage: ''
+        loadChildList: false
     };
 
     async _pickImage (handleChange) {
@@ -135,6 +135,13 @@ export default class EditChild extends React.Component{
         this.setState({orgid: orgId});
     }
 
+    componentWillUnmount() {
+        if (this.state.loadChildList) {
+            const { params } = this.props.navigation.state;
+            params.refreshChildList();
+        }
+    }
+
     uploadImage(child){
         let photoUrl = base_url+"/upload-image/"+child.childNo;
         console.log(photoUrl);
@@ -184,6 +191,13 @@ export default class EditChild extends React.Component{
         }
     }
 
+    handleLoadChildList(child){
+        let actualChild = this.props.childData
+        if(actualChild.FirstName !== child.FirstName || actualChild.LastName !== child.LastName
+            || actualChild.DOB !== child.DOB || actualChild.DOA !== child.DOA){
+                this.setState({loadChildList: true})
+        }
+    }
     _submitEditChildForm(values) {
         this.setState({ loading: true });
         let child = this.props.childData
@@ -207,6 +221,7 @@ export default class EditChild extends React.Component{
             if(response.ok){
                 response.json().then((res) => {
                     this.uploadImage(child)
+                    this.handleLoadChildList(values)
                 }).catch(error => {
                     this.setState({ loading: false, isVisible: true });
                     this.setState({ errorDisplay: true });

@@ -30,7 +30,7 @@ export default class GeneralInfoForm extends React.Component{
     constructor(props){
         super(props)
         this.state = {
-            child: this.props.navigation.getParam('child'),
+            child: this.props.childData,
             sucessDisplay: false,
             errorDisplay: false,
             loading: false,

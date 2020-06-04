@@ -53,8 +53,8 @@ export default class PrevEduForm extends React.Component{
 
         let prevEducation = this.props.prevEducation
         prevEducation.dropoutReason = values.dropOutReason
-        prevEducation.date_from = new Date(parseInt(values.yearOfStudied) - 1, 4)
-        prevEducation.date_to = new Date(parseInt(values.yearOfStudied), 4)
+        prevEducation.date_from = new Date(parseInt(values.yearOfStudied) - 1, 5)
+        prevEducation.date_to = new Date(parseInt(values.yearOfStudied), 5)
         prevEducation.medium = values.medium,
         prevEducation.schoolName = values.schoolName,
         prevEducation.schooltype = values.schooltype,

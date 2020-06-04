@@ -18,7 +18,7 @@ export default class GeneralInfoSegControl extends Component {
     super(props)
   }
   state = {
-    formIndex: 0,
+    formIndex: -1,
     loading: false,
     child: this.props.navigation.getParam('child'),
     childHealth: {
@@ -66,6 +66,9 @@ export default class GeneralInfoSegControl extends Component {
           this.setState({prevEducation: data[0]})
         this.setState({loading: false})
       })
+    }
+    async getData(){
+      
     }
     
     render() {
