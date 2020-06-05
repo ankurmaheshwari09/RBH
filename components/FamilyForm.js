@@ -362,6 +362,7 @@ export default class FamilyForm extends React.Component {
     render() {
         return (
             <View style={globalStyles.container}>
+                
                 <View style={globalStyles.backgroundlogoimageview}>
                     <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
                 </View>
@@ -430,7 +431,7 @@ export default class FamilyForm extends React.Component {
                                     <KeyboardAvoidingView
                                         enabled style={globalStyles.keyboardavoid}
                                     >
-                                        <ScrollView>
+                                    <ScrollView showsVerticalScrollIndicator={false}>
 
                                             <View>
                                             <Text style={globalStyles.label}>Name :</Text>
@@ -448,7 +449,7 @@ export default class FamilyForm extends React.Component {
                                                         props.setFieldValue('Relation', value);
                                                     }}
                                                 >
-                                                    <Picker.Item label="Select Relation" value="" />
+                                                <Picker.Item color='grey' label="Select Relation" value="" />
                                                     {
                                                         this.state.relations.map((item) => {
                                                             return <Picker.Item key={item.relationNo} label={item.relation} value={item.relationNo} />
@@ -471,7 +472,7 @@ export default class FamilyForm extends React.Component {
                                                         props.setFieldValue('Occupation', value);
                                                     }}
                                                 >
-                                                    <Picker.Item label="Select Occupation" value="" />
+                                                <Picker.Item color='grey' label="Select Occupation" value="" />
                                                     {
                                                         this.state.occupations.map((item) => {
                                                             return <Picker.Item key={item.occupationNo} label={item.occupation} value={item.occupationNo} />
@@ -487,7 +488,7 @@ export default class FamilyForm extends React.Component {
                                                         props.setFieldValue('Present', value);
                                                     }}
                                                 >
-                                                    <Picker.Item label="Select Present Condition" value="" />
+                                                <Picker.Item color='grey' label="Select Present Condition" value="" />
                                                     {
                                                         this.state.presentConditions.map((item) => {
                                                             return <Picker.Item key={item.presentId} label={item.present} value={item.presentId} />
@@ -575,7 +576,7 @@ export default class FamilyForm extends React.Component {
                                     <KeyboardAvoidingView
                                         enabled style={globalStyles.keyboardavoid}
                                     >
-                                        <ScrollView>
+                                    <ScrollView showsVerticalScrollIndicator={false}>
 
                                             <View>
                                             <Text style={globalStyles.label}>Name :</Text>
@@ -593,7 +594,7 @@ export default class FamilyForm extends React.Component {
                                                         props.setFieldValue('Relation', value);
                                                     }}
                                                 >
-                                                    <Picker.Item label="Select Relation" value="" />
+                                                <Picker.Item color='grey' label="Select Relation" value="" />
                                                     {
                                                         this.state.relations.map((item) => {
                                                             return <Picker.Item key={item.relationNo} label={item.relation} value={item.relationNo} />
@@ -616,7 +617,7 @@ export default class FamilyForm extends React.Component {
                                                         props.setFieldValue('Occupation', value);
                                                     }}
                                                 >
-                                                    <Picker.Item label="Select Occupation" value="" />
+                                                <Picker.Item color='grey' label="Select Occupation" value="" />
                                                     {
                                                         this.state.occupations.map((item) => {
                                                             return <Picker.Item key={item.occupationNo} label={item.occupation} value={item.occupationNo} />
@@ -632,7 +633,7 @@ export default class FamilyForm extends React.Component {
                                                         props.setFieldValue('Present', value);
                                                     }}
                                                 >
-                                                    <Picker.Item label="Select Present Condition" value="" />
+                                                <Picker.Item color='grey' label="Select Present Condition" value="" />
                                                     {
                                                         this.state.presentConditions.map((item) => {
                                                             return <Picker.Item key={item.presentId} label={item.present} value={item.presentId} />
@@ -678,8 +679,9 @@ export default class FamilyForm extends React.Component {
                 
                 <View style={styles.bottom}>
                 <FlatList
-                    data={this.state.childFamilyList}
-                    showsVerticalScrollIndicator={false}
+                        data={this.state.childFamilyList}
+                       
+                        showsVerticalScrollIndicator={false}
                     renderItem={({ item, index }) => (
                        
                         <View style={{ flexDirection: 'column'}}>
@@ -737,16 +739,19 @@ export default class FamilyForm extends React.Component {
                                 
 
                             </TouchableOpacity>
+                           
                         </View>
                     
                             
                     )}
                     //Setting the number of column
                     numColumns={1}
-                    keyExtractor={(item, index) => index.toString()}
+                            keyExtractor={(item, index) => index.toString()}
+                            
                 //keyExtractor={this.reviews.name}
                 />
-                  </View> 
+                    </View> 
+               
             </View>
             
     
