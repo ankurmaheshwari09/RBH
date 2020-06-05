@@ -45,7 +45,7 @@ export default class GeneralInfoSegControl extends Component {
 
     componentDidMount(){
       this.setState({ search: null, loading: true });
-      getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => this.setState({childData: data}))
+      getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => this.setState({childData: data, formIndex: 0}))
       getDataAsync(base_url + '/child-health-all-records/' + this.state.child.childNo).then(data => {
         if(JSON.stringify(data) !== JSON.stringify([]) && data !== null){
             let health = data[0];
