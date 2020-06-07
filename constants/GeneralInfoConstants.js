@@ -28,4 +28,7 @@ export function generalInfoConstants(){
 
     global.class;
     getDataAsync(base_url + '/studying-class').then(data => {global.class = data})
+
+    global.bloodGroup;
+    getDataAsync(base_url + '/bloodgroups').then(data => {global.bloodGroup = data})
 }

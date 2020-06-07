@@ -40,12 +40,13 @@ export default class PrevEduForm extends React.Component{
         return moment(date_to).format('YYYY')
     }
 
-    getApiMethod(data, path){
+    getApiMethod(prevEducation){
         if('newChild' in this.props.prevEducation){
-            return UpdateApi.addData(data, path)
+            prevEducation.modified_on = new Date()
+            return UpdateApi.addData(JSON.stringify(prevEducation), 'child-education')
         }
         else{
-            return UpdateApi.updateData(data, path)
+            return UpdateApi.updateData(JSON.stringify(prevEducation), 'child-education')
         }
     }
     _submitPrevEdu(values){
@@ -60,9 +61,8 @@ export default class PrevEduForm extends React.Component{
         prevEducation.schooltype = values.schooltype,
         prevEducation.studyingclass = values.class,
         prevEducation.address = values.schoolPlace,
-        prevEducation.modified_on = new Date()
 
-        this.getApiMethod(JSON.stringify(prevEducation), 'child-education').then((response) => {
+        this.getApiMethod(prevEducation).then((response) => {
             this.setState({ loading: false, isVisible: true });
             if(response.ok){
                 response.json().then((res) => {

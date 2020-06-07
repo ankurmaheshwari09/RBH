@@ -52,6 +52,8 @@ export default class GeneralInfoSegControl extends Component {
             let required_date = new Date(health.healthDate)
             for(let i = 1; i < data.length ; i++)
             {
+              if(data[i].healthDate == null)
+                continue;
               let vardate = new Date(data[i].healthDate)
               if(vardate < required_date){
                 health = data[i]
@@ -62,8 +64,21 @@ export default class GeneralInfoSegControl extends Component {
           }
         })
       getDataAsync(base_url + '/child-education/' + this.state.child.childNo).then(data => {
-        if(data !== null && JSON.stringify(data) !== JSON.stringify([]))
+        if(data !== null && JSON.stringify(data) !== JSON.stringify([])){
+          let edu = data[0];
+            let required_date = new Date(edu.modified_on)
+            for(let i = 1; i < data.length ; i++)
+            {
+              if(data[i].modified_on == null)
+                continue;
+              let vardate = new Date(data[i].modified_on)
+              if(vardate < required_date){
+                edu = data[i]
+                required_date = new Date(edu.modified_on)
+              }
+            }
           this.setState({prevEducation: data[0]})
+        }
         this.setState({loading: false})
       })
     }

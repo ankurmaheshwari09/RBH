@@ -110,14 +110,18 @@ export default class HealthDuringAdd extends React.Component{
                                 selectedValue = {props.values.bloodGroup}
                                 >
                                     <Picker.Item color = 'grey' label = 'Select Blood Group' value = '0'/>
-                                    <Picker.Item label = 'O+' value = "1"/>
+                                    {global.generalHealth.map((item) => {
+                                        return <Picker.Item key = {item.bloodGroupID} label = {item.bloodGroup} value = {item.bloodGroupID}/>
+                                    })}
+
+                                    {/* <Picker.Item label = 'O+' value = "1"/>
                                     <Picker.Item label = 'O-' value = "2"/>
                                     <Picker.Item label = 'A+' value = "3"/>
                                     <Picker.Item label = 'A-' value = "4"/>
                                     <Picker.Item label = 'B+' value = "5"/>
                                     <Picker.Item label = 'B-' value = "6"/>
                                     <Picker.Item label = 'AB+' value = "7"/>
-                                    <Picker.Item label = 'AB-' value = "8"/>
+                                    <Picker.Item label = 'AB-' value = "8"/> */}
                                 </Picker>
                                 <Text style = {globalStyles.errormsg}>{props.touched.bloodGroup && props.errors.bloodGroup}</Text>
 
