@@ -40,12 +40,13 @@ export default class PrevEduForm extends React.Component{
         return moment(date_to).format('YYYY')
     }
 
-    getApiMethod(data, path){
+    getApiMethod(prevEducation){
         if('newChild' in this.props.prevEducation){
-            return UpdateApi.addData(data, path)
+            prevEducation.modified_on = new Date()
+            return UpdateApi.addData(JSON.stringify(prevEducation), 'child-education')
         }
         else{
-            return UpdateApi.updateData(data, path)
+            return UpdateApi.updateData(JSON.stringify(prevEducation), 'child-education')
         }
     }
     _submitPrevEdu(values){
@@ -53,16 +54,15 @@ export default class PrevEduForm extends React.Component{
 
         let prevEducation = this.props.prevEducation
         prevEducation.dropoutReason = values.dropOutReason
-        prevEducation.date_from = new Date(parseInt(values.yearOfStudied) - 1, 4)
-        prevEducation.date_to = new Date(parseInt(values.yearOfStudied), 4)
+        prevEducation.date_from = new Date(parseInt(values.yearOfStudied) - 1, 5)
+        prevEducation.date_to = new Date(parseInt(values.yearOfStudied), 5)
         prevEducation.medium = values.medium,
         prevEducation.schoolName = values.schoolName,
         prevEducation.schooltype = values.schooltype,
         prevEducation.studyingclass = values.class,
         prevEducation.address = values.schoolPlace,
-        prevEducation.modified_on = new Date()
 
-        this.getApiMethod(JSON.stringify(prevEducation), 'child-education').then((response) => {
+        this.getApiMethod(prevEducation).then((response) => {
             this.setState({ loading: false, isVisible: true });
             if(response.ok){
                 response.json().then((res) => {
@@ -135,7 +135,7 @@ export default class PrevEduForm extends React.Component{
                                             props.setFieldValue('medium', value)
                                         }}
                                         >
-                                            <Picker.Item label="Select Medium" value="" />
+                                            <Picker.Item color = 'grey' label="Select Medium" value="" />
                                             {global.medium.map((item) => {
                                                 return <Picker.Item key = {item.motherTongueId} label = {item.motherTongue} value = {item.motherTongueId}/>
                                             })}
@@ -159,7 +159,7 @@ export default class PrevEduForm extends React.Component{
                                             props.setFieldValue('schooltype', value)
                                         }}
                                         >
-                                            <Picker.Item label="Select School Type" value="" />
+                                            <Picker.Item color = 'grey' label="Select School Type" value="" />
                                             {global.schoolType.map((item) => {
                                                 return <Picker.Item key = {item.schoolTypeID} label = {item.schoolType} value = {item.schoolTypeID}/>
                                             })}
@@ -175,7 +175,7 @@ export default class PrevEduForm extends React.Component{
                                             props.setFieldValue('class', value)
                                         }}
                                         >
-                                            <Picker.Item label="Select Class" value="" />
+                                            <Picker.Item color = 'grey' label="Select Class" value="" />
                                             {global.class.map((item) => {
                                                 return <Picker.Item key = {item.studyingclassId} label = {item.studyingclass} value = {item.studyingclassId}/>
                                             })}

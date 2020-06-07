@@ -18,7 +18,7 @@ export default class GeneralInfoSegControl extends Component {
     super(props)
   }
   state = {
-    formIndex: 0,
+    formIndex: -1,
     loading: false,
     child: this.props.navigation.getParam('child'),
     childHealth: {
@@ -45,13 +45,15 @@ export default class GeneralInfoSegControl extends Component {
 
     componentDidMount(){
       this.setState({ search: null, loading: true });
-      getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => this.setState({childData: data}))
+      getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => this.setState({childData: data, formIndex: 0}))
       getDataAsync(base_url + '/child-health-all-records/' + this.state.child.childNo).then(data => {
         if(JSON.stringify(data) !== JSON.stringify([]) && data !== null){
             let health = data[0];
             let required_date = new Date(health.healthDate)
             for(let i = 1; i < data.length ; i++)
             {
+              if(data[i].healthDate == null)
+                continue;
               let vardate = new Date(data[i].healthDate)
               if(vardate < required_date){
                 health = data[i]
@@ -62,10 +64,26 @@ export default class GeneralInfoSegControl extends Component {
           }
         })
       getDataAsync(base_url + '/child-education/' + this.state.child.childNo).then(data => {
-        if(data !== null && JSON.stringify(data) !== JSON.stringify([]))
+        if(data !== null && JSON.stringify(data) !== JSON.stringify([])){
+          let edu = data[0];
+            let required_date = new Date(edu.modified_on)
+            for(let i = 1; i < data.length ; i++)
+            {
+              if(data[i].modified_on == null)
+                continue;
+              let vardate = new Date(data[i].modified_on)
+              if(vardate < required_date){
+                edu = data[i]
+                required_date = new Date(edu.modified_on)
+              }
+            }
           this.setState({prevEducation: data[0]})
+        }
         this.setState({loading: false})
       })
+    }
+    async getData(){
+      
     }
     
     render() {

@@ -54,7 +54,7 @@ export default class EditChild extends React.Component{
         errorDisplay: false,
         loading: false,
         isVisible: false,
-        photoUploadMessage: ''
+        loadChildList: false
     };
 
     async _pickImage (handleChange) {
@@ -135,6 +135,13 @@ export default class EditChild extends React.Component{
         this.setState({orgid: orgId});
     }
 
+    componentWillUnmount() {
+        if (this.state.loadChildList) {
+            const { params } = this.props.navigation.state;
+            params.refreshChildList();
+        }
+    }
+
     uploadImage(child){
         let photoUrl = base_url+"/upload-image/"+child.childNo;
         console.log(photoUrl);
@@ -184,6 +191,13 @@ export default class EditChild extends React.Component{
         }
     }
 
+    handleLoadChildList(child){
+        let actualChild = this.props.childData
+        if(actualChild.FirstName !== child.FirstName || actualChild.LastName !== child.LastName
+            || actualChild.DOB !== child.DOB || actualChild.DOA !== child.DOA){
+                this.setState({loadChildList: true})
+        }
+    }
     _submitEditChildForm(values) {
         this.setState({ loading: true });
         let child = this.props.childData
@@ -207,6 +221,7 @@ export default class EditChild extends React.Component{
             if(response.ok){
                 response.json().then((res) => {
                     this.uploadImage(child)
+                    this.handleLoadChildList(values)
                 }).catch(error => {
                     this.setState({ loading: false, isVisible: true });
                     this.setState({ errorDisplay: true });
@@ -299,7 +314,7 @@ export default class EditChild extends React.Component{
                                     onValueChange = {props.handleChange('Gender')}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Gender' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Gender' value = ''/>
                                     <Picker.Item label='Male' value = '1'/>
                                     <Picker.Item label='Female' value = '2'/>
                                 </Picker>
@@ -340,7 +355,7 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Religion' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Religion' value = ''/>
                                     { 
                                         global.religions.map((item) => {
                                             return <Picker.Item key = {item.religionId} label = {item.religion} value = {item.religionId}/>
@@ -358,7 +373,7 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Community' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Community' value = ''/>
                                     {
                                         global.communities.map((item) => {
                                             return <Picker.Item key = {item.communityId} label = {item.community} value = {item.communityId}/>
@@ -376,7 +391,7 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Mother Tongue' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Mother Tongue' value = ''/>
                                     {
                                         global.motherTongues.map((item) => {
                                             return <Picker.Item key = {item.motherTongueId} label = {item.motherTongue} value = {item.motherTongueId}/>
@@ -394,7 +409,7 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Parental Status' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Parental Status' value = ''/>
                                     {
                                         global.parentalStatusList.map((item) => {
                                             return <Picker.Item key = {item.parentalStatusId} label = {item.parentalStatus} value = {item.parentalStatusId}/>
@@ -412,7 +427,7 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Reason For Admission' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Reason For Admission' value = ''/>
                                     {
                                         global.admissionReasons.map((item) => {
                                             return <Picker.Item key = {item.reasonForAdmissionId} label = {item.reasonForAdmission} value = {item.reasonForAdmissionId}/>
@@ -430,7 +445,7 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Previous Education Status' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Previous Education Status' value = ''/>
                                     {
                                         global.educationStatusList.map((item) => {
                                             return <Picker.Item key = {item.educationStatusId} label = {item.educationStatus} value = {item.educationStatusId}/>
@@ -448,7 +463,7 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Admitted By' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Admitted By' value = ''/>
                                     {
                                         global.homeStaffList.map((item) => {
                                             return <Picker.Item key = {item.staffNo} label = {item.firstName + ' ' + item.lastName} value = {item.staffNo}/>
@@ -492,7 +507,7 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Referred Source' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Referred Source' value = ''/>
                                     {
                                         global.referralSourcesList.map((item) => {
                                             return <Picker.Item key = {item.referralSourceId} label = {item.referralSource} value = {item.referralSourceId}/>
