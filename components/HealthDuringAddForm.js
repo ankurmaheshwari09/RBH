@@ -30,7 +30,7 @@ export default class HealthDuringAdd extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            child: this.props.navigation.getParam('child'),
+            child: this.props.childData,
             childHealth: this.props.childHealth,
             sucessDisplay: false,
             errorDisplay: false,
@@ -52,7 +52,7 @@ export default class HealthDuringAdd extends React.Component{
         this.setState({ loading: true });
 
         let childHealth = this.props.childHealth
-        childHealth.bloodGroup = parseInt(values.bloodGroup)
+        childHealth.bloodGroup = values.bloodGroup
         childHealth.generalHealth = values.generalHealth
         childHealth.height =  values.height
         childHealth.weight = values.weight
@@ -80,7 +80,7 @@ export default class HealthDuringAdd extends React.Component{
                 <Formik
                     initialValues = {
                         {
-                            bloodGroup: this.state.child.bloodGroup ? this.state.child.bloodGroup.toString() : '',
+                            bloodGroup: this.state.child.bloodGroup ? this.state.child.bloodGroup : '',
                             generalHealth: this.state.childHealth.generalHealth ? this.state.childHealth.generalHealth : '',
                             height: this.state.childHealth.height ? this.state.childHealth.height : '',
                             weight: this.state.childHealth.weight ? this.state.childHealth.weight : '',
@@ -106,22 +106,16 @@ export default class HealthDuringAdd extends React.Component{
                             <View>
                                 <Text style = {globalStyles.label}>Blood Group:</Text>
                                 <Picker style = {globalStyles.dropDown}
-                                onValueChange = {props.handleChange('bloodGroup')}
+                                onValueChange = {value => {
+                                    props.setFieldValue('bloodGroup', value)
+                                }}
                                 selectedValue = {props.values.bloodGroup}
                                 >
-                                    <Picker.Item color = 'grey' label = 'Select Blood Group' value = '0'/>
-                                    {global.generalHealth.map((item) => {
+                                    <Picker.Item color = 'grey' label = 'Select Blood Group' value = ''/>
+                                    {global.bloodGroup.map((item) => {
                                         return <Picker.Item key = {item.bloodGroupID} label = {item.bloodGroup} value = {item.bloodGroupID}/>
                                     })}
 
-                                    {/* <Picker.Item label = 'O+' value = "1"/>
-                                    <Picker.Item label = 'O-' value = "2"/>
-                                    <Picker.Item label = 'A+' value = "3"/>
-                                    <Picker.Item label = 'A-' value = "4"/>
-                                    <Picker.Item label = 'B+' value = "5"/>
-                                    <Picker.Item label = 'B-' value = "6"/>
-                                    <Picker.Item label = 'AB+' value = "7"/>
-                                    <Picker.Item label = 'AB-' value = "8"/> */}
                                 </Picker>
                                 <Text style = {globalStyles.errormsg}>{props.touched.bloodGroup && props.errors.bloodGroup}</Text>
 

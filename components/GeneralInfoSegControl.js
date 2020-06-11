@@ -45,7 +45,7 @@ export default class GeneralInfoSegControl extends Component {
 
     componentDidMount(){
       this.setState({ search: null, loading: true });
-      getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => this.setState({childData: data, formIndex: 0}))
+      getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => {this.setState({childData: data, formIndex: 0}); console.log(data)})
       getDataAsync(base_url + '/child-health-all-records/' + this.state.child.childNo).then(data => {
         if(JSON.stringify(data) !== JSON.stringify([]) && data !== null){
             let health = data[0];
@@ -126,7 +126,7 @@ export default class GeneralInfoSegControl extends Component {
               {formIndex === 0 && <GeneralInfoForm navigation = {this.props.navigation} childData = {this.state.childData}/>}
               {formIndex === 1 && <EditChild navigation = {this.props.navigation} childData = {this.state.childData}/>}
               {formIndex === 2 && <PrevEduForm navigation = {this.props.navigation} prevEducation = {this.state.prevEducation}/>}
-              {formIndex === 3 && <HealtDuringAdd navigation = {this.props.navigation} childHealth = {this.state.childHealth}/>}
+              {formIndex === 3 && <HealtDuringAdd navigation = {this.props.navigation} childHealth = {this.state.childHealth} childData = {this.state.childData}/>}
             </View>
         </View>
       )
