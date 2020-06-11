@@ -108,11 +108,21 @@ export default class StatusScreen extends React.Component {
                "actionTakenId": this.state.actionsTaken.sort().join(','),
                "childStayPlace": values.stay,
                "followedBy": values.followUpBy,
-               "approvedBy": values.ApprovedBy
-            
+               "approvedBy": values.ApprovedBy,
+              
         });
         console.log(request_body);
         const path = `child-status/${this.state.child.childNo}`;
+        if (values.email != '' && values.phnNo != '' && vales.future != '') {
+            path = path + `?email=${values.email}&phnNo=${values.phnNo}&future=${values.future}`;
+
+        } else if (values.email != '' && values.phnNo != '') {
+            path = path + `?email=${values.email}&phnNo=${values.phnNo}`;
+
+        } else if (values.email != '' -) {
+            path = path + `?email=${values.email}&phnNo=${values.phnNo}`;
+
+        }
         UpdateApi.updateData(request_body, path).then((response) => {
             this.setState({ loading: false, isVisible: true });
             if (response.ok) {
@@ -163,11 +173,11 @@ export default class StatusScreen extends React.Component {
         const radio_props = [
             {
                 label: 'Child Exits',
-                value: 'exit'
+                value: false
             },
             {
                 label: 'Child Moves To Future Program',
-                value: 'futureProgram'
+                value: true
             }
         ];
        
@@ -190,7 +200,9 @@ export default class StatusScreen extends React.Component {
                         stay: '',
                         followUpBy: '',
                         credentials: '',
-                        notificationRecipient: ''
+                        email: '',
+                        phnNo: '',
+                        future:''
                     }}
                     validationSchema={statusSchema}
                     onSubmit={(values, actions) => {
@@ -439,7 +451,7 @@ export default class StatusScreen extends React.Component {
                                                 buttonColor={'black'}
                                                 buttonInnerColor={'black'}
                                                     selectedButtonColor={'black'}
-                                                    onPress={(value) => { props.setFieldValue('credentials', value); this.onCreateCredentialsSelected(); }}
+                                                    onPress={(value) => { props.setFieldValue('future', value); this.onCreateCredentialsSelected(); }}
                                                 />
                                             </View>
                                             <Modal style={styles.emailContainer} isVisible={this.state.isMailModelVisible} onBackdropPress={() => this.setState({ isMailModelVisible: false })}>
@@ -447,8 +459,13 @@ export default class StatusScreen extends React.Component {
                                                     <Text style={globalStyles.label}>Enter Child Email / Phone number:</Text>
                                                     <TextInput
                                                         style={globalStyles.inputText}
-                                                        onChangeText={(input) => { props.setFieldValue('notificationRecipient', input) }}
-                                                        value={props.values.notificationRecipient} //value updated in 'values' is reflected here
+                                                        onChangeText={(input) => { props.setFieldValue('email', input) }}
+                                                        value={props.values.email} //value updated in 'values' is reflected here
+                                                    />
+                                                    <TextInput
+                                                        style={globalStyles.inputText}
+                                                        onChangeText={(input) => { props.setFieldValue('phnNo', input) }}
+                                                        value={props.values.phnNo} //value updated in 'values' is reflected here
                                                     />
                                                 </View>
                                             </Modal>
