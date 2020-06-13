@@ -55,13 +55,16 @@ export default class ChildList extends Component {
         this.getData = this.getData.bind(this);
         this.getModalItems = this.getModalItems.bind(this);
         this.checkStatusDateExpired = this.checkStatusDateExpired.bind(this);
+        this.resertStack = this.resertStack.bind(this);
         this.getAddedData = this.getAddedData.bind(this);
+        this.back_Button_Press = this.back_Button_Press.bind(this);
         //  this.setStyles = this.setStyles.bind(this);
         // this.show =this.show.bind(this);
     }
     async componentDidMount() {
-        await this.getData();
         BackHandler.addEventListener('hardwareBackPress', this.back_Button_Press);
+        await this.getData();
+        
     }
 
 
@@ -75,22 +78,48 @@ export default class ChildList extends Component {
     }
 
     back_Button_Press() {
-        Alert.alert(
+
+        console.log(this.props);
+        const popAction = StackActions.pop(1);
+
+        this.props.navigation.dispatch(popAction);
+
+       /* console.log(this.props.screenProps, 'oooo');
+        this.props.screenProps.navigation.replace('Home');*/
+
+       
+        /*Alert.alert(
             ' Exit From App ',
             ' Do you want to exit From App ?',
             [
-                { text: 'Yes', onPress: () => { this.resertStack;  }},
+                {
+                    text: 'Yes', onPress: () => {
+                        console.log(this.props);
+                        const popAction = StackActions.pop(1);
+
+                       this.props.navigation.dispatch(popAction);
+
+                        console.log(this.props.screenProps, 'oooo');
+                        this.props.screenProps.navigation.replace('Home');
+
+                    }
+                },
                 { text: 'No', onPress: () => { console.log('NO Pressed'); } }
             ],
             { cancelable: false },
-        );
-        return ;
+        );*/
+        return true ;
     }
 
     resertStack() {
+
+        console.log("insdie backdrop");
         const popAction = StackActions.pop(1);
 
         navigation.dispatch(popAction);
+
+        console.log(this.props.screenProps, 'oooo');
+        this.props.screenProps.navigation.replace('Home');
     }
     // This function adds a new property to object
     async getAddedData(data) {

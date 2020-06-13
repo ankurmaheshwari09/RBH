@@ -1,7 +1,7 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Formik } from "formik";
 import React from 'react';
-import {  Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View, Dimensions, Image } from 'react-native';
+import {  Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, BackHandler, Text, TextInput, View, Dimensions, Image } from 'react-native';
 import * as yup from "yup";
 import { globalStyles } from "../styles/global";
 import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
@@ -48,9 +48,12 @@ export default class StatusScreen extends React.Component {
         }
         this.pickDob = this.pickDob.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        
+        this.back_Button_Press = this.back_Button_Press.bind(this);
     }
 
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.back_Button_Press);
+    }
     //setting the dropdown options according to current status
     static getDerivedStateFromProps(props, state) {
         if (state.child.childStatus.childStatusId == 1) {
@@ -151,12 +154,31 @@ export default class StatusScreen extends React.Component {
 
     componentWillUnmount() {
         console.log("in unmount");
+        BackHandler.addEventListener('hardwareBackPress', this.back_Button_Press);
        /* if (this.state.successDisplay) {
             const { params } = this.props.navigation.state;
             params.refreshChildList();
         }*/
     }
 
+    back_Button_Press() {
+/*
+        console.log("insdie backdrop")
+        Alert.alert(
+            ' Exit From App ',
+            ' Do you want to exit From App ?',
+            [
+                { text: 'Yes', onPress: () => { this.resertStack; } },
+                { text: 'No', onPress: () => { console.log('NO Pressed'); } }
+            ],
+            { cancelable: false },
+        );*/
+        if (this.state.loading) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     handleChange = selectedOption => {
         this.setState({ selectedOption });
     };
