@@ -43,7 +43,8 @@ export default class StatusScreen extends React.Component {
             actionsTaken: [],
             actionItemsModal: false,
             statusOptions: global.status,
-            selectedOption: null
+            selectedOption: null,
+            credentials: false
         }
         this.pickDob = this.pickDob.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -112,17 +113,23 @@ export default class StatusScreen extends React.Component {
               
         });
         console.log(request_body);
-        const path = `child-status/${this.state.child.childNo}`;
-        if (values.email != '' && values.phnNo != '' && vales.future != '') {
-            path = path + `?email=${values.email}&phnNo=${values.phnNo}&future=${values.future}`;
+        let path = `child-status/${this.state.child.childNo}`;
+        if (this.state.credentials) {
+            if (values.email != '' && values.phnNo != '') {
+                path = path + `?email=${values.email}&phnNo=${values.phnNo}`;
 
-        } else if (values.email != '' && values.phnNo != '') {
-            path = path + `?email=${values.email}&phnNo=${values.phnNo}`;
+            } else if (values.email != '') {
+                path = path + `?email=${values.email}`;
 
-        } else if (values.email != '' -) {
-            path = path + `?email=${values.email}&phnNo=${values.phnNo}`;
+            } else if (values.phnNo != '') {
+            path = path + `?phnNo=${ values.phnNo }`;
 
+            }
+            if (values.future) {
+                path = path + `&future=${values.future}`;
+            }
         }
+        console.log(path);
         UpdateApi.updateData(request_body, path).then((response) => {
             this.setState({ loading: false, isVisible: true });
             if (response.ok) {
@@ -142,12 +149,13 @@ export default class StatusScreen extends React.Component {
     }
 
 
-    /*componentWillUnmount() {
-        if (this.state.successDisplay) {
+    componentWillUnmount() {
+        console.log("in unmount");
+       /* if (this.state.successDisplay) {
             const { params } = this.props.navigation.state;
             params.refreshChildList();
-        }
-    }*/
+        }*/
+    }
 
     handleChange = selectedOption => {
         this.setState({ selectedOption });
@@ -166,7 +174,7 @@ export default class StatusScreen extends React.Component {
 
     onCreateCredentialsSelected() {
         console.log("inside");
-        this.setState({ isMailModelVisible: true });
+        this.setState({ isMailModelVisible: true, credentials: true });
     }
 
     render() {
@@ -199,7 +207,6 @@ export default class StatusScreen extends React.Component {
                         leftPlace: '',
                         stay: '',
                         followUpBy: '',
-                        credentials: '',
                         email: '',
                         phnNo: '',
                         future:''
@@ -222,7 +229,7 @@ export default class StatusScreen extends React.Component {
                         if (!(this.state.leavingReasonError || this.state.reasonDescriptionError || this.state.leftPlaceError || this.state.actionTakenError || this.state.stayError || this.state.followUpByError)) {
                             this.updateStatus(values);
                             actions.resetForm();
-                            this.setState({ date: null, showElements: false, leavingReasonError: false, reasonDescriptionError: false, leftPlaceError: false, actionTakenError: false, stayError: false, followUpByError: false, credentialsError: false });
+                            this.setState({ date: null, showElements: false, leavingReasonError: false, reasonDescriptionError: false, leftPlaceError: false, actionTakenError: false, stayError: false, followUpByError: false, credentialsError: false, credentials: false });
                            
                         }
                     }}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, ToolbarAndroid, Button, FlatList, Image, Dimensions, PixelRatio } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert,  ToolbarAndroid, Button, FlatList, Image, Dimensions, PixelRatio, BackHandler  } from 'react-native'
 import { Card, CardImage, CardContent } from 'react-native-cards'
 import Modal from 'react-native-modal';
 import { SearchBar } from 'react-native-elements';
@@ -11,6 +11,7 @@ import { getOrgId } from '../constants/LoginConstant';
 import { Ionicons } from '@expo/vector-icons';
 import { base_url, getDataAsync } from '../constants/Base';
 import ScalableText from 'react-native-text';
+import { StackActions } from '@react-navigation/native';
 
 export default class ChildList extends Component {
     constructor(props) {
@@ -60,6 +61,7 @@ export default class ChildList extends Component {
     }
     async componentDidMount() {
         await this.getData();
+        BackHandler.addEventListener('hardwareBackPress', this.back_Button_Press);
     }
 
 
@@ -69,8 +71,27 @@ export default class ChildList extends Component {
             search: null,
             errorDisplay: false
         });
+        BackHandler.addEventListener('hardwareBackPress', this.back_Button_Press);
     }
 
+    back_Button_Press() {
+        Alert.alert(
+            ' Exit From App ',
+            ' Do you want to exit From App ?',
+            [
+                { text: 'Yes', onPress: () => { this.resertStack;  }},
+                { text: 'No', onPress: () => { console.log('NO Pressed'); } }
+            ],
+            { cancelable: false },
+        );
+        return ;
+    }
+
+    resertStack() {
+        const popAction = StackActions.pop(1);
+
+        navigation.dispatch(popAction);
+    }
     // This function adds a new property to object
     async getAddedData(data) {
 
