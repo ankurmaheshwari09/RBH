@@ -79,13 +79,13 @@ export default class ChildList extends Component {
 
     back_Button_Press() {
 
-        console.log(this.props);
-        const popAction = StackActions.pop(1);
+      /*  console.log(this.props);
+        const popAction = StackActions.pop(1);*/
 
-        this.props.navigation.dispatch(popAction);
+        this.props.screenProps.goBack();
 
-       /* console.log(this.props.screenProps, 'oooo');
-        this.props.screenProps.navigation.replace('Home');*/
+        console.log(this.props.screenProps, 'oooo');
+       // this.props.screenProps.navigation.replace('Home');
 
        
         /*Alert.alert(

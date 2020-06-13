@@ -48,11 +48,12 @@ export default class StatusScreen extends React.Component {
         }
         this.pickDob = this.pickDob.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.back_Button_Press = this.back_Button_Press.bind(this);
+        this.back_Button = this.back_Button.bind(this);
     }
 
     componentDidMount() {
-        BackHandler.addEventListener('hardwareBackPress', this.back_Button_Press);
+       // DeviceEventEmitter.removeAllListeners('hardwareBackPress');
+        BackHandler.addEventListener('hardwareBackPress', this.back_Button);
     }
     //setting the dropdown options according to current status
     static getDerivedStateFromProps(props, state) {
@@ -154,14 +155,14 @@ export default class StatusScreen extends React.Component {
 
     componentWillUnmount() {
         console.log("in unmount");
-        BackHandler.addEventListener('hardwareBackPress', this.back_Button_Press);
+        BackHandler.addEventListener('hardwareBackPress', this.back_Button);
        /* if (this.state.successDisplay) {
             const { params } = this.props.navigation.state;
             params.refreshChildList();
         }*/
     }
 
-    back_Button_Press() {
+    back_Button() {
 /*
         console.log("insdie backdrop")
         Alert.alert(
@@ -173,11 +174,13 @@ export default class StatusScreen extends React.Component {
             ],
             { cancelable: false },
         );*/
-        if (this.state.loading) {
+        console.log(this.state.loading);
+        if (this.state.loading === true) {
             return true;
         } else {
             return false;
         }
+        return false;
     }
     handleChange = selectedOption => {
         this.setState({ selectedOption });
