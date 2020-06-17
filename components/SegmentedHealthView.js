@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollViewBase, ScrollView, TouchableOpacity, SafeAreaView
+  ScrollViewBase, ScrollView, TouchableOpacity, SafeAreaView, Image,
 } from 'react-native';
 
 export default class SegmentedHealthView extends Component {
@@ -25,6 +25,9 @@ constructor(props) {
       const {customStyleIndex } = this.state
               return (
                 <View style = {globalStyles.container}>
+                   <View style={globalStyles.backgroundlogoimageview}>
+                        <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+                   </View>
                   <View style = {globalStyles.segView}>
                   <ScrollView
                     horizontal = {true}

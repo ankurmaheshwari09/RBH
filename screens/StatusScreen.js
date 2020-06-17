@@ -234,7 +234,7 @@ export default class StatusScreen extends React.Component {
                             enabled style={globalStyles.keyboardavoid}
                             keyboardVerticalOffset={0}>
 
-                            <ScrollView>
+                            <ScrollView showsVerticalScrollIndicator={false}>
                                 <View>
                                     {/*Child Name*/}
                                     <Text style={globalStyles.label}>Child Name: </Text>

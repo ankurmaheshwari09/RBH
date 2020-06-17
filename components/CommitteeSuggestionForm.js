@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-    Button, Text, TextInput, View, Picker, ScrollView,
-    KeyboardAvoidingView, Field, StyleSheet
+    Button, Text, TextInput, View, ScrollView,
+    KeyboardAvoidingView, StyleSheet, Dimensions, Image 
 } from 'react-native';
 import { Formik } from 'formik';
 import { globalStyles } from '../styles/global';
@@ -103,17 +103,27 @@ export default class CommitteeScreen extends React.Component {
     //     submitted = submitted.concat(committeeStaff[i].staffNo);
     //    }
     //    this.setState({staffMembers: submitted});
-     return this.state.staffMembers.map((member) => {
+    let selectedStaffNumber = [];
+    this.state.updateSelectedStaff.map((newStaff)=>{
+        selectedStaffNumber.push(newStaff.staffNo);
+    })
+    this.setState({updateSelectedStaff: selectedStaffNumber, selectedStaff: selectedStaffNumber});
+
+     let result = this.state.staffMembers.map((member) => {
+         console.log(member.staffNo,'staff')
+         console.log(this.state.updateSelectedStaff,'from db staff');
         if(this.state.updateSelectedStaff.includes(member.staffNo)){    
                 member.isSelected = true;
-                console.log('true');
+                // console.log('true');
         }
         else{
                 member.isSelected = false;     
-                console.log('false');
+                // console.log('false');
         }
         return member;
         });  
+        this.setState({staffMembers: result});
+        
     } 
 
 
@@ -240,15 +250,19 @@ export default class CommitteeScreen extends React.Component {
 
     render() {
         console.log('calling render',this.state.suggestion);
-        return (<View style={globalStyles.formcontainer}>
+        return (     
             <View style={globalStyles.container}>
+
+                        {/*Background Image*/}
+                       <View style={globalStyles.backgroundlogoimageview}>
+                            <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
+                        </View>
                 <Formik     
                    enableReinitialize
                     initialValues={
                         {
                             Suggestion: this.state.suggestion,
-                            MeetingDate: this.state.meetingdate
-                            
+                            MeetingDate: this.state.meetingdate                            
                         }
                     }
                     validationSchema={CommitteeFormSchema}
@@ -276,10 +290,16 @@ export default class CommitteeScreen extends React.Component {
             <KeyboardAvoidingView behavior="padding"
                 enabled style={globalStyles.keyboardavoid}
                 keyboardVerticalOffset={200}>
-                <ScrollView>
+                <ScrollView showsVerticalScrollIndicator={false}>
 
                     <View>
-                        <Text style={globalStyles.label}>Child Name : {this.state.child.firstName}</Text>
+                        <Text style={globalStyles.label}>Child Name : </Text>
+                        <TextInput
+                            style={globalStyles.disabledBox}
+                            value={this.state.child.firstName} //value updated in 'values' is reflected here
+                            editable={false}
+                            selectTextOnFocus={false}
+                        />
                         <Text style={globalStyles.padding}></Text>                   
                         <Text style={globalStyles.label}>Select Meeting Date:</Text>
                         <View style={globalStyles.dobView}>
@@ -305,9 +325,9 @@ export default class CommitteeScreen extends React.Component {
                             }
                             <Text style={globalStyles.errormsg}>{props.touched.MeetingDate && props.errors.MeetingDate}</Text>
                             </View>
-
+                            <Text style={globalStyles.padding}></Text> 
                         <Text style={globalStyles.label}>Enter/Update Suggestion:</Text>
-                        <Text style={globalStyles.errormsg}>{props.touched.Suggestion && props.errors.Suggestion}</Text>
+                        
                         <TextInput
                             style={globalStyles.inputText}
                             onChangeText={props.handleChange('Suggestion')}
@@ -316,7 +336,9 @@ export default class CommitteeScreen extends React.Component {
                             multiline={true}
                             numberOfLines={6}
                         /> 
-                      <Text style={globalStyles.padding}></Text>                       
+                     <Text style={globalStyles.errormsg}>{props.touched.Suggestion && props.errors.Suggestion}</Text>
+                     {/* <Text style={globalStyles.padding}></Text>  */}
+                      <Text style={globalStyles.label}>Select Staff:</Text>                   
              {
               this.state.staffMembers.map((staffMember,index) => {
                return(
@@ -344,7 +366,7 @@ export default class CommitteeScreen extends React.Component {
                         this.setState({selectedStaff: temp});
                     }
                     console.log(this.state.selectedStaff,'selected staff');
-                   
+                    
                     }}
                     isChecked={staffMember.isSelected}     
                     rightText={staffMember.firstName + " " + staffMember.lastName}  
@@ -371,7 +393,7 @@ export default class CommitteeScreen extends React.Component {
                 </Modal>
                 <LoadingDisplay loading={this.state.loading} />
             </View >
-        </View >
+
         );
     }
 }

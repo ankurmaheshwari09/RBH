@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView
+    Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView, Image
 } from 'react-native';
 import { Formik } from 'formik';
 import { globalStyles } from '../styles/global';
@@ -55,7 +55,9 @@ export default class ChildResultScreen extends React.Component {
     }
     render() {
         return (<View style={globalStyles.container}>
-            <Text> Child Name: {this.state.child.firstName}</Text>
+            <View style={globalStyles.backgroundlogoimageview}>
+                <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
+            </View>
 
             <Formik
                 initialValues={
@@ -80,49 +82,64 @@ export default class ChildResultScreen extends React.Component {
                     <KeyboardAvoidingView behavior="padding"
                         enabled style={globalStyles.keyboardavoid}
                         keyboardVerticalOffset={200}>
-                        <ScrollView>
+                        <ScrollView showsVerticalScrollIndicator={false}>
 
                             <View>
-                                <Text style={globalStyles.text}>Class:</Text>
+                                {/*Child Name*/}
+                                <Text style={globalStyles.label}>Child Name: </Text>
+                                <TextInput
+                                    style={globalStyles.disabledBox}
+                                    value={this.state.child.firstName} //value updated in 'values' is reflected here
+                                    editable={false}
+                                    selectTextOnFocus={false}
+                                />
+
+                                {/*Child Class*/}
+                                <Text style={globalStyles.label}>Class:</Text>
                                 <Picker
                                     selectedValue={props.values.Class}
                                     style={globalStyles.dropDown}
                                     onValueChange={props.handleChange('Class')}
                                 >
-                                    <Picker.Item label="Select the Class" value="" />
+                                    <Picker.Item color='grey' label="Select the Class" value="" />
                                     <Picker.Item label="X" value="11" />
                                     <Picker.Item label="XII(Inter 2/PUC2)" value="13" />
                                 </Picker>
-                                <Text style={globalStyles.text}>Appeared:</Text>
+
+                                {/*Appeared*/}
+                                <Text style={globalStyles.label}>Appeared:</Text>
                                 <Picker
                                     selectedValue={props.values.Appeared}
                                     style={globalStyles.dropDown}
                                     onValueChange={props.handleChange('Appeared')}
                                 >
-                                    <Picker.Item label="Select" value="" />
+                                    <Picker.Item color='grey' label="Select" value="" />
                                     <Picker.Item label="Yes" value="Y" />
                                     <Picker.Item label="No" value="N" />
                                 </Picker>
-                                <View>
-                                    <Text style={globalStyles.text}>Result:</Text>
-                                    <Picker
-                                        selectedValue={props.values.Result}
-                                        style={globalStyles.dropDown}
-                                        onValueChange={props.handleChange('Result')}
-                                    >
-                                        <Picker.Item label="Select" value="" />
-                                        <Picker.Item label="Pass" value="PASS" />
-                                        <Picker.Item label="Fail" value="FAIL" />
-                                    </Picker>
-                                    <Text style={globalStyles.text}>Percentage:</Text>
-                                    <TextInput
-                                        style={globalStyles.input}
-                                        onChangeText={props.handleChange('Percentage')}
-                                        value={props.values.Percentage}
-                                    />
-                                    <Text style={globalStyles.padding}></Text>
-                                    <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
-                                </View>
+
+                                {/*Result*/}
+                                <Text style={globalStyles.label}>Result:</Text>
+                                <Picker
+                                    selectedValue={props.values.Result}
+                                    style={globalStyles.dropDown}
+                                    onValueChange={props.handleChange('Result')}
+                                >
+                                    <Picker.Item color='grey' label="Select" value="" />
+                                    <Picker.Item label="Pass" value="PASS" />
+                                    <Picker.Item label="Fail" value="FAIL" />
+                                </Picker>
+
+                                {/*Percentage*/}
+                                <Text style={globalStyles.label}>Percentage:</Text>
+                                <TextInput
+                                    style={globalStyles.input}
+                                    onChangeText={props.handleChange('Percentage')}
+                                    value={props.values.Percentage}
+                                />
+                                <Text style={globalStyles.padding}></Text>
+                                <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
+
                             </View>
                         </ScrollView>
                     </KeyboardAvoidingView>

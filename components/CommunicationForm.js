@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Button, Text, TextInput, View, Picker, ScrollView,
+    Button, Text, TextInput, View, Picker, ScrollView,Image,
     KeyboardAvoidingView
 } from 'react-native';
 import { Formik } from 'formik';
@@ -137,7 +137,9 @@ export default class CommunicationForm extends React.Component {
     render() {
         return (
             <View style={globalStyles.container}>
-
+             <View style={globalStyles.backgroundlogoimageview}>
+                <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+             </View>
                 <Formik
                     initialValues={
                         {
@@ -173,22 +175,24 @@ export default class CommunicationForm extends React.Component {
                             <ScrollView showsVerticalScrollIndicator = {false}>
 
                                 <View>
-                                    <Text style={globalStyles.text}>Present(Local)Address Details:{"\n"}(Street No/Name,Village Name)</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.PresentAddress && props.errors.PresentAddress}</Text>
+                                    <Text style={globalStyles.label}>Present(Local)Address Details:{"\n"}(Street No/Name,Village Name)</Text>
+
                                     <TextInput
                                         style={globalStyles.inputText}
                                         onChangeText={props.handleChange('PresentAddress')}
                                         value={props.values.PresentAddress}
                                     />
-                                    <Text style={globalStyles.text}>Area/Town/City Name</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.Area && props.errors.Area}</Text>
+                                    <Text style={globalStyles.errormsg}>{props.touched.PresentAddress && props.errors.PresentAddress}</Text>
+                                    <Text style={globalStyles.label}>Area/Town/City Name:</Text>
+
                                     <TextInput
                                         style={globalStyles.inputText}
                                         onChangeText={props.handleChange('Area')}
                                         value={props.values.Area}
                                     />
-                                    <Text style={globalStyles.text}>Country</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.Country && props.errors.Country}</Text>
+                                    <Text style={globalStyles.errormsg}>{props.touched.Area && props.errors.Area}</Text>
+                                    <Text style={globalStyles.label}>Country:</Text>
+
                                     <Picker
                                         selectedValue={props.values.Country}
                                         style={globalStyles.dropDown}
@@ -208,17 +212,17 @@ export default class CommunicationForm extends React.Component {
                                         }}
                                         value={props.values.Country}
                                     >
-                                        <Picker.Item key = '' label="Select Country" value='' />
+                                        <Picker.Item key = '' label="Select Country" color = "grey" value='' />
                                         {
                                            this.state.countries.map((item) => {
                                                return <Picker.Item key = {item.countryId} label = {item.country} value = {item.countryId}/>
                                            })
                                         }
                                     </Picker>
-
+                                    <Text style={globalStyles.errormsg}>{props.touched.Country && props.errors.Country}</Text>
                                     {this.state.showPresentState ?
                                         <View>
-                                        <Text style={globalStyles.text}>State</Text>
+                                        <Text style={globalStyles.label}>State:</Text>
                                         <Text style={globalStyles.errormsg}>{props.touched.State && props.errors.State}</Text>
                                         <Picker
                                             selectedValue={props.values.State}
@@ -238,7 +242,7 @@ export default class CommunicationForm extends React.Component {
                                             }}
                                             value={props.values.State}
                                         >
-                                            <Picker.Item label="Select State" value='' />
+                                            <Picker.Item color = "grey" label="Select State" value='' />
                                             {
                                                this.state.states.map((item) => {
                                                    return <Picker.Item key = {item.stateID} label = {item.state} value = {item.stateID}/>
@@ -250,8 +254,8 @@ export default class CommunicationForm extends React.Component {
 
                                     {this.state.showPresentDistrictAndPincode ?
                                         <View>
-                                        <Text style={globalStyles.text}>District</Text>
-                                        <Text style={globalStyles.errormsg}>{props.touched.District && props.errors.District}</Text>
+                                        <Text style={globalStyles.label}>District:</Text>
+
                                         <Picker
                                             selectedValue={props.values.District}
                                             style={globalStyles.dropDown}
@@ -263,44 +267,49 @@ export default class CommunicationForm extends React.Component {
                                             }}
                                             value={props.values.District}
                                         >
-                                            <Picker.Item label="Select District" value='' />
+                                            <Picker.Item color= "grey" label="Select District" value='' />
                                             {
                                                this.state.presentDistricts.map((item) => {
                                                   return <Picker.Item key = {item.districtID} label = {item.district} value = {item.districtID}/>
                                               })
                                             }
                                         </Picker>
-                                        <Text style={globalStyles.text}>Pin Code</Text>
-                                        <Text style={globalStyles.errormsg}>{props.touched.Pincode && props.errors.Pincode}</Text>
+                                        <Text style={globalStyles.errormsg}>{props.touched.District && props.errors.District}</Text>
+                                        <Text style={globalStyles.text}>Pin Code:</Text>
+
                                         <TextInput
                                             style={globalStyles.inputText}
                                             onChangeText={props.handleChange('Pincode')}
                                             value={props.values.Pincode}
                                         />
+                                        <Text style={globalStyles.errormsg}>{props.touched.Pincode && props.errors.Pincode}</Text>
                                         </View>
                                     :null}
 
-                                    <Text style={globalStyles.text}>Mobile Number(Personal)</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.Mobile && props.errors.Mobile}</Text>
+                                    <Text style={globalStyles.text}>Mobile Number(Personal):</Text>
+
                                     <TextInput
                                         style={globalStyles.inputText}
                                         onChangeText={props.handleChange('Mobile')}
                                         value={props.values.Mobile}
                                     />
-                                    <Text style={globalStyles.text}>Phone Number(Relatives/Neighbours)</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.Phone && props.errors.Phone}</Text>
+                                    <Text style={globalStyles.errormsg}>{props.touched.Mobile && props.errors.Mobile}</Text>
+                                    <Text style={globalStyles.text}>Phone Number(Relatives/Neighbours):</Text>
+
                                     <TextInput
                                         style={globalStyles.inputText}
                                         onChangeText={props.handleChange('Phone')}
                                         value={props.values.Phone}
                                     />
-                                    <Text style={globalStyles.text}>Permanent(Native) Address</Text>
-                                    <Text style={globalStyles.errormsg}>{props.touched.PermanentAddress && props.errors.PermanentAddress}</Text>
+                                    <Text style={globalStyles.errormsg}>{props.touched.Phone && props.errors.Phone}</Text>
+                                    <Text style={globalStyles.text}>Permanent(Native) Address:</Text>
+
                                     <TextInput
                                         style={globalStyles.inputText}
                                         onChangeText={props.handleChange('PermanentAddress')}
                                         value={props.values.PermanentAddress}
                                     />
+                                    <Text style={globalStyles.errormsg}>{props.touched.PermanentAddress && props.errors.PermanentAddress}</Text>
                                     <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                                 </View>
                             </ScrollView>

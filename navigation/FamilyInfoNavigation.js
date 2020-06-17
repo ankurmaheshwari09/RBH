@@ -2,19 +2,17 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation'
 import { React } from 'react';
 import FamilyForm from '../components/FamilyForm';
-import FamilyScreen from '../screens/FamilyScreen';
+
 
 const screens = {
     FamilyForm: {
         screen: FamilyForm
-    },
-    FamilyScreen: {
-        screen: FamilyScreen
-    },
+    }
 }
 
 const HomeStack = createStackNavigator(screens, {
     defaultNavigationOptions: {
+        title: 'Family Details',
         headerStyle: {
             height: 50
         },

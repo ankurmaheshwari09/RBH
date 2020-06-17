@@ -1,8 +1,9 @@
 import React from 'react';
 import {
-    Button, Text, TextInput, View, Picker, ScrollView, Modal, StyleSheet, FlatList, TouchableOpacity,
-    KeyboardAvoidingView
+    Button, Text, TextInput, Image, View, Picker, ScrollView, StyleSheet, FlatList, TouchableOpacity,
+    KeyboardAvoidingView, Dimensions
 } from 'react-native';
+import Modal from 'react-native-modal';
 import { Formik } from 'formik';
 import { globalStyles } from '../styles/global';
 import * as yup from 'yup';
@@ -162,10 +163,10 @@ export default class FamilyForm extends React.Component {
         })
             .then((response) => response.json())
             .then((responseJson) => {
-                this.setState({ loading: false });
+               
                 this.setState({ familyDetails: responseJson });
                 console.log("response.......", responseJson);
-               
+                this.setState({ successDisplay: true });
                // this.setState({ loading: true, loaderIndex: 0 });
                 fetch(base_url + '/child-family/' + this.state.child.childNo, {
                     method: 'GET',
@@ -176,16 +177,17 @@ export default class FamilyForm extends React.Component {
                 })
                     .then((res) => res.json())
                     .then((resJson) => {
-                        
+                        this.setState({ loading: false });
                         this.setState({
                             childFamilyList: resJson,
                             //display: [{ familyDisplay: this.state.childFamilyList }, { relationDisplay: this.state.relations.relation }],
                             // error: res.error || null,
                             loading: false,
                         });
-                       // this.setState({ loading: false });
+                        // this.setState({ loading: false });
+                        this.setState({ isVisibleMsg: true });
                         this.setState({ successDisplay: true });
-                        
+                        //alert("submitted data");
                         console.log("ncdiuuir", this.state.childFamilyList);
                         // this.arrayholder = res;
                     })
@@ -245,7 +247,7 @@ export default class FamilyForm extends React.Component {
                             // error: res.error || null,
                             loading: false,
                         });
-                        this.setState({ isVisible: true });
+                        this.setState({ isVisibleMsg: true });
                         this.setState({ successDisplay: true });
                         console.log("ncdiuuir", this.state.childFamilyList);
                         // this.arrayholder = res;
@@ -253,7 +255,7 @@ export default class FamilyForm extends React.Component {
                     ;
             })
             .catch((error) => {
-                this.setState({ isVisible: true });
+                this.setState({ isVisibleMsg: true });
                 this.setState({ errorDisplay: true });
                 console.log(error);
                 this.setState({ loading: false, loaderIndex: 0 });
@@ -264,7 +266,7 @@ export default class FamilyForm extends React.Component {
     onPressForDelete(item) {
        // alert("Deleted family details with familyID :" + id);
         console.log(item);
-
+        this.setState({ loading: true, loaderIndex: 0 });
         console.log(".........id", item.familyNo);
         for (var i = 0; i < this.state.childFamilyList.length; i++) {
             console.log(".........", this.state.childFamilyList[i].familyNo);
@@ -320,16 +322,16 @@ export default class FamilyForm extends React.Component {
                                     // error: res.error || null,
                                     loading: false,
                                 });
-                                this.setState({ submitAlertMessage: 'Successfully deleted family with family Number ' + item.familyNo });
-                                alert(this.state.submitAlertMessage);
+                                this.setState({ isVisibleMsg: true });
+                                this.setState({ successDisplay: true });
                                 console.log("ncdiuuir", this.state.childFamilyList);
                                 // this.arrayholder = res;
                             })
                             ;
                     })
                     .catch((error) => {
-                        this.setState({ submitAlertMessage: 'Unable to delete child. Plesae contact the Admin.' });
-                        alert(this.state.submitAlertMessage);
+                        this.setState({ isVisibleMsg: true });
+                        this.setState({ errorDisplay: true });
                         console.log(error);
                         this.setState({ loading: false, loaderIndex: 0 });
                     });
@@ -359,15 +361,20 @@ export default class FamilyForm extends React.Component {
     }
     render() {
         return (
-            <View>
-                <Modal visible={this.state.isVisibleMsg} animationType='slide'>
+            <View style={globalStyles.container}>
+                
+                <View style={globalStyles.backgroundlogoimageview}>
+                    <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
+                </View>
+                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisibleMsg} onBackdropPress={() => this.setState({ isVisibleMsg: false })}>
                     <View style={globalStyles.MainContainer}>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                        <SuccessDisplay successDisplay={this.state.successDisplay} type='General Info' childNo={this.state.child.firstName} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Family Details' childNo={this.state.child.firstName} />
                     </View>
-               </Modal>
-                <Modal visible={this.state.modalVisible} animationType='slide'>
-                    <View style={styles.modalContent}>
+                </Modal>
+                
+                <Modal visible={this.state.modalVisible}>
+                    <View style={globalStyles.container}>
                         <MaterialIcons
                             name='close'
                             size={24}
@@ -375,7 +382,9 @@ export default class FamilyForm extends React.Component {
                             onPress={() => this.setModalVisible(!this.state.modalVisible)}
                         />
 
-                        <View style={globalStyles.container}>
+                        <View style={globalStyles.backgroundlogoimageview}>
+                            <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
+                        </View> 
 
                             <Formik
                                 initialValues={
@@ -422,18 +431,17 @@ export default class FamilyForm extends React.Component {
                                     <KeyboardAvoidingView
                                         enabled style={globalStyles.keyboardavoid}
                                     >
-                                        <ScrollView>
+                                    <ScrollView showsVerticalScrollIndicator={false}>
 
                                             <View>
-                                                <Text style={globalStyles.text}>Name</Text>
-                                                <Text style={globalStyles.errormsg}>{props.touched.Name && props.errors.Name}</Text>
+                                            <Text style={globalStyles.label}>Name :</Text>
                                                 <TextInput
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Name')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Name} //value updated in 'values' is reflected here
-                                                />
-                                                <Text style={globalStyles.text}>Relation</Text>
-                                                <Text style={globalStyles.errormsg}>{props.touched.Relation && props.errors.Relation}</Text>
+                                            />
+                                            <Text style={globalStyles.errormsg}>{props.touched.Name && props.errors.Name}</Text>
+                                            <Text style={globalStyles.label}>Relation :</Text> 
                                                 <Picker
                                                     selectedValue={props.values.Relation}
                                                     style={globalStyles.dropDown}
@@ -441,22 +449,22 @@ export default class FamilyForm extends React.Component {
                                                         props.setFieldValue('Relation', value);
                                                     }}
                                                 >
-                                                    <Picker.Item label="Select Relation" value="" />
+                                                <Picker.Item color='grey' label="Select Relation" value="" />
                                                     {
                                                         this.state.relations.map((item) => {
                                                             return <Picker.Item key={item.relationNo} label={item.relation} value={item.relationNo} />
                                                         })
                                                     }
-                                                </Picker>
-                                                <Text style={globalStyles.text}>Age</Text>
+                                            </Picker>
+                                            <Text style={globalStyles.errormsg}>{props.touched.Relation && props.errors.Relation}</Text>
+                                            <Text style={globalStyles.label}>Age :</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.Age && props.errors.Age}</Text>
                                                 <TextInput
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Age')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Age} //value updated in 'values' is reflected here
                                                 />
-                                                <Text style={globalStyles.text}>Occupation</Text>
-                                                <Text style={globalStyles.errormsg}>{props.touched.Occupation && props.errors.Occupation}</Text>
+                                            <Text style={globalStyles.label}>Occupation :</Text>
                                                 <Picker
                                                     selectedValue={props.values.Occupation}
                                                     style={globalStyles.dropDown}
@@ -464,15 +472,15 @@ export default class FamilyForm extends React.Component {
                                                         props.setFieldValue('Occupation', value);
                                                     }}
                                                 >
-                                                    <Picker.Item label="Select Occupation" value="" />
+                                                <Picker.Item color='grey' label="Select Occupation" value="" />
                                                     {
                                                         this.state.occupations.map((item) => {
                                                             return <Picker.Item key={item.occupationNo} label={item.occupation} value={item.occupationNo} />
                                                         })
                                                     }
-                                                </Picker>
-                                                <Text style={globalStyles.text}>Present</Text>
-                                                <Text style={globalStyles.errormsg}>{props.touched.Present && props.errors.Present}</Text>
+                                            </Picker>
+                                            <Text style={globalStyles.errormsg}>{props.touched.Occupation && props.errors.Occupation}</Text>
+                                            <Text style={globalStyles.label}>Present :</Text>
                                                 <Picker
                                                     selectedValue={props.values.Present}
                                                     style={globalStyles.dropDown}
@@ -480,21 +488,22 @@ export default class FamilyForm extends React.Component {
                                                         props.setFieldValue('Present', value);
                                                     }}
                                                 >
-                                                    <Picker.Item label="Select Present Condition" value="" />
+                                                <Picker.Item color='grey' label="Select Present Condition" value="" />
                                                     {
                                                         this.state.presentConditions.map((item) => {
                                                             return <Picker.Item key={item.presentId} label={item.present} value={item.presentId} />
                                                         })
                                                     }
-                                                </Picker>
-                                                <Text style={globalStyles.text}>Income</Text>
+                                            </Picker>
+                                            <Text style={globalStyles.errormsg}>{props.touched.Present && props.errors.Present}</Text>
+                                            <Text style={globalStyles.label}>Income :</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.PresentLocalAddress && props.errors.PresentLocalAddress}</Text>
                                                 <TextInput
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Income')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Income} //value updated in 'values' is reflected here
                                                 />
-                                                <Text style={globalStyles.text}>Remarks</Text>
+                                            <Text style={globalStyles.label}>Remarks :</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.Remarks && props.errors.Remarks}</Text>
                                                 <TextInput
                                                     style={globalStyles.inputText}
@@ -510,15 +519,18 @@ export default class FamilyForm extends React.Component {
 
                             </Formik>
                             
-                        </View>
+                        
                     </View>
                 </Modal>
                 
                 <LoadingDisplay loading={this.state.loading} />
                 <Modal visible={this.state.modaledit} animationType='slide'>
-                    <View style={styles.modalContent}>
-                        <View style={globalStyles.container}>
-
+                  
+                    <View style={globalStyles.container}>
+                    <View style={globalStyles.backgroundlogoimageview}>
+                        <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
+                    </View>
+                        
                             <Formik
                                 initialValues={
                                     {
@@ -564,18 +576,17 @@ export default class FamilyForm extends React.Component {
                                     <KeyboardAvoidingView
                                         enabled style={globalStyles.keyboardavoid}
                                     >
-                                        <ScrollView>
+                                    <ScrollView showsVerticalScrollIndicator={false}>
 
                                             <View>
-                                                <Text style={globalStyles.text}>Name</Text>
-                                                <Text style={globalStyles.errormsg}>{props.touched.Name && props.errors.Name}</Text>
+                                            <Text style={globalStyles.label}>Name :</Text>
                                                 <TextInput
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Name')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Name} //value updated in 'values' is reflected here
-                                                />
-                                                <Text style={globalStyles.text}>Relation</Text>
-                                                <Text style={globalStyles.errormsg}>{props.touched.Relation && props.errors.Relation}</Text>
+                                            />
+                                            <Text style={globalStyles.errormsg}>{props.touched.Name && props.errors.Name}</Text>
+                                            <Text style={globalStyles.label}>Relation :</Text>
                                                 <Picker
                                                     selectedValue={props.values.Relation}
                                                     style={globalStyles.dropDown}
@@ -583,22 +594,22 @@ export default class FamilyForm extends React.Component {
                                                         props.setFieldValue('Relation', value);
                                                     }}
                                                 >
-                                                    <Picker.Item label="Select Relation" value="" />
+                                                <Picker.Item color='grey' label="Select Relation" value="" />
                                                     {
                                                         this.state.relations.map((item) => {
                                                             return <Picker.Item key={item.relationNo} label={item.relation} value={item.relationNo} />
                                                         })
                                                     }
-                                                </Picker>
-                                                <Text style={globalStyles.text}>Age</Text>
+                                            </Picker>
+                                            <Text style={globalStyles.errormsg}>{props.touched.Relation && props.errors.Relation}</Text>
+                                            <Text style={globalStyles.label}>Age :</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.Age && props.errors.Age}</Text>
                                                 <TextInput
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Age')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Age} //value updated in 'values' is reflected here
                                                 />
-                                                <Text style={globalStyles.text}>Occupation</Text>
-                                                <Text style={globalStyles.errormsg}>{props.touched.Occupation && props.errors.Occupation}</Text>
+                                            <Text style={globalStyles.label}>Occupation :</Text> 
                                                 <Picker
                                                     selectedValue={props.values.Occupation}
                                                     style={globalStyles.dropDown}
@@ -606,15 +617,15 @@ export default class FamilyForm extends React.Component {
                                                         props.setFieldValue('Occupation', value);
                                                     }}
                                                 >
-                                                    <Picker.Item label="Select Occupation" value="" />
+                                                <Picker.Item color='grey' label="Select Occupation" value="" />
                                                     {
                                                         this.state.occupations.map((item) => {
                                                             return <Picker.Item key={item.occupationNo} label={item.occupation} value={item.occupationNo} />
                                                         })
                                                     }
-                                                </Picker>
-                                                <Text style={globalStyles.text}>Present</Text>
-                                                <Text style={globalStyles.errormsg}>{props.touched.Present && props.errors.Present}</Text>
+                                            </Picker>
+                                            <Text style={globalStyles.errormsg}>{props.touched.Occupation && props.errors.Occupation}</Text>
+                                            <Text style={globalStyles.label}>Present :</Text>
                                                 <Picker
                                                     selectedValue={props.values.Present}
                                                     style={globalStyles.dropDown}
@@ -622,27 +633,28 @@ export default class FamilyForm extends React.Component {
                                                         props.setFieldValue('Present', value);
                                                     }}
                                                 >
-                                                    <Picker.Item label="Select Present Condition" value="" />
+                                                <Picker.Item color='grey' label="Select Present Condition" value="" />
                                                     {
                                                         this.state.presentConditions.map((item) => {
                                                             return <Picker.Item key={item.presentId} label={item.present} value={item.presentId} />
                                                         })
                                                     }
-                                                </Picker>
-                                                <Text style={globalStyles.text}>Income</Text>
-                                                <Text style={globalStyles.errormsg}>{props.touched.PresentLocalAddress && props.errors.PresentLocalAddress}</Text>
+                                            </Picker>
+                                            <Text style={globalStyles.errormsg}>{props.touched.Present && props.errors.Present}</Text>
+                                            <Text style={globalStyles.label}>Income :</Text>
                                                 <TextInput
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Income')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Income} //value updated in 'values' is reflected here
-                                                />
-                                                <Text style={globalStyles.text}>Remarks</Text>
-                                                <Text style={globalStyles.errormsg}>{props.touched.Remarks && props.errors.Remarks}</Text>
+                                            />
+                                            <Text style={globalStyles.errormsg}>{props.touched.PresentLocalAddress && props.errors.PresentLocalAddress}</Text>
+                                            <Text style={globalStyles.label}>Remarks :</Text>
                                                 <TextInput
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Remarks')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Remarks} //value updated in 'values' is reflected here
-                                                />
+                                            />
+                                            <Text style={globalStyles.errormsg}>{props.touched.Remarks && props.errors.Remarks}</Text>
                                                 <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                                             </View>
                                         </ScrollView>
@@ -652,39 +664,62 @@ export default class FamilyForm extends React.Component {
 
                             </Formik>
                           
+                       
                         </View>
-                    </View>
+                    
                 </Modal>
 
                 <MaterialIcons
                     name='add'
                     size={24}
-                    style={styles.modalToggle}
+                    style={{ ...styles.modalToggle, ...styles.modalClose }}
                     onPress={() => this.setModalVisible(true)}
                 />
                 
                 
                 <View style={styles.bottom}>
                 <FlatList
-                    data={this.state.childFamilyList}
+                        data={this.state.childFamilyList}
+                       
+                        showsVerticalScrollIndicator={false}
                     renderItem={({ item, index }) => (
                        
                         <View style={{ flexDirection: 'column'}}>
-                           
-                                <TouchableOpacity style={styles.container} >
+
+                            <TouchableOpacity style={styles.container}>
 
                                     {/*react-native-elements Card*/}
 
-                                    <Card>
+                            <Card border="secondary" style={{ borderWidth: 1 }}>
                                         <CardContent style={styles.paragraph}>
-                                            <Text>Name :{`${item.name}`}</Text>
-                                            <Text>Relation : {`${item.relationType}`}</Text>
-                                            <Text>Age : {`${item.age}`}</Text>
-                                            <Text>Occupation : {`${item.occupationType}`}</Text>
-                                            <Text>Present :{`${item.presentconditionType}`}</Text>
-                                            <Text>Income : {`${item.income}`}</Text>
-                                            <Text>Remarks :{`${item.remarks}`}</Text>
-
+                                        <Text>
+                                        <Text style={{ fontWeight: "bold" }}>Name : </Text>
+                                        <Text>{`${item.name}`}</Text>
+                                        </Text>
+                                        <Text>
+                                            <Text style={{ fontWeight: "bold" }}>Relation : </Text>
+                                        <Text>{`${item.relationType}`}</Text>
+                                    </Text>
+                                <Text>
+                                            <Text style={{ fontWeight: "bold" }}>Age : </Text>
+                                        <Text>{`${item.age}`}</Text>
+                                        </Text>
+                                        <Text>
+                                            <Text style={{ fontWeight: "bold" }}>Occupation : </Text>
+                                        <Text>{`${item.occupationType}`}</Text>
+                                        </Text>
+                                        <Text>
+                                            <Text style={{ fontWeight: "bold" }}>Present : </Text>
+                                        <Text>{`${item.presentconditionType}`}</Text>
+                                            </Text>
+                                    <Text>
+                                            <Text style={{ fontWeight: "bold" }}>Income : </Text>
+                                        <Text>{`${item.income}`}</Text>
+                                        </Text>
+                                        <Text>
+                                            <Text style={{ fontWeight: "bold" }}>Remarks : </Text>
+                                        <Text>{`${item.remarks}`}</Text>
+                                        </Text>
                                         </CardContent>
                                         <MaterialIcons
                                             name='edit'
@@ -701,19 +736,22 @@ export default class FamilyForm extends React.Component {
 
                                     </Card>
 
-                                </TouchableOpacity>
-                            
+                                
 
+                            </TouchableOpacity>
+                           
                         </View>
                     
                             
                     )}
                     //Setting the number of column
                     numColumns={1}
-                    keyExtractor={(item, index) => index.toString()}
+                            keyExtractor={(item, index) => index.toString()}
+                            
                 //keyExtractor={this.reviews.name}
                 />
-                  </View> 
+                    </View> 
+               
             </View>
             
     
@@ -729,7 +767,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 10,
         borderWidth: 1,
-        borderColor: '#f2f2f2',
+        borderColor: '#000000',
         padding: 10,
         borderRadius: 10,
         alignSelf: 'center',
@@ -757,11 +795,23 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         margin:10
     },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+        backgroundColor: 'white',
+        width: Dimensions.get('window').width / 2 + 50,
+        maxHeight: Dimensions.get('window').height / 4,
+        top: 150,
+        borderRadius: 30
+    },
     paragraph: {
         padding: 20,
         
     }, bottom: {
-        marginBottom: 150,
+        marginBottom: 100,
+        marginTop:10
     },
     green: {
         backgroundColor: '#ABEBC6',
@@ -775,6 +825,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
         //marginBottom:50
         // borderRadius : 15,
-        // backgroundColor : '#FFFFFF',
+       
+         backgroundColor : '#FFFFFF',
     }
 });

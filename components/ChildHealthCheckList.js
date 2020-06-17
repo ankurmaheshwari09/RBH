@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView} from 'react-native';
+import {Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView, Image} from 'react-native';
 import {useField, useFormikContext, Formik} from 'formik';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Feather} from '@expo/vector-icons';
@@ -150,7 +150,10 @@ export default class ChildHealthCheckList extends React.Component{
     render() {
         return (
             <View style = {globalStyles.container}>
-                <Text style ={globalStyles.healthformheading}>       Child Health CheckList      </Text>
+              <View style={globalStyles.backgroundlogoimageview}>
+                            <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+                        </View>
+
                 <Formik
                     initialValues = {
                         {
@@ -194,8 +197,8 @@ export default class ChildHealthCheckList extends React.Component{
                     {props => (
                         <ScrollView showsVerticalScrollIndicator = {false}>
                             <View>
-                                <Text style = {globalStyles.text}>HIV Test</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.HIVTest && props.errors.HIVTest}</Text>
+                                <Text style = {globalStyles.label}>HIV Test:</Text>
+
                                 <Picker
                                     selectedValue = {props.values.HIVTest}
                                     style = {globalStyles.dropDown}
@@ -209,14 +212,15 @@ export default class ChildHealthCheckList extends React.Component{
                                     }}
                                     value = {props.values.HIVTest}
                                 >
-                                    <Picker.Item label='Select HIV Test' value = ''/>
+                                    <Picker.Item color='grey' label='Select HIV Test' value = ''/>
                                     <Picker.Item label='Taken' value = 'true'/>
                                     <Picker.Item label='Not Taken' value = 'false'/>
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.HIVTest && props.errors.HIVTest}</Text>
 
                                 {this.state.showHIVTestResult ?
                                     <View>
-                                    <Text style = {globalStyles.text}>HIV Test Result</Text>
+                                    <Text style = {globalStyles.text}>HIV Test Result:</Text>
                                     <Picker
                                         selectedValue = {props.values.HIVTestResult}
                                         style = {globalStyles.dropDown}
@@ -239,8 +243,8 @@ export default class ChildHealthCheckList extends React.Component{
                                 :null}
                                 {this.state.HIVTestResultError ? <Text style={globalStyles.errormsg}> HIV Test Result is a required field </Text> : null}
 
-                                <Text style = {globalStyles.text}>TB Test</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.TBTest && props.errors.TBTest}</Text>
+                                <Text style = {globalStyles.label}>TB Test:</Text>
+
                                 <Picker
                                     selectedValue = {props.values.TBTest}
                                     style = {globalStyles.dropDown}
@@ -254,14 +258,15 @@ export default class ChildHealthCheckList extends React.Component{
                                     }}
                                     value = {props.values.TBTest}
                                 >
-                                    <Picker.Item label='Select TB Test' value = ''/>
+                                    <Picker.Item color='grey' label='Select TB Test' value = ''/>
                                     <Picker.Item label='Taken' value = 'true'/>
                                     <Picker.Item label='Not Taken' value = 'false'/>
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.TBTest && props.errors.TBTest}</Text>
 
                                 {this.state.showTBTestResult ?
                                     <View>
-                                    <Text style = {globalStyles.text}>TB Test Result</Text>
+                                    <Text style = {globalStyles.label}>TB Test Result:</Text>
                                     <Picker
                                         selectedValue = {props.values.TBTestResult}
                                         style = {globalStyles.dropDown}
@@ -276,7 +281,7 @@ export default class ChildHealthCheckList extends React.Component{
                                         }}
                                         value = {props.values.TBTestResult}
                                     >
-                                        <Picker.Item label='Select TB Test Result' value = ''/>
+                                        <Picker.Item color = 'grey' label='Select TB Test Result' value = ''/>
                                         <Picker.Item label='Positive' value = 'true'/>
                                         <Picker.Item label='Negative' value = 'false'/>
                                     </Picker>
@@ -284,8 +289,8 @@ export default class ChildHealthCheckList extends React.Component{
                                 :null}
                                 {this.state.TBTestResultError ? <Text style={globalStyles.errormsg}> TB Test Result is a required field </Text> : null}
 
-                                <Text style = {globalStyles.text}>Deworming</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.Deworming && props.errors.Deworming}</Text>
+                                <Text style = {globalStyles.label}>Deworming:</Text>
+
                                 <Picker
                                     selectedValue = {props.values.Deworming}
                                     onValueChange = {props.handleChange('Deworming')}
@@ -300,16 +305,16 @@ export default class ChildHealthCheckList extends React.Component{
                                     }}
                                     value = {props.values.Deworming}
                                 >
-                                    <Picker.Item label='Select Deworming' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Deworming' value = ''/>
                                     <Picker.Item label='Yes' value = 'true'/>
                                     <Picker.Item label='No' value = 'false'/>
                                 </Picker>
-
+                                <Text style = {globalStyles.errormsg}>{props.touched.Deworming && props.errors.Deworming}</Text>
                                 {this.state.showDewormingDate ?
                                     <View style={globalStyles.dobView}>
-                                        <Text style = {globalStyles.text}>Deworming Date</Text>
+                                        <Text style = {globalStyles.text}>Deworming Date:</Text>
                                         <TextInput
-                                            style={globalStyles.inputText}
+                                            style={globalStyles.inputText, globalStyles.dobValue}
                                             value={this.state.DewormingDate}
                                             editable={false}
                                             onValueChange={props.handleChange('DewormingDate')}
@@ -332,16 +337,16 @@ export default class ChildHealthCheckList extends React.Component{
                                 :null}
                                 {this.state.DewormingDateError ? <Text style={globalStyles.errormsg}> DewormingDate is a required field </Text> : null}
 
-                                <Text style = {globalStyles.text}>Camps Check Ups</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.CampsCheckUps && props.errors.CampsCheckUps}</Text>
+                                <Text style = {globalStyles.label}>Camps Check Ups:</Text>
+
                                 <TextInput
                                     style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('CampsCheckUps')}
                                     value = {props.values.CampsCheckUps}
                                 />
+                                <Text style = {globalStyles.errormsg}>{props.touched.CampsCheckUps && props.errors.CampsCheckUps}</Text>
+                                <Text style = {globalStyles.label}>Gynecology:</Text>
 
-                                <Text style = {globalStyles.text}>Gynecology</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.Gynecology && props.errors.Gynecology}</Text>
                                 <Picker
                                     selectedValue = {props.values.Gynecology}
                                     onValueChange = {props.handleChange('Gynecology')}
@@ -356,16 +361,18 @@ export default class ChildHealthCheckList extends React.Component{
                                     }}
                                     value = {props.values.Gynecology}
                                 >
-                                    <Picker.Item label='Select Gynecology' value = ''/>
+
+                                    <Picker.Item  color = 'grey' label='Select Gynecology' value = ''/>
                                     <Picker.Item label='Yes' value = 'true'/>
                                     <Picker.Item label='No' value = 'false'/>
                                 </Picker>
+                                 <Text style = {globalStyles.errormsg}>{props.touched.Gynecology && props.errors.Gynecology}</Text>
 
                                 {this.state.showGynecologyDate ?
                                     <View style={globalStyles.dobView}>
                                         <Text style = {globalStyles.text}>Gynecology Date</Text>
                                         <TextInput
-                                            style={globalStyles.inputText}
+                                            style={globalStyles.inputText, globalStyles.dobValue}
                                             value={this.state.GynecologyDate}
                                             editable={false}
                                             onValueChange={props.handleChange('GynecologyDate')}

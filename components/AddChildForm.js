@@ -35,7 +35,6 @@ const AddChildSchema = yup.object({
     DOA: yup.string().required(),
     ReferredSource: yup.string().required(),
     ReferredBy: yup.string().required(),
-    ChildStatus: yup.string().required(),
 });
 
 
@@ -62,6 +61,7 @@ export default class AddChild extends React.Component{
         homeStaffList: [],
         referralSourcesList: [],
         childStatusList: [],
+        childStatusId: '',
         submitAlertMessage: '',
         photoUploadMessage: '',
         orgid: '',
@@ -73,6 +73,14 @@ export default class AddChild extends React.Component{
         pageThree: false,
         currentPage: 1,
     };
+
+    componentDidMount() {
+        this.addChildConstants();
+        let orgId = getOrgId();
+        this.setState({orgid: orgId});
+    }
+
+    
 
     async _pickImage (handleChange) {
         const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -92,23 +100,29 @@ export default class AddChild extends React.Component{
     }
 
     async addChildConstants(){
-        getDataAsync(base_url + '/religions').then(data => {console.log(data); this.setState({religions: data})});
+        getDataAsync(base_url + '/religions').then(data => { this.setState({religions: data})});
     
-        getDataAsync(base_url + '/communities').then(data => {console.log(data);this.setState({communities: data})});
+        getDataAsync(base_url + '/communities').then(data => { this.setState({communities: data})});
     
-        getDataAsync(base_url + '/mother-tongues').then(data => {console.log(data);this.setState({motherTongues: data})});
+        getDataAsync(base_url + '/mother-tongues').then(data => { this.setState({motherTongues: data})});
     
-        getDataAsync(base_url + '/parental-statuses').then(data => {console.log(data);this.setState({parentalStatusList: data})});
+        getDataAsync(base_url + '/parental-statuses').then(data => { this.setState({parentalStatusList: data})});
     
-        getDataAsync(base_url + '/admission-reasons').then(data => {console.log(data);this.setState({admissionReasons: data})});
+        getDataAsync(base_url + '/admission-reasons').then(data => { this.setState({admissionReasons: data})});
     
-        getDataAsync(base_url + '/education-statuses').then(data => {console.log(data);this.setState({educationStatusList: data})});
+        getDataAsync(base_url + '/education-statuses').then(data => { this.setState({educationStatusList: data})});
     
-        getDataAsync(base_url + '/home-staff-list').then(data => {console.log(data);this.setState({homeStaffList: data})});
+        getDataAsync(base_url + '/home-staff-list').then(data => {this.setState({homeStaffList: data})});
         
         getDataAsync(base_url + '/referral-sources').then(data => {console.log(data);this.setState({referralSourcesList: data})});
     
-        getDataAsync(base_url + '/child-statuses').then(data => {console.log(data);this.setState({childStatusList: data})});
+        getDataAsync(base_url + '/child-statuses').then(data => {
+            console.log(data); this.setState({childStatusList: data});
+            this.state.childStatusList.map((item) => {
+                if(item.childStatus == "Observation") this.setState({childStatusId:item.childStatusId}); 
+            });
+            console.log(this.state.childStatusId);
+        });
     }
 
     _pickDob = (event,date,handleChange) => {
@@ -238,7 +252,7 @@ export default class AddChild extends React.Component{
             "admittedBy": values.AdmittedBy,
             "referredBy": values.ReferredBy,
             "referredSource": values.ReferredSource,
-            "childStatus": values.ChildStatus,
+            "childStatus": this.state.childStatusId,
             "rainbowHomeNumber": this.state.orgid
         });
         var imageupload = false;
@@ -411,7 +425,11 @@ export default class AddChild extends React.Component{
                     'Added Child',
                     this.state.submitAlertMessage,
                     [
-                        { text: 'OK', onPress: () => this.props.navigation.goBack() },
+                        { text: 'OK', onPress: () => {
+                                this.setState({imageUri: '',doa:'',dob:''});
+                                this.props.navigation.goBack();
+                            } 
+                        },
                     ],
                     { cancelable: false },
                 );
@@ -488,7 +506,6 @@ export default class AddChild extends React.Component{
                         AdmittedBy: '',
                         ReferredSource: '',
                         ReferredBy: '',
-                        ChildStatus: '',
                     }
                 }
                 validationSchema = {AddChildSchema}
@@ -509,29 +526,23 @@ export default class AddChild extends React.Component{
                             <ActivityIndicator animating={this.state.showLoader} size="large" color="red" />
                         </View>
                         <ScrollView showsVerticalScrollIndicator={false}>
-                            
                             <View style= {globalStyles.topView}>
                                 {this.state.pageOne && <View>
                                     <View style={globalStyles.backgroundlogoimageview}>
                                         <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
                                     </View>
-                                {/* Child Photo */}
                                 
+                                <View style={globalStyles.PageHeaderView}>
+                                    <Text style={globalStyles.PageHeader}>Add New Child</Text>
+                                </View>
+
+                                {/* Child Photo */}
                                 <Text style = {globalStyles.label}>Child Image:</Text>
                                 {
                                     <Image source={{ uri: this.state.image }} style={globalStyles.uploadImage}/>
                                 }
                                 <Text style = {globalStyles.errormsg}>{props.touched.ChildPhoto && props.errors.ChildPhoto}</Text>
                                 <Button title="Upload Photo" onPress={() => this._pickImage(props.handleChange('ChildPhoto'))} />
-
-                                
-                                {/* Child Id */}
-                                {/* <Text style = {globalStyles.label}>Child Id :</Text>
-                                <TextInput
-                                    style = {globalStyles.inputText}
-                                    onChangeText = {props.handleChange('ChildID')} 
-                                    value = {props.values.ChildID}
-                                /> */}
 
                                 {/* First Name */}
                                 <Text style = {globalStyles.label}>First Name :</Text>
@@ -577,6 +588,14 @@ export default class AddChild extends React.Component{
                                 />
                                 <Text style = {globalStyles.errormsg}>{props.touched.Gender && props.errors.Gender}</Text>
 
+                                
+                                </View>}
+                                
+                                {this.state.pageTwo && <View>
+                                    <View style={globalStyles.backgroundlogoimageview}>
+                                        <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+                                    </View>
+
                                 {/* DOB */}
                                 <Text style = {globalStyles.label}>Date Of Birth :</Text>
                                 <View style={globalStyles.dobView}>
@@ -601,14 +620,9 @@ export default class AddChild extends React.Component{
                                             onChange= {(e,date) => this._pickDob(e,date,props.handleChange('DOB'))} 
                                         />
                                     }
-                                    <Text style = {globalStyles.errormsg}>{props.touched.DOB && props.errors.DOB}</Text>
                                 </View>
-                                </View>}
+                                <Text style = {globalStyles.errormsg}>{props.touched.DOB && props.errors.DOB}</Text>
                                 
-                                {this.state.pageTwo && <View>
-                                    <View style={globalStyles.backgroundlogoimageview}>
-                                        <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
-                                    </View>
                                 {/* Religion */}
                                 <Text style = {globalStyles.label}>Religion :</Text>
                                 <Picker
@@ -618,7 +632,7 @@ export default class AddChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Religion' value = ''/>
+                                    <Picker.Item label='Select Religion' color='grey' value = ''/>
                                     { 
                                         this.state.religions.map((item) => {
                                             return <Picker.Item key = {item.religionId} label = {item.religion} value = {item.religionId}/>
@@ -638,7 +652,7 @@ export default class AddChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Community' value = ''/>
+                                    <Picker.Item label='Select Community' color='grey' value = ''/>
                                     {
                                         this.state.communities.map((item) => {
                                             return <Picker.Item key = {item.communityId} label = {item.community} value = {item.communityId}/>
@@ -657,7 +671,7 @@ export default class AddChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Mother Tongue' value = ''/>
+                                    <Picker.Item label='Select Mother Tongue' color='grey' value = ''/>
                                     {
                                         this.state.motherTongues.map((item) => {
                                             return <Picker.Item key = {item.motherTongueId} label = {item.motherTongue} value = {item.motherTongueId}/>
@@ -676,7 +690,7 @@ export default class AddChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Parental Status' value = ''/>
+                                    <Picker.Item label='Select Parental Status' color='grey' value = ''/>
                                     {
                                         this.state.parentalStatusList.map((item) => {
                                             return <Picker.Item key = {item.parentalStatusId} label = {item.parentalStatus} value = {item.parentalStatusId}/>
@@ -695,7 +709,7 @@ export default class AddChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Reason For Admission' value = ''/>
+                                    <Picker.Item label='Select Reason For Admission' color='grey' value = ''/>
                                     {
                                         this.state.admissionReasons.map((item) => {
                                             return <Picker.Item key = {item.reasonForAdmissionId} label = {item.reasonForAdmission} value = {item.reasonForAdmissionId}/>
@@ -704,7 +718,6 @@ export default class AddChild extends React.Component{
                                 </Picker>
                                 <Text style = {globalStyles.errormsg}>{props.touched.ReasonForAdmission && props.errors.ReasonForAdmission}</Text>
                                 
-
                                 {/* Previous Education Status */}
                                 <Text style = {globalStyles.label}>Previous Education Status :</Text>
                                 <Picker
@@ -714,7 +727,7 @@ export default class AddChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Previous Education Status' value = ''/>
+                                    <Picker.Item label='Select Previous Education Status' color='grey' value = ''/>
                                     {
                                         this.state.educationStatusList.map((item) => {
                                             return <Picker.Item key = {item.educationStatusId} label = {item.educationStatus} value = {item.educationStatusId}/>
@@ -723,6 +736,14 @@ export default class AddChild extends React.Component{
                                 </Picker>
                                 <Text style = {globalStyles.errormsg}>{props.touched.PreviousEducationStatus && props.errors.PreviousEducationStatus}</Text>
                                 
+
+                                </View>}
+
+
+                                {this.state.pageThree && <View>
+                                    <View style={globalStyles.backgroundlogoimageview}>
+                                        <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+                                    </View>
 
                                 {/* Admitted By */}
                                 <Text style = {globalStyles.label}>Admitted By :</Text>
@@ -733,7 +754,7 @@ export default class AddChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Admitted By' value = ''/>
+                                    <Picker.Item label='Select Admitted By' color='grey' value = ''/>
                                     {
                                         this.state.homeStaffList.map((item) => {
                                             return <Picker.Item key = {item.staffNo} label = {item.firstName + ' ' + item.lastName} value = {item.staffNo}/>
@@ -742,13 +763,7 @@ export default class AddChild extends React.Component{
                                 </Picker>
                                 <Text style = {globalStyles.errormsg}>{props.touched.AdmittedBy && props.errors.AdmittedBy}</Text>
                                 
-                                </View>}
 
-
-                                {this.state.pageThree && <View>
-                                    <View style={globalStyles.backgroundlogoimageview}>
-                                        <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
-                                    </View>
                                 {/* DOA */}
                                 <Text style = {globalStyles.label}>Date Of Admission :</Text>
                                 <View style={globalStyles.dobView}>
@@ -773,8 +788,8 @@ export default class AddChild extends React.Component{
                                             onChange= {(e,date) => this._pickDoa(e,date,props.handleChange('DOA'))} 
                                         />
                                     }
-                                    <Text style = {globalStyles.errormsg}>{props.touched.DOB && props.errors.DOB}</Text>
                                 </View>
+                                <Text style = {globalStyles.errormsg}>{props.touched.DOB && props.errors.DOB}</Text>
 
                                 {/* Referred Source */}
                                 <Text style = {globalStyles.label}>Referred Source :</Text>
@@ -785,7 +800,7 @@ export default class AddChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Referred Source' value = ''/>
+                                    <Picker.Item label='Select Referred Source' color='grey' value = ''/>
                                     {
                                         this.state.referralSourcesList.map((item) => {
                                             return <Picker.Item key = {item.referralSourceId} label = {item.referralSource} value = {item.referralSourceId}/>
@@ -807,7 +822,7 @@ export default class AddChild extends React.Component{
                                 
 
                                 {/* Child Status */}
-                                <Text style = {globalStyles.label}>Child Status :</Text>
+                                {/* <Text style = {globalStyles.label}>Child Status :</Text>
                                 <Picker
                                     selectedValue = {props.values.ChildStatus}
                                     onValueChange = {value => {
@@ -823,24 +838,26 @@ export default class AddChild extends React.Component{
                                     }
                                 </Picker>
                                 <Text style = {globalStyles.errormsg}>{props.touched.ChildStatus && props.errors.ChildStatus}</Text>
-                                
+                                 */}
 
                                 <Button style = {globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                                 </View>}
+                            </View>
+                            <View style={{fliex:1,flexDirection:'column-reverse'}}>
                                 <View style={globalStyles.prevnext}>
-                                    <View style={globalStyles.prevnextsubview}>
-                                        <TouchableOpacity onPress={(event) => { this.changePage('prev') }}>
-                                            <Text style={this.changeprevstyle()}>
-                                                <Feather name="skip-back"/>Prev
-                                            </Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                    <View style={globalStyles.prevnextsubview}>
-                                        <TouchableOpacity onPress={(event) => { this.changePage('next')}}>
-                                            <Text style={this.changenextstyle()}>
-                                                Next<Feather name="skip-forward"/></Text>
-                                        </TouchableOpacity>
-                                    </View>
+                                        <View style={globalStyles.prevnextsubview}>
+                                            <TouchableOpacity onPress={(event) => { this.changePage('prev') }}>
+                                                <Text style={this.changeprevstyle()}>
+                                                    <Feather name="skip-back"/>Prev
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <View style={globalStyles.prevnextsubview}>
+                                            <TouchableOpacity onPress={(event) => { this.changePage('next')}}>
+                                                <Text style={this.changenextstyle()}>
+                                                    Next<Feather name="skip-forward"/></Text>
+                                            </TouchableOpacity>
+                                        </View>
                                 </View>
                             </View>
                         </ScrollView>  
