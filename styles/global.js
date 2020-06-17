@@ -166,6 +166,12 @@ export const globalStyles = StyleSheet.create({
         backgroundColor: 'black',
         color: 'black',
     },
+    ModelBtn: {
+        padding: 30,
+        backgroundColor: 'black',
+        color: 'black',
+        width: 20
+    },
     homeScreenText: {
         top: '30%',
         padding: 30,

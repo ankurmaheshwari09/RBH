@@ -14,6 +14,8 @@ import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 import CheckBox from "react-native-check-box";
+import { Router, Scene, Actions } from 'react-native-router-flux';
+
 
 const statusSchema = yup.object({
     ChildStatus: yup.string().required(),
@@ -48,13 +50,10 @@ export default class StatusScreen extends React.Component {
         }
         this.pickDob = this.pickDob.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.back_Button = this.back_Button.bind(this);
+       
     }
 
-    componentDidMount() {
-       // DeviceEventEmitter.removeAllListeners('hardwareBackPress');
-        BackHandler.addEventListener('hardwareBackPress', this.back_Button);
-    }
+  
     //setting the dropdown options according to current status
     static getDerivedStateFromProps(props, state) {
         if (state.child.childStatus.childStatusId == 1) {
@@ -119,14 +118,14 @@ export default class StatusScreen extends React.Component {
         console.log(request_body);
         let path = `child-status/${this.state.child.childNo}`;
         if (this.state.credentials) {
-            if (values.email != '' && values.phnNo != '') {
-                path = path + `?email=${values.email}&phnNo=${values.phnNo}`;
+            if (values.email != '' && values.phNo != '') {
+                path = path + `?email=${values.email}&phNo=${values.phNo}`;
 
             } else if (values.email != '') {
                 path = path + `?email=${values.email}`;
 
-            } else if (values.phnNo != '') {
-            path = path + `?phnNo=${ values.phnNo }`;
+            } else if (values.phNo != '') {
+            path = path + `?phNo=${ values.phNo }`;
 
             }
             if (values.future) {
@@ -152,36 +151,6 @@ export default class StatusScreen extends React.Component {
       
     }
 
-
-    componentWillUnmount() {
-        console.log("in unmount");
-        BackHandler.addEventListener('hardwareBackPress', this.back_Button);
-       /* if (this.state.successDisplay) {
-            const { params } = this.props.navigation.state;
-            params.refreshChildList();
-        }*/
-    }
-
-    back_Button() {
-/*
-        console.log("insdie backdrop")
-        Alert.alert(
-            ' Exit From App ',
-            ' Do you want to exit From App ?',
-            [
-                { text: 'Yes', onPress: () => { this.resertStack; } },
-                { text: 'No', onPress: () => { console.log('NO Pressed'); } }
-            ],
-            { cancelable: false },
-        );*/
-        console.log(this.state.loading);
-        if (this.state.loading === true) {
-            return true;
-        } else {
-            return false;
-        }
-        return false;
-    }
     handleChange = selectedOption => {
         this.setState({ selectedOption });
     };
@@ -233,7 +202,7 @@ export default class StatusScreen extends React.Component {
                         stay: '',
                         followUpBy: '',
                         email: '',
-                        phnNo: '',
+                        phNo: '',
                         future:''
                     }}
                     validationSchema={statusSchema}
@@ -486,21 +455,26 @@ export default class StatusScreen extends React.Component {
                                                     onPress={(value) => { props.setFieldValue('future', value); this.onCreateCredentialsSelected(); }}
                                                 />
                                             </View>
-                                            <Modal style={styles.emailContainer} isVisible={this.state.isMailModelVisible} onBackdropPress={() => this.setState({ isMailModelVisible: false })}>
+                                            
+                                            <Modal style ={styles.emailContainer} isVisible={this.state.isMailModelVisible} onBackdropPress={() => this.setState({ isMailModelVisible: false })}>
                                                     <View>
-                                                    <Text style={globalStyles.label}>Enter Child Email / Phone number:</Text>
+                                                    <Text style={globalStyles.label}>Enter Child Email: </Text>
                                                     <TextInput
                                                         style={globalStyles.inputText}
                                                         onChangeText={(input) => { props.setFieldValue('email', input) }}
                                                         value={props.values.email} //value updated in 'values' is reflected here
                                                     />
+                                                    <Text style={globalStyles.label}>Enter Child Phone number: </Text>
                                                     <TextInput
                                                         style={globalStyles.inputText}
-                                                        onChangeText={(input) => { props.setFieldValue('phnNo', input) }}
-                                                        value={props.values.phnNo} //value updated in 'values' is reflected here
+                                                        onChangeText={(input) => { props.setFieldValue('phNo', input) }}
+                                                        value={props.values.phNo} //value updated in 'values' is reflected here
                                                     />
+                                                    <Button style={globalStyles.modalButton} onPress={() => this.setState({ isMailModelVisible: false })} title="Submit"></Button>
+
                                                 </View>
-                                            </Modal>
+                                                </Modal>
+                                            
                                         </View>
                                         : null}
                                     <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />                                    
@@ -548,7 +522,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#e1e1e1',
         width: Dimensions.get('window').width / 2 + 50,
-        maxHeight: Dimensions.get('window').height / 4,
+        maxHeight: Dimensions.get('window').height / 3,
         marginTop: Dimensions.get('window').height / 3,
         marginLeft: Dimensions.get('window').width / 5,
         borderRadius: 30
