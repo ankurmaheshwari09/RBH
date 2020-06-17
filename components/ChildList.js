@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert,  ToolbarAndroid, Button, FlatList, Image, Dimensions, PixelRatio, BackHandler  } from 'react-native'
 import { Card, CardImage, CardContent } from 'react-native-cards'
 import Modal from 'react-native-modal';
-import { SearchBar } from 'react-native-elements';
+import { SearchBar, Overlay } from 'react-native-elements';
 import moment from 'moment';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
@@ -200,7 +200,7 @@ export default class ChildList extends Component {
         let orgId = getOrgId();
         const path = 'https://rest-service.azurewebsites.net/api/v1/children/' + orgId;
         console.log(path, 'lllll');
-        this.setState({ search: null, loading: true });
+        this.setState({ search: null, loading: true, data: null });
         try {
             let const1 = await fetch(path, {
                 method: 'GET',
@@ -433,9 +433,11 @@ export default class ChildList extends Component {
         return (
             <View style={styles.MainContainer}>
                 {this.state.loading ?
+                   
                     <View style={{ position: 'absolute', top: "45%", right: 0, left: 0, zIndex: 10 }}>
                         <ActivityIndicator animating={this.state.loading} size="large" color="black" />
-                    </View> : null}
+                        </View>
+                     : null}
 
                     {this.state.errorDisplay ?
                             <ErrorDisplay errorDisplay={this.state.errorDisplay} />
