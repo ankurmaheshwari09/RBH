@@ -496,7 +496,7 @@ export default class EditChild extends React.Component{
                                         />
                                     }
                                 </View>
-                                <Text style = {globalStyles.errormsg}>{props.touched.DOB && props.errors.DOB}</Text>
+                                <Text style = {globalStyles.errormsg}>{props.touched.DOA && props.errors.DOA}</Text>
 
                                 {/* Referred Source */}
                                 <Text style = {globalStyles.label}>Referred Source:</Text>
