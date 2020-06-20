@@ -14,7 +14,6 @@ import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 import CheckBox from "react-native-check-box";
-import { Router, Scene, Actions } from 'react-native-router-flux';
 
 
 const statusSchema = yup.object({
@@ -46,7 +45,13 @@ export default class StatusScreen extends React.Component {
             actionItemsModal: false,
             statusOptions: global.status,
             selectedOption: null,
-            credentials: false
+            credentials: false,
+            emailError: false,
+            checkEmail: null,
+            checkPhNo: null,
+            phNoError: false,
+            emailContainerEmpty: false
+            
         }
         this.pickDob = this.pickDob.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -138,6 +143,7 @@ export default class StatusScreen extends React.Component {
             if (response.ok) {
                 response.json().then((res) => {
                     console.log(res);
+                   
                 });
                 this.setState({ successDisplay: true });
             } else {
@@ -167,8 +173,67 @@ export default class StatusScreen extends React.Component {
     }
 
     onCreateCredentialsSelected() {
-        console.log("inside");
+       
         this.setState({ isMailModelVisible: true, credentials: true });
+    }
+
+    validateEmailContainer() {
+        console.log(this.state.checkEmail,'eeee');
+        console.log(this.state.checkPhNo);
+        console.log(this.state.checkEmail !== '')
+        
+        if ((this.state.checkEmail === null || this.state.checkEmail === '') && (this.state.checkPhNo === null || this.state.checkPhNo === '')) {
+            console.log("inside empty");
+            this.setState({ emailContainerEmpty: true, emailError: false, phNoError: false });
+
+        } else {
+            this.setState({ emailContainerEmpty: false });
+            if ((this.state.checkEmail !== null) && (this.state.checkPhNo !== null)) {
+                console.log("inside first case");
+                let error = this.invalidEmail() || this.invalidPhnNo();
+                this.setState({ isMailModelVisible: error });
+
+            } else if (this.state.checkEmail !== null) {
+                console.log("inside second case");
+                let error = this.invalidEmail();
+                this.setState({ isMailModelVisible: error, phNoError: false });
+            } else if (this.state.checkPhNo !== null) {
+                console.log("inside third case");
+                let error = this.invalidPhnNo();
+                this.setState({ isMailModelVisible: error, emailError: false });
+            }
+        }
+    }
+
+    invalidEmail() {
+        console.log("inside email")
+        let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (reg.test(this.state.checkEmail) === false) {
+            this.setState({ emailError: true });
+            return true;
+        } else {
+            this.setState({ emailError: false });
+            return false;
+        }
+    }
+
+    invalidPhnNo() {
+        console.log("inside phno")
+        let reg = /^\d{10}$/;
+        console.log(reg.test(this.state.checkPhNo), "ggggg");
+        if (reg.test(this.state.checkPhNo) === false) {
+            this.setState({ phNoError: true });
+            return true;
+        } else {
+            this.setState({ phNoError: false });
+            return false;
+        }
+    }
+    
+
+    onSubmitEmailContainer() {
+
+        this.validateEmailContainer();
     }
 
     render() {
@@ -220,10 +285,16 @@ export default class StatusScreen extends React.Component {
                         } if (values.followUpBy == '' && this.state.showElements == true) {
                             this.setState({ followUpByError: true });
                         }
-                        if (!(this.state.leavingReasonError || this.state.reasonDescriptionError || this.state.leftPlaceError || this.state.actionTakenError || this.state.stayError || this.state.followUpByError)) {
+                        if (!(this.state.leavingReasonError || this.state.reasonDescriptionError || this.state.leftPlaceError || this.state.actionTakenError || this.state.stayError || this.state.followUpByError || this.state.emailContainerEmpty || this.state.emailError || this.state.phNoError)) {
                             this.updateStatus(values);
                             actions.resetForm();
-                            this.setState({ date: null, showElements: false, leavingReasonError: false, reasonDescriptionError: false, leftPlaceError: false, actionTakenError: false, stayError: false, followUpByError: false, credentialsError: false, credentials: false });
+                            this.setState({
+                                date: null, showElements: false, leavingReasonError: false,
+                                reasonDescriptionError: false, leftPlaceError: false,
+                                actionTakenError: false, stayError: false, followUpByError: false,
+                                credentialsError: false, credentials: false,
+                                checkEmail: null, emailError: false, checkPhNo: null, phNoError: false, emailContainerEmpty: false
+                            });
                            
                         }
                     }}
@@ -436,12 +507,12 @@ export default class StatusScreen extends React.Component {
                                                 })}
                                             </Picker>
                                             <View>
-                                                {this.state.followUpByError ? < Text style={globalStyles.errormsg}>FollowUpBy is required:</Text> : null}
+                                                {this.state.followUpByError ? < Text style={globalStyles.errormsg}>FollowUpBy is required</Text> : null}
                                             </View>
 
 
                                             {/*User Credentials*/}
-                                            <Text style={globalStyles.label}>Create User Credentials: </Text>
+                                            <Text style={globalStyles.label}>Create User Credentials: (optional) </Text>
                                             <View>
                                             <RadioForm
                                                 style={{marginLeft: 10, marginTop:5}}
@@ -455,22 +526,52 @@ export default class StatusScreen extends React.Component {
                                                     onPress={(value) => { props.setFieldValue('future', value); this.onCreateCredentialsSelected(); }}
                                                 />
                                             </View>
-                                            
-                                            <Modal style ={styles.emailContainer} isVisible={this.state.isMailModelVisible} onBackdropPress={() => this.setState({ isMailModelVisible: false })}>
+                                            <View>
+                                                {this.state.emailContainerEmpty ? < Text style={globalStyles.errormsg}>Enter atleast one Value</Text> : null}
+                                            </View>
+                                            <View>
+                                                {this.state.emailError || this.state.phNoError ? < Text style={globalStyles.errormsg}>Enter correct email or PhNo</Text> : null}
+                                            </View>
+
+                                            <Modal style={styles.emailContainer} isVisible={this.state.isMailModelVisible} onBackdropPress={() => { this.setState({ isMailModelVisible: false }) }}>
                                                     <View>
                                                     <Text style={globalStyles.label}>Enter Child Email: </Text>
                                                     <TextInput
                                                         style={globalStyles.inputText}
-                                                        onChangeText={(input) => { props.setFieldValue('email', input) }}
+                                                        onChangeText={(input) => {
+                                                            props.setFieldValue('email', input);
+                                                            if (input === '') {
+                                                                this.setState({ checkEmail: null })
+                                                            } else {
+                                                                this.setState({ checkEmail: input })
+                                                            }
+                                                        }}
                                                         value={props.values.email} //value updated in 'values' is reflected here
                                                     />
+                                                    <View>
+                                                        {this.state.emailError ? < Text style={globalStyles.errormsg}>Invalid email</Text> : null}
+                                                    </View>
                                                     <Text style={globalStyles.label}>Enter Child Phone number: </Text>
                                                     <TextInput
                                                         style={globalStyles.inputText}
-                                                        onChangeText={(input) => { props.setFieldValue('phNo', input) }}
+                                                        keyboardType="numeric"
+                                                        onChangeText={(input) => {
+                                                            props.setFieldValue('phNo', input);
+                                                            if (input === '') {
+                                                                this.setState({ checkPhNo: null })
+                                                            } else {
+                                                                this.setState({ checkPhNo: input })
+                                                            }
+                                                        }}
                                                         value={props.values.phNo} //value updated in 'values' is reflected here
                                                     />
-                                                    <Button style={globalStyles.modalButton} onPress={() => this.setState({ isMailModelVisible: false })} title="Submit"></Button>
+                                                    <View>
+                                                        {this.state.phNoError ? < Text style={globalStyles.errormsg}>Invalid Phone Number</Text> : null}
+                                                    </View>
+                                                    <View>
+                                                        {this.state.emailContainerEmpty ? < Text style={globalStyles.errormsg}>Enter atleast one Value</Text> : null}
+                                                    </View>
+                                                    <Button style={globalStyles.modalButton} onPress={() => this.onSubmitEmailContainer()} title="Submit"></Button>
 
                                                 </View>
                                                 </Modal>
@@ -520,7 +621,7 @@ const styles = StyleSheet.create({
     },
     emailContainer: {
         alignItems: 'center',
-        backgroundColor: '#e1e1e1',
+        backgroundColor: '#F2EEEE',
         width: Dimensions.get('window').width / 2 + 50,
         maxHeight: Dimensions.get('window').height / 3,
         marginTop: Dimensions.get('window').height / 3,
@@ -531,7 +632,7 @@ const styles = StyleSheet.create({
     actionItemsModal:{
         flex: 1,
         justifyContent: 'center',
-        backgroundColor: '#e1e1e1',
+        backgroundColor: '#F2EEEE',
         // width: Dimensions.get('window').width /2 + 50,
         maxHeight: Dimensions.get('window').height / 2,
         marginTop: 150,

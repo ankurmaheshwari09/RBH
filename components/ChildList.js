@@ -4,13 +4,10 @@ import { Card, CardImage, CardContent } from 'react-native-cards'
 import Modal from 'react-native-modal';
 import { SearchBar, Overlay } from 'react-native-elements';
 import moment from 'moment';
-import Spinner from 'react-native-loading-spinner-overlay';
-import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { getOrgId } from '../constants/LoginConstant';
 import { Ionicons } from '@expo/vector-icons';
 import { base_url, getDataAsync } from '../constants/Base';
-import ScalableText from 'react-native-text';
 import { StackActions } from '@react-navigation/native';
 import { Router, Scene, Actions } from 'react-native-router-flux';
 import { NavigationEvents } from 'react-navigation';
@@ -60,15 +57,13 @@ export default class ChildList extends Component {
         this.getData = this.getData.bind(this);
         this.getModalItems = this.getModalItems.bind(this);
         this.checkStatusDateExpired = this.checkStatusDateExpired.bind(this);
-        this.resertStack = this.resertStack.bind(this);
         this.getAddedData = this.getAddedData.bind(this);
-        this.back_Button_Press = this.back_Button_Press.bind(this);
         this.reset = this.reset.bind(this);
         //  this.setStyles = this.setStyles.bind(this);
         // this.show =this.show.bind(this);
     }
     /*async componentDidMount() {
-       // BackHandler.addEventListener('hardwareBackPress', this.back_Button_Press);
+      
         await this.getData();
         
     }*/
@@ -80,73 +75,9 @@ export default class ChildList extends Component {
             search: null,
             errorDisplay: false
         });
-      //  BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
+     
     }
 
-    back_Button_Press() {
-
-      /*  console.log(this.props);
-        const popAction = StackActions.pop(1);*/
-
-
-       // console.log(this.props.screenProps, 'oooo');
-
-        
-       /* if (this.props.navigation.state.routeName !== 'ViewChild') {
-            console.log(this.props.navigation.state.routeName, 'oooo');
-            this.props.screenProps.goBack();
-            return false;
-        } else {
-            console.log(this.props.navigation.state.routeName, 'lll');
-            return false;
-        }
-*/
-
-        return false;
-       
-
-        
-
-       /* if (Actions.currentScene !== '') {
-            Actions.pop();
-            return true;
-        }*/
-       // this.props.screenProps.navigation.replace('Home');
-
-       
-        /*Alert.alert(
-            ' Exit From App ',
-            ' Do you want to exit From App ?',
-            [
-                {
-                    text: 'Yes', onPress: () => {
-                        console.log(this.props);
-                        const popAction = StackActions.pop(1);
-
-                       this.props.navigation.dispatch(popAction);
-
-                        console.log(this.props.screenProps, 'oooo');
-                        this.props.screenProps.navigation.replace('Home');
-
-                    }
-                },
-                { text: 'No', onPress: () => { console.log('NO Pressed'); } }
-            ],
-            { cancelable: false },
-        );*/
-        
-    }
-
-    resertStack() {
-
-        console.log("insdie backdrop");
-        const popAction = StackActions.pop(1);
-
-        navigation.dispatch(popAction);
-
-        console.log(this.props.screenProps, 'oooo');
-        this.props.screenProps.navigation.replace('Home');
-    }
     // This function adds a new property to object
     async getAddedData(data) {
 
@@ -200,7 +131,7 @@ export default class ChildList extends Component {
         let orgId = getOrgId();
         const path = 'https://rest-service.azurewebsites.net/api/v1/children/' + orgId;
         console.log(path, 'lllll');
-        this.setState({ search: null, loading: true, data: null });
+        this.setState({ search: null, loading: true });
         try {
             let const1 = await fetch(path, {
                 method: 'GET',
@@ -251,9 +182,11 @@ export default class ChildList extends Component {
         });
 
     }
+
+   
     navigateToOtherScreen(screen) {
         // console.log(this.state.navItems);
-       // this.setState({ refresh: true });
+        // this.setState({ refresh: true });
         this.props.navigation.navigate(screen, { child: this.state.selectedChild, refreshChildList: this.getData.bind(this) });
     }
     closeModal() {
@@ -410,6 +343,8 @@ export default class ChildList extends Component {
         await this.getData();
     }
 
+
+
     calculateCharLength(firstName, lastName) {
         let firstNameLen = firstName.length;
         let lastNameLen = lastName.length;
@@ -431,11 +366,16 @@ export default class ChildList extends Component {
     render() {
 
         return (
-            <View style={styles.MainContainer}>
+            <View style={styles.MainContainer} pointerEvents={this.state.loading ? 'none' : 'auto'} >
                 {this.state.loading ?
                    
-                    <View style={{ position: 'absolute', top: "45%", right: 0, left: 0, zIndex: 10 }}>
-                        <ActivityIndicator animating={this.state.loading} size="large" color="black" />
+                    <View style={{ position: 'absolute', top: "45%", right: 0, left: 0, zIndex: 10   }}>
+                        <View>
+                            <ActivityIndicator animating={this.state.loading} size="large" color="black" />
+                        </View>
+                        <View>
+                            <Text style={styles.loading}>Loading..... </Text>
+                        </View>
                         </View>
                      : null}
 
@@ -588,17 +528,17 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 15,
         fontFamily: 'sans-serif-medium',
-        // fontWeight: 'bold',
+        
     },
     loading: {
         color: 'black',
-        fontSize: 30,
-        fontFamily: 'sans-serif-medium',
+        fontSize: 20,
         textAlign: 'center',
         justifyContent: 'center',
-        marginTop: Dimensions.get('window').height / 2,
-        marginLeft: Dimensions.get('window').width / 2
-        // fontWeight: 'bold',
+        position: 'absolute',
+        top: '70%',
+        left: Dimensions.get('window').width / 3+15
+      
     },
     cardContent: {
         color: 'black',
