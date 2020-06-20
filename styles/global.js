@@ -54,7 +54,6 @@ export const globalStyles = StyleSheet.create({
     },
     inputText: {
         borderWidth: 1,
-        // borderColor: '#ddd',
         padding: 10,
         marginBottom: 10,
         fontSize: 18,
@@ -176,6 +175,12 @@ export const globalStyles = StyleSheet.create({
         padding: 30,
         backgroundColor: 'black',
         color: 'black',
+    },
+    ModelBtn: {
+        padding: 30,
+        backgroundColor: 'black',
+        color: 'black',
+        width: 20
     },
     homeScreenText: {
         top: '30%',

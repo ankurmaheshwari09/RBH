@@ -1,16 +1,18 @@
 import React, { Component } from 'react'
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, ToolbarAndroid, Button, FlatList, Image, Dimensions, PixelRatio } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert,  ToolbarAndroid, Button, FlatList, Image, Dimensions, PixelRatio, BackHandler  } from 'react-native'
 import { Card, CardImage, CardContent } from 'react-native-cards'
 import Modal from 'react-native-modal';
-import { SearchBar } from 'react-native-elements';
+import { SearchBar, Overlay } from 'react-native-elements';
 import moment from 'moment';
-import Spinner from 'react-native-loading-spinner-overlay';
-import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { getOrgId } from '../constants/LoginConstant';
 import { Ionicons } from '@expo/vector-icons';
 import { base_url, getDataAsync } from '../constants/Base';
-import ScalableText from 'react-native-text';
+import { StackActions } from '@react-navigation/native';
+import { Router, Scene, Actions } from 'react-native-router-flux';
+import { NavigationEvents } from 'react-navigation';
+import { ActivityIndicator } from 'react-native';
+import { globalStyles } from '../styles/global';
 
 export default class ChildList extends Component {
     constructor(props) {
@@ -29,6 +31,7 @@ export default class ChildList extends Component {
             error: null,
             search: null,
             errorDisplay: false,
+            refresh: true,
             modalItems: [
                 { key: 'Status', page: 'ChildStatus' },
                 { key: 'Health', page: 'Health' },
@@ -55,12 +58,15 @@ export default class ChildList extends Component {
         this.getModalItems = this.getModalItems.bind(this);
         this.checkStatusDateExpired = this.checkStatusDateExpired.bind(this);
         this.getAddedData = this.getAddedData.bind(this);
+        this.reset = this.reset.bind(this);
         //  this.setStyles = this.setStyles.bind(this);
         // this.show =this.show.bind(this);
     }
-    async componentDidMount() {
+    /*async componentDidMount() {
+      
         await this.getData();
-    }
+        
+    }*/
 
 
     componentWillUnmount() {
@@ -69,6 +75,7 @@ export default class ChildList extends Component {
             search: null,
             errorDisplay: false
         });
+     
     }
 
     // This function adds a new property to object
@@ -153,6 +160,7 @@ export default class ChildList extends Component {
             console.log(error, 'error in getting data');
             //  this.setState({ loading: false, errorDisplay: true });
         }
+        this.setState({ refresh: false });
     }
 
 
@@ -174,8 +182,11 @@ export default class ChildList extends Component {
         });
 
     }
+
+   
     navigateToOtherScreen(screen) {
         // console.log(this.state.navItems);
+        // this.setState({ refresh: true });
         this.props.navigation.navigate(screen, { child: this.state.selectedChild, refreshChildList: this.getData.bind(this) });
     }
     closeModal() {
@@ -332,6 +343,8 @@ export default class ChildList extends Component {
         await this.getData();
     }
 
+
+
     calculateCharLength(firstName, lastName) {
         let firstNameLen = firstName.length;
         let lastNameLen = lastName.length;
@@ -343,68 +356,87 @@ export default class ChildList extends Component {
             return true;
         }
     }
+
+    async reset() {
+        if (this.state.refresh) {
+            await this.getData();
+        }
+       
+    }
     render() {
 
         return (
-            <View style={styles.MainContainer}>
-                <LoadingDisplay loading={this.state.loading} />
-                {this.state.errorDisplay ?
-                    <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                    :
-                    <FlatList
-                        data={this.state.data}
-                        renderItem={({ item }) => (
-                            <View style={{
-                                flex: 1 / 2, flexDirection: 'column', justifyContent: 'space-evenly'
-                            }}>
-                                <TouchableOpacity style={this.getContainerStyles(item)} onPress={(event) => { this.onPress(item) }}>
-                                    {/*react-native-elements Card*/}
-                                    <Card style={this.getStyles(item.childStatus.childStatus, item.childMaps, item.childNo)} >
+            <View style={styles.MainContainer} pointerEvents={this.state.loading ? 'none' : 'auto'} >
+                {this.state.loading ?
+                   
+                    <View style={{ position: 'absolute', top: "45%", right: 0, left: 0, zIndex: 10   }}>
+                        <View>
+                            <ActivityIndicator animating={this.state.loading} size="large" color="black" />
+                        </View>
+                        <View>
+                            <Text style={styles.loading}>Loading..... </Text>
+                        </View>
+                        </View>
+                     : null}
 
-                                        <View>
-                                            <Image
-                                                source={this.getImageUri(item.picture, item.gender)}
-                                                style={this.getImageStyle(item.style)}
-                                            />
-                                        </View>
+                    {this.state.errorDisplay ?
+                            <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                            :
+                            <FlatList
+                                data={this.state.data}
+                                renderItem={({ item }) => (
+                                    <View style={{
+                                        flex: 1 / 2, flexDirection: 'column', justifyContent: 'space-evenly'
+                                    }}>
+                                        <TouchableOpacity style={this.getContainerStyles(item)} onPress={(event) => { this.onPress(item) }}>
+                                            {/*react-native-elements Card*/}
+                                            <Card style={this.getStyles(item.childStatus.childStatus, item.childMaps, item.childNo)} >
 
-                                        <View style={styles.paragraph}>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text style={styles.heading}>Name:</Text >
-                                                <Text style={styles.cardContent}>{`${item.firstName} ${item.lastName}`}</Text>
-                                            </View>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text style={styles.heading}>Adm Date:</Text >
-                                                <Text style={styles.cardContent}>{moment(item.admissionDate).format('DD/MM/YYYY')}</Text>
-                                            </View>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text style={styles.heading}>DOB:</Text >
-                                                <Text style={styles.cardContent}>{moment(item.dateOfBirth).format('DD/MM/YYYY')}</Text>
-                                            </View>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text style={styles.heading}>Status:</Text >
-                                                {item.childStatus.childStatus == 'Closed' ? <Text style={styles.cardContent}>Exit</Text> :
-                                                    <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>}
-                                                {item.style == styles.red ? < Ionicons name="md-warning" size={20} color="red" /> : null}
-                                            </View>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <Text style={styles.heading}>Profile Update: </Text >
-                                                {item.changeProfile ? <Text style={styles.cardContent}>Yes</Text> :
-                                                    <Text style={styles.cardContent}>No</Text>}
-                                            </View>
-                                        </View>
+                                                <View>
+                                                    <Image
+                                                        source={this.getImageUri(item.picture, item.gender)}
+                                                        style={this.getImageStyle(item.style)}
+                                                    />
+                                                </View>
 
-                                    </Card>
-                                </TouchableOpacity>
-                            </View>
-                        )}
+                                                <View style={styles.paragraph}>
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                        <Text style={styles.heading}>Name:</Text >
+                                                        <Text style={styles.cardContent}>{`${item.firstName} ${item.lastName}`}</Text>
+                                                    </View>
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                        <Text style={styles.heading}>Adm Date:</Text >
+                                                        <Text style={styles.cardContent}>{moment(item.admissionDate).format('DD/MM/YYYY')}</Text>
+                                                    </View>
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                        <Text style={styles.heading}>DOB:</Text >
+                                                        <Text style={styles.cardContent}>{moment(item.dateOfBirth).format('DD/MM/YYYY')}</Text>
+                                                    </View>
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                        <Text style={styles.heading}>Status:</Text >
+                                                        {item.childStatus.childStatus == 'Closed' ? <Text style={styles.cardContent}>Exit</Text> :
+                                                            <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>}
+                                                        {item.style == styles.red ? < Ionicons name="md-warning" size={20} color="red" /> : null}
+                                                    </View>
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                        <Text style={styles.heading}>Profile Update: </Text >
+                                                        {item.changeProfile ? <Text style={styles.cardContent}>Yes</Text> :
+                                                            <Text style={styles.cardContent}>No</Text>}
+                                                    </View>
+                                                </View>
 
-                        //Setting the number of column
-                        numColumns={2}
-                        keyExtractor={item => item.childNo}
-                        ListHeaderComponent={this.renderHeader}
-                    />
-                }
+                                            </Card>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+
+                                //Setting the number of column
+                                numColumns={2}
+                                keyExtractor={item => item.childNo}
+                                ListHeaderComponent={this.renderHeader}
+                            />
+                    }
+                
                 <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
                     <View style={styles.optionsContainer}>
                         <FlatList data={this.state.modalItemsForCurrentItem} renderItem={({ item }) => (
@@ -421,6 +453,7 @@ export default class ChildList extends Component {
                         />
                     </View>
                 </Modal>
+                <NavigationEvents onDidFocus={() => this.reset()} />
             </View>
         );
     }
@@ -495,7 +528,17 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 15,
         fontFamily: 'sans-serif-medium',
-        // fontWeight: 'bold',
+        
+    },
+    loading: {
+        color: 'black',
+        fontSize: 20,
+        textAlign: 'center',
+        justifyContent: 'center',
+        position: 'absolute',
+        top: '70%',
+        left: Dimensions.get('window').width / 3+15
+      
     },
     cardContent: {
         color: 'black',

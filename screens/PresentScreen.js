@@ -16,8 +16,8 @@ export default class PresentScreen extends Component {
         else if(this.props.screen === 'addChild') {
             return <AddChild navigation={this.props.navigation} />;
         }
-        else if(this.props.screen === 'viewChild') {
-            return <StackNavigation/>;
+        else if (this.props.screen === 'viewChild') {
+            return <StackNavigation screenProps={this.props.navigation} />;
         }
         else if(this.props.screen === 'report') {
             return <Text>Report Screen</Text>;

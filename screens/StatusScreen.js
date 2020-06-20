@@ -1,7 +1,7 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Formik } from "formik";
 import React from 'react';
-import {  Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View, Dimensions, Image } from 'react-native';
+import {  Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, BackHandler, Text, TextInput, View, Dimensions, Image } from 'react-native';
 import * as yup from "yup";
 import { globalStyles } from "../styles/global";
 import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
@@ -14,6 +14,7 @@ import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 import CheckBox from "react-native-check-box";
+
 
 const statusSchema = yup.object({
     ChildStatus: yup.string().required(),
@@ -36,19 +37,28 @@ export default class StatusScreen extends React.Component {
             followUpByError: false,
             child: this.props.navigation.getParam('child'),
             isVisible: false,
+            isMailModelVisible: false,
             loading: false,
             errorDisplay: false,
             sucessDisplay: false,
             actionsTaken: [],
             actionItemsModal: false,
             statusOptions: global.status,
-            selectedOption: null
+            selectedOption: null,
+            credentials: false,
+            emailError: false,
+            checkEmail: null,
+            checkPhNo: null,
+            phNoError: false,
+            emailContainerEmpty: false
+            
         }
         this.pickDob = this.pickDob.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        
+       
     }
 
+  
     //setting the dropdown options according to current status
     static getDerivedStateFromProps(props, state) {
         if (state.child.childStatus.childStatusId == 1) {
@@ -96,6 +106,7 @@ export default class StatusScreen extends React.Component {
 
     updateStatus(values) {
         this.setState({ loading: true });
+        console.log(values);
         let request_body = JSON.stringify({
            
                "childStatusID": values.ChildStatus,
@@ -106,16 +117,33 @@ export default class StatusScreen extends React.Component {
                "actionTakenId": this.state.actionsTaken.sort().join(','),
                "childStayPlace": values.stay,
                "followedBy": values.followUpBy,
-               "approvedBy": values.ApprovedBy
-            
+               "approvedBy": values.ApprovedBy,
+              
         });
         console.log(request_body);
-        const path = `child-status/${this.state.child.childNo}`;
+        let path = `child-status/${this.state.child.childNo}`;
+        if (this.state.credentials) {
+            if (values.email != '' && values.phNo != '') {
+                path = path + `?email=${values.email}&phNo=${values.phNo}`;
+
+            } else if (values.email != '') {
+                path = path + `?email=${values.email}`;
+
+            } else if (values.phNo != '') {
+            path = path + `?phNo=${ values.phNo }`;
+
+            }
+            if (values.future) {
+                path = path + `&future=${values.future}`;
+            }
+        }
+        console.log(path);
         UpdateApi.updateData(request_body, path).then((response) => {
             this.setState({ loading: false, isVisible: true });
             if (response.ok) {
                 response.json().then((res) => {
                     console.log(res);
+                   
                 });
                 this.setState({ successDisplay: true });
             } else {
@@ -128,14 +156,6 @@ export default class StatusScreen extends React.Component {
         });
       
     }
-
-
-    /*componentWillUnmount() {
-        if (this.state.successDisplay) {
-            const { params } = this.props.navigation.state;
-            params.refreshChildList();
-        }
-    }*/
 
     handleChange = selectedOption => {
         this.setState({ selectedOption });
@@ -152,15 +172,79 @@ export default class StatusScreen extends React.Component {
        
     }
 
+    onCreateCredentialsSelected() {
+       
+        this.setState({ isMailModelVisible: true, credentials: true });
+    }
+
+    validateEmailContainer() {
+        console.log(this.state.checkEmail,'eeee');
+        console.log(this.state.checkPhNo);
+        console.log(this.state.checkEmail !== '')
+        
+        if ((this.state.checkEmail === null || this.state.checkEmail === '') && (this.state.checkPhNo === null || this.state.checkPhNo === '')) {
+            console.log("inside empty");
+            this.setState({ emailContainerEmpty: true, emailError: false, phNoError: false });
+
+        } else {
+            this.setState({ emailContainerEmpty: false });
+            if ((this.state.checkEmail !== null) && (this.state.checkPhNo !== null)) {
+                console.log("inside first case");
+                let error = this.invalidEmail() || this.invalidPhnNo();
+                this.setState({ isMailModelVisible: error });
+
+            } else if (this.state.checkEmail !== null) {
+                console.log("inside second case");
+                let error = this.invalidEmail();
+                this.setState({ isMailModelVisible: error, phNoError: false });
+            } else if (this.state.checkPhNo !== null) {
+                console.log("inside third case");
+                let error = this.invalidPhnNo();
+                this.setState({ isMailModelVisible: error, emailError: false });
+            }
+        }
+    }
+
+    invalidEmail() {
+        console.log("inside email")
+        let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (reg.test(this.state.checkEmail) === false) {
+            this.setState({ emailError: true });
+            return true;
+        } else {
+            this.setState({ emailError: false });
+            return false;
+        }
+    }
+
+    invalidPhnNo() {
+        console.log("inside phno")
+        let reg = /^\d{10}$/;
+        console.log(reg.test(this.state.checkPhNo), "ggggg");
+        if (reg.test(this.state.checkPhNo) === false) {
+            this.setState({ phNoError: true });
+            return true;
+        } else {
+            this.setState({ phNoError: false });
+            return false;
+        }
+    }
+    
+
+    onSubmitEmailContainer() {
+
+        this.validateEmailContainer();
+    }
+
     render() {
         const radio_props = [
             {
                 label: 'Child Exits',
-                value: 'exit'
+                value: false
             },
             {
                 label: 'Child Moves To Future Program',
-                value: 'futureProgram'
+                value: true
             }
         ];
        
@@ -182,7 +266,9 @@ export default class StatusScreen extends React.Component {
                         leftPlace: '',
                         stay: '',
                         followUpBy: '',
-                        credentials: ''
+                        email: '',
+                        phNo: '',
+                        future:''
                     }}
                     validationSchema={statusSchema}
                     onSubmit={(values, actions) => {
@@ -199,10 +285,16 @@ export default class StatusScreen extends React.Component {
                         } if (values.followUpBy == '' && this.state.showElements == true) {
                             this.setState({ followUpByError: true });
                         }
-                        if (!(this.state.leavingReasonError || this.state.reasonDescriptionError || this.state.leftPlaceError || this.state.actionTakenError || this.state.stayError || this.state.followUpByError)) {
+                        if (!(this.state.leavingReasonError || this.state.reasonDescriptionError || this.state.leftPlaceError || this.state.actionTakenError || this.state.stayError || this.state.followUpByError || this.state.emailContainerEmpty || this.state.emailError || this.state.phNoError)) {
                             this.updateStatus(values);
                             actions.resetForm();
-                            this.setState({ date: null, showElements: false, leavingReasonError: false, reasonDescriptionError: false, leftPlaceError: false, actionTakenError: false, stayError: false, followUpByError: false, credentialsError: false });
+                            this.setState({
+                                date: null, showElements: false, leavingReasonError: false,
+                                reasonDescriptionError: false, leftPlaceError: false,
+                                actionTakenError: false, stayError: false, followUpByError: false,
+                                credentialsError: false, credentials: false,
+                                checkEmail: null, emailError: false, checkPhNo: null, phNoError: false, emailContainerEmpty: false
+                            });
                            
                         }
                     }}
@@ -415,12 +507,12 @@ export default class StatusScreen extends React.Component {
                                                 })}
                                             </Picker>
                                             <View>
-                                                {this.state.followUpByError ? < Text style={globalStyles.errormsg}>FollowUpBy is required:</Text> : null}
+                                                {this.state.followUpByError ? < Text style={globalStyles.errormsg}>FollowUpBy is required</Text> : null}
                                             </View>
 
 
                                             {/*User Credentials*/}
-                                            <Text style={globalStyles.label}>Create User Credentials: </Text>
+                                            <Text style={globalStyles.label}>Create User Credentials: (optional) </Text>
                                             <View>
                                             <RadioForm
                                                 style={{marginLeft: 10, marginTop:5}}
@@ -430,10 +522,60 @@ export default class StatusScreen extends React.Component {
                                                 buttonOuterSize={20}
                                                 buttonColor={'black'}
                                                 buttonInnerColor={'black'}
-                                                selectedButtonColor={'black'}
-                                                onPress={(value) => { props.setFieldValue('credentials',value) }}
+                                                    selectedButtonColor={'black'}
+                                                    onPress={(value) => { props.setFieldValue('future', value); this.onCreateCredentialsSelected(); }}
                                                 />
                                             </View>
+                                            <View>
+                                                {this.state.emailContainerEmpty ? < Text style={globalStyles.errormsg}>Enter atleast one Value</Text> : null}
+                                            </View>
+                                            <View>
+                                                {this.state.emailError || this.state.phNoError ? < Text style={globalStyles.errormsg}>Enter correct email or PhNo</Text> : null}
+                                            </View>
+
+                                            <Modal style={styles.emailContainer} isVisible={this.state.isMailModelVisible} onBackdropPress={() => { this.setState({ isMailModelVisible: false }) }}>
+                                                    <View>
+                                                    <Text style={globalStyles.label}>Enter Child Email: </Text>
+                                                    <TextInput
+                                                        style={globalStyles.inputText}
+                                                        onChangeText={(input) => {
+                                                            props.setFieldValue('email', input);
+                                                            if (input === '') {
+                                                                this.setState({ checkEmail: null })
+                                                            } else {
+                                                                this.setState({ checkEmail: input })
+                                                            }
+                                                        }}
+                                                        value={props.values.email} //value updated in 'values' is reflected here
+                                                    />
+                                                    <View>
+                                                        {this.state.emailError ? < Text style={globalStyles.errormsg}>Invalid email</Text> : null}
+                                                    </View>
+                                                    <Text style={globalStyles.label}>Enter Child Phone number: </Text>
+                                                    <TextInput
+                                                        style={globalStyles.inputText}
+                                                        keyboardType="numeric"
+                                                        onChangeText={(input) => {
+                                                            props.setFieldValue('phNo', input);
+                                                            if (input === '') {
+                                                                this.setState({ checkPhNo: null })
+                                                            } else {
+                                                                this.setState({ checkPhNo: input })
+                                                            }
+                                                        }}
+                                                        value={props.values.phNo} //value updated in 'values' is reflected here
+                                                    />
+                                                    <View>
+                                                        {this.state.phNoError ? < Text style={globalStyles.errormsg}>Invalid Phone Number</Text> : null}
+                                                    </View>
+                                                    <View>
+                                                        {this.state.emailContainerEmpty ? < Text style={globalStyles.errormsg}>Enter atleast one Value</Text> : null}
+                                                    </View>
+                                                    <Button style={globalStyles.modalButton} onPress={() => this.onSubmitEmailContainer()} title="Submit"></Button>
+
+                                                </View>
+                                                </Modal>
+                                            
                                         </View>
                                         : null}
                                     <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />                                    
@@ -448,6 +590,7 @@ export default class StatusScreen extends React.Component {
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName} />
                     </View>
                 </Modal>
+                
                 <LoadingDisplay loading={this.state.loading} />
             </View>
         );
@@ -476,10 +619,20 @@ const styles = StyleSheet.create({
         borderRadius: 30
       //  margin: 90,
     },
+    emailContainer: {
+        alignItems: 'center',
+        backgroundColor: '#F2EEEE',
+        width: Dimensions.get('window').width / 2 + 50,
+        maxHeight: Dimensions.get('window').height / 3,
+        marginTop: Dimensions.get('window').height / 3,
+        marginLeft: Dimensions.get('window').width / 5,
+        borderRadius: 30
+        //  margin: 90,
+    },
     actionItemsModal:{
         flex: 1,
         justifyContent: 'center',
-        backgroundColor: 'white',
+        backgroundColor: '#F2EEEE',
         // width: Dimensions.get('window').width /2 + 50,
         maxHeight: Dimensions.get('window').height / 2,
         marginTop: 150,
