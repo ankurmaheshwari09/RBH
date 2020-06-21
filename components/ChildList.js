@@ -139,26 +139,29 @@ export default class ChildList extends Component {
                     'Content-Type': 'application/json'
                 }
             })
-            let response = await const1.json();
-            response = this.setCounterForItemsInList(response);
-            // console.log(response, 'ddddddddddd');
             if (const1.ok) {
-                await this.getAddedData(response);
-                //console.log(this.state.data,'final');
+                let response = await const1.json();
+                response = this.setCounterForItemsInList(response);
+                // console.log(response, 'ddddddddddd');
+               
+                    await this.getAddedData(response);
+                    //console.log(this.state.data,'final');
 
-                if (this.state.checkProfileAlert) {
-                    console.log('alert');
-                    alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
-                }
-                this.arrayholder = response;
-            } else {
-                console.log(response.status);
-                throw Error(response.status);
+                    if (this.state.checkProfileAlert) {
+                        console.log('alert');
+                        alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
+                    }
+                    this.arrayholder = response;
+                
+            }else {
+               
+                // this.setState({ loading: false, errorDisplay: true });
+                throw Error(const1.status);
             }
         }
         catch (error) {
             console.log(error, 'error in getting data');
-            //  this.setState({ loading: false, errorDisplay: true });
+            this.setState({ loading: false, errorDisplay: true });
         }
         this.setState({ refresh: false });
     }
