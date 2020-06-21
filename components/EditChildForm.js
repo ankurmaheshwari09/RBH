@@ -193,8 +193,8 @@ export default class EditChild extends React.Component{
 
     handleLoadChildList(child){
         let actualChild = this.props.childData
-        if(actualChild.FirstName !== child.FirstName || actualChild.LastName !== child.LastName
-            || actualChild.DOB !== child.DOB || actualChild.DOA !== child.DOA){
+        if(actualChild.firstName !== child.FirstName || actualChild.lastName !== child.LastName
+            || actualChild.dateOfBirth !== child.DOB || actualChild.admissionDate !== child.DOA){
                 this.setState({loadChildList: true})
         }
     }
@@ -496,7 +496,7 @@ export default class EditChild extends React.Component{
                                         />
                                     }
                                 </View>
-                                <Text style = {globalStyles.errormsg}>{props.touched.DOB && props.errors.DOB}</Text>
+                                <Text style = {globalStyles.errormsg}>{props.touched.DOA && props.errors.DOA}</Text>
 
                                 {/* Referred Source */}
                                 <Text style = {globalStyles.label}>Referred Source:</Text>
