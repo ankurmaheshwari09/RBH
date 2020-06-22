@@ -131,9 +131,9 @@ export default class EducationScreen extends React.Component {
                     {
                         Class: '',
                         Medium: '',
-                        SchoolName: 'SchoolName',
+                        SchoolName: '',
                         SchoolType: '',
-                        SchoolPlace: 'SchoolPlace',
+                        SchoolPlace: '',
                         StartingDate: this.state.startingdate,
                         EndingDate: this.state.endingdate,
                         ChildStayType: '',
