@@ -91,6 +91,7 @@ export default class EducationScreen extends React.Component {
             "classDetails": values.CDetail,
             "sponsorship": values.ScholarshipSponsorship,
             "sponsorshipFor": this.state.scholoshiptype.sort().join(','),
+            "modified_on": new Date(),
 
         });
         console.log(values);
