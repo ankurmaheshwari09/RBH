@@ -57,7 +57,7 @@ export default class ChildList extends Component {
         this.getData = this.getData.bind(this);
         this.getModalItems = this.getModalItems.bind(this);
         this.checkStatusDateExpired = this.checkStatusDateExpired.bind(this);
-        this.getAddedData = this.getAddedData.bind(this);
+        //this.getAddedData = this.getAddedData.bind(this);
         this.reset = this.reset.bind(this);
         //  this.setStyles = this.setStyles.bind(this);
         // this.show =this.show.bind(this);
@@ -78,58 +78,10 @@ export default class ChildList extends Component {
      
     }
 
-    // This function adds a new property to object
-    async getAddedData(data) {
-
-        let result = data.map(async childData => {
-            let res = await fetch(base_url + "/child-profile-all-description/" + childData.childNo, {
-                method: 'GET',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                }
-            })
-            let responseJson = await res.json();
-            if (res.ok) {
-
-                if (responseJson == null) {
-                    childData.changeProfile = true;
-                    this.setState({ checkProfileAlert: true });
-                }
-                else {
-                    let date_modified = responseJson[0].modified_ON;
-                    let dm = moment(date_modified).format("YYYY-MM-DD");
-                    let dm1 = moment(new Date()).format("YYYY-MM-DD");
-                    let a = new Date(dm);
-                    let b = new Date(dm1);
-                    let diffInDate = b - a;
-                    let daysTillToday = Math.floor(diffInDate / (1000 * 60 * 60 * 24));
-                    //  console.log(daysTillToday, childData.childNo, 'daysTillToday');
-                    if (daysTillToday >= 365) {
-                        childData.changeProfile = true;
-                        this.setState({ checkProfileAlert: true });
-                    } else {
-                        this.setState({ checkProfileAlert: false });
-                        childData.changeProfile = false;
-                    }
-                }
-            }
-            else {
-                console.log(res.status);
-                throw Error(res.status);
-            }
-            return childData;
-        });
-
-        let final_result = await Promise.all(result)
-        //console.log(final_result,'finished adding data');
-        this.setState({ data: final_result, loading: false });
-
-    };
-    async getData() {
+     async getData() {
         console.log('inside get');
         let orgId = getOrgId();
-        const path = 'https://rest-service.azurewebsites.net/api/v1/children/' + orgId;
+        const path = 'https://rest-service.azurewebsites.net/api/v1/childrenWithProfileStatus/' + orgId;
         console.log(path, 'lllll');
         this.setState({ search: null, loading: true });
         try {
@@ -140,24 +92,29 @@ export default class ChildList extends Component {
                 }
             })
             if (const1.ok) {
+                //console.log('inside ok')
                 let response = await const1.json();
+                //console.log(response,'response-----');
                 response = this.setCounterForItemsInList(response);
                 // console.log(response, 'ddddddddddd');
                
-                    await this.getAddedData(response);
+                    //await this.getAddedData(response);
                     //console.log(this.state.data,'final');
 
-                    if (this.state.checkProfileAlert) {
+                   
+                    this.arrayholder = response;
+                    this.setState({ data:response, loading: false });
+                    
+                    if (response.profileUpdateFlag == 'Y') {
                         console.log('alert');
                         alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
                     }
-                    this.arrayholder = response;
                 
-            }else {
-               
-                // this.setState({ loading: false, errorDisplay: true });
-                throw Error(const1.status);
-            }
+                    }else {
+                    
+                        // this.setState({ loading: false, errorDisplay: true });
+                        throw Error(const1.status);
+                    }
         }
         catch (error) {
             console.log(error, 'error in getting data');
@@ -423,7 +380,7 @@ export default class ChildList extends Component {
                                                     </View>
                                                     <View style={{ flexDirection: 'row' }}>
                                                         <Text style={styles.heading}>Profile Update: </Text >
-                                                        {item.changeProfile ? <Text style={styles.cardContent}>Yes</Text> :
+                                                        {item.profileUpdateFlag == 'Y' ? <Text style={styles.cardContent}>Yes</Text> :
                                                             <Text style={styles.cardContent}>No</Text>}
                                                     </View>
                                                 </View>
