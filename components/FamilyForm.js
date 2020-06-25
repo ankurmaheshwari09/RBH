@@ -527,6 +527,12 @@ export default class FamilyForm extends React.Component {
                 <Modal visible={this.state.modaledit} animationType='slide'>
                   
                     <View style={globalStyles.container}>
+                        <MaterialIcons
+                            name='close'
+                            size={24}
+                            style={{ ...styles.modalToggle, ...styles.modalClose }}
+                            onPress={() => this.setModaledit(!this.state.modaledit)}
+                        />
                     <View style={globalStyles.backgroundlogoimageview}>
                         <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
                     </View>
