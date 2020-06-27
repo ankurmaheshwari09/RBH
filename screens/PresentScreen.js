@@ -9,17 +9,17 @@ import AddChildNavigation from '../navigation/AddChildNavigation';
 
 export default class PresentScreen extends Component {
 
-    render () {
+    render() {
         if (this.props.screen === 'home') {
-            return <HomeScreen navigation={this.props.navigation}/>;
+            return <HomeScreen navigation={this.props.navigation} />;
         }
-        else if(this.props.screen === 'addChild') {
+        else if (this.props.screen === 'addChild') {
             return <AddChild navigation={this.props.navigation} />;
         }
         else if (this.props.screen === 'viewChild') {
             return <StackNavigation screenProps={this.props.navigation} />;
         }
-        else if(this.props.screen === 'report') {
+        else if (this.props.screen === 'report') {
             return <Text>Report Screen</Text>;
         }
     }
