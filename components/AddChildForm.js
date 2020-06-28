@@ -109,8 +109,8 @@ export default class AddChild extends React.Component{
         getDataAsync(base_url + '/admission-reasons').then(data => { this.setState({admissionReasons: data})});
     
         getDataAsync(base_url + '/education-statuses').then(data => { this.setState({educationStatusList: data})});
-    
-        getDataAsync(base_url + '/home-staff-list').then(data => {this.setState({homeStaffList: data})});
+
+        getDataAsync(base_url + '/home-staff-list/'+getOrgId()).then(data => {this.setState({homeStaffList: data})});
         
         getDataAsync(base_url + '/referral-sources').then(data => {this.setState({referralSourcesList: data})});
     
@@ -168,9 +168,9 @@ export default class AddChild extends React.Component{
     }
 
     componentDidMount() {
-        this.addChildConstants();
         let orgId = getOrgId();
         this.setState({orgid: orgId});
+        this.addChildConstants();
     }
 
     changeprevstyle() {
