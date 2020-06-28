@@ -12,7 +12,6 @@ import StatusNavigator from './StatusNavigator';
 import FollowUpNavigation from './FollowUpNavigation';
 import FamilyInfoNavigation from './FamilyInfoNavigation';
 import CommunicationInfoNavigation from './CommunicationInfoNavigation';
-import childResultScreen from './ChildResultNavigation';
 import HealthInfoNavigation from './HealthInfoNavigation';
 
 const screens = {
@@ -45,10 +44,7 @@ const screens = {
     },
     FollowUp: {
         screen: FollowUpNavigation
-    },
-    ChildResult: {
-        screen: childResultScreen,
-    },
+    }
 
 };
 

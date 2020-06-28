@@ -142,6 +142,8 @@ export default class EducationScreen extends React.Component {
                         BridgeCourseSchoolName: '',
                         ScholarshipSponsorship: '',
                         scholorshiptype: '',
+                        Literacytatus: '',
+                        FirstGenLearner: '',
                     }
                 }
                 validationSchema={EducationFormSchema}
@@ -163,7 +165,7 @@ export default class EducationScreen extends React.Component {
 
                             <View>
                                 {/*Child Name*/}
-                                <Text style={globalStyles.label}>Child Name: </Text>
+                                <Text style={globalStyles.label}>Child Name:</Text>
                                 <TextInput
                                     style={globalStyles.disabledBox}
                                     value={this.state.child.firstName} //value updated in 'values' is reflected here
@@ -172,7 +174,7 @@ export default class EducationScreen extends React.Component {
                                 />
 
                                 {/*Child Class*/}
-                                <Text style={globalStyles.label}>Class:</Text>
+                                <Text style={globalStyles.label}>Class: <Text style={{ color: "red" }}>*</Text> </Text>
                                 <Picker
                                     selectedValue={props.values.Class}
                                     style={globalStyles.dropDown}
@@ -187,7 +189,7 @@ export default class EducationScreen extends React.Component {
                                 <Text style={globalStyles.errormsg}>{props.touched.Class && props.errors.Class}</Text>
 
                                 {/*Child Medium*/}
-                                <Text style={globalStyles.label}>Medium:</Text>
+                                <Text style={globalStyles.label}>Medium:  <Text style={{ color: "red" }}>*</Text> </Text>
                                 <Picker
                                     selectedValue={props.values.Medium}
                                     style={globalStyles.dropDown}
@@ -202,7 +204,7 @@ export default class EducationScreen extends React.Component {
                                 <Text style={globalStyles.errormsg}>{props.touched.Medium && props.errors.Medium}</Text>
 
                                 {/*School Name*/}
-                                <Text style={globalStyles.label}>School Name:</Text>
+                                <Text style={globalStyles.label}>School/College/Institution Name: <Text style={{ color: "red" }}>*</Text> </Text>
                                 <TextInput
                                     style={globalStyles.input}
                                     onChangeText={props.handleChange('SchoolName')}
@@ -211,7 +213,7 @@ export default class EducationScreen extends React.Component {
                                 <Text style={globalStyles.errormsg}>{props.touched.SchoolName && props.errors.SchoolName}</Text>
 
                                 {/*School Type*/}
-                                <Text style={globalStyles.label}>School Type:</Text>
+                                <Text style={globalStyles.label}>School/College/Institution Type: <Text style={{ color: "red" }}>*</Text> </Text>
                                 <Picker
                                     selectedValue={props.values.SchoolType}
                                     style={globalStyles.dropDown}
@@ -226,7 +228,7 @@ export default class EducationScreen extends React.Component {
                                 <Text style={globalStyles.errormsg}>{props.touched.SchoolType && props.errors.SchoolType}</Text>
 
                                 {/*School Place*/}
-                                <Text style={globalStyles.label}>School Place:</Text>
+                                <Text style={globalStyles.label}>School/College/Institution Place: <Text style={{ color: "red" }}>*</Text> </Text>
                                 <TextInput
                                     style={globalStyles.input}
                                     onChangeText={props.handleChange('SchoolPlace')}
@@ -235,7 +237,7 @@ export default class EducationScreen extends React.Component {
                                 <Text style={globalStyles.errormsg}>{props.touched.SchoolPlace && props.errors.SchoolPlace}</Text>
 
                                 {/*Starting Date*/}
-                                <Text style={globalStyles.label}>Starting Date:</Text>
+                                <Text style={globalStyles.label}>Starting Date:  <Text style={{ color: "red" }}>*</Text> </Text>
                                 <View style={globalStyles.dobView}>
                                     <TextInput
                                         style={globalStyles.inputText, globalStyles.dobValue}
@@ -394,6 +396,22 @@ export default class EducationScreen extends React.Component {
                                 </View>
                                     : null}
 
+
+                                {/*Literacy status*/}
+                                <Text style={globalStyles.label}>Literacy Status:</Text>
+
+                                {/*First Generation Learner*/}
+                                <Text style={globalStyles.label}>First Generation Learner:</Text>
+                                <Picker
+                                    selectedValue={props.values.FirstGenLearner}
+                                    style={globalStyles.dropDown}
+                                    onValueChange={(FirstGenLearner) => props.setFieldValue('FirstGenLearner', FirstGenLearner)}
+                                    value={props.values.FirstGenLearner}
+                                >
+                                    <Picker.Item color='grey' label="Select" value="" />
+                                    <Picker.Item label="Yes" value="Yes" />
+                                    <Picker.Item label="No" value="No" />
+                                </Picker>
 
                                 <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
 

@@ -17,6 +17,15 @@ export default class ChildResultScreen extends React.Component {
             child: this.props.navigation.getParam('child'),
         }
     }
+    getApiMethod(prevEducation) {
+        if ('newChild' in this.props.prevEducation) {
+            prevEducation.modified_on = new Date()
+            return UpdateApi.addData(JSON.stringify(prevEducation), 'child-education')
+        }
+        else {
+            return UpdateApi.updateData(JSON.stringify(prevEducation), 'child-education')
+        }
+    }
     examResultsubmit(values) {
         this.setState({ loading: true });
         let request_body = JSON.stringify({
@@ -62,6 +71,7 @@ export default class ChildResultScreen extends React.Component {
             <Formik
                 initialValues={
                     {
+                        Class: this.props.studyingclass,
                         Appeared: '',
                         Result: '',
                         Percentage: '',
@@ -102,8 +112,9 @@ export default class ChildResultScreen extends React.Component {
                                     onValueChange={props.handleChange('Class')}
                                 >
                                     <Picker.Item color='grey' label="Select the Class" value="" />
-                                    <Picker.Item label="X" value="11" />
-                                    <Picker.Item label="XII(Inter 2/PUC2)" value="13" />
+                                    {global.studyingclass.map((item) => {
+                                        return <Picker.Item key={item.studyingclassId} label={item.studyingclass} value={item.studyingclassId} />
+                                    })}
                                 </Picker>
 
                                 {/*Appeared*/}
