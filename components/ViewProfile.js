@@ -207,7 +207,7 @@ export default class ViewProfile extends React.Component {
                         selectTextOnFocus={false}
                     />
                     <Text style={globalStyles.padding}></Text>
-                    <Text style={globalStyles.label}>Enter/Update Description about child:</Text>
+                    <Text style={globalStyles.label}>Profile Description <Text style={{color:"red"}}>*</Text> :</Text>
                     <TextInput
                         style={globalStyles.inputText}
                         onChangeText={props.handleChange('Description')}
@@ -230,7 +230,7 @@ export default class ViewProfile extends React.Component {
             <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.navigateToChildListScreen()}>
                 <View style={globalStyles.MainContainer}>
                     <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                    <SuccessDisplay successDisplay={this.state.successDisplay} type='Profile' childNo={this.state.child.firstName}/>
+                    <SuccessDisplay successDisplay={this.state.successDisplay} type='Profile description' childNo={this.state.child.firstName}/>
                 </View>
             </Modal>
             <LoadingDisplay loading={this.state.loading} />
