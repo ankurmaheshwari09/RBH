@@ -301,7 +301,7 @@ export default class CommitteeScreen extends React.Component {
                             selectTextOnFocus={false}
                         />
                         <Text style={globalStyles.padding}></Text>                   
-                        <Text style={globalStyles.label}>Select Meeting Date:</Text>
+                        <Text style={globalStyles.label}>Select Meeting Date <Text style={{color:"red"}}>*</Text> :</Text>
                         <View style={globalStyles.dobView}>
                             <TextInput
                                 style={globalStyles.inputText, globalStyles.dobValue}
@@ -316,17 +316,19 @@ export default class CommitteeScreen extends React.Component {
             
                             {this.state.showSD &&
                                 <DateTimePicker
-                                    style={{ width: 100 }}
+                                    style={{ width: 200 }}
                                     mode="date" //The enum of date, datetime and time
                                     value={ new Date() }
                                     mode= { 'date' }
                                     onChange={(e,date) => this._pickDate(e,date,props.handleChange('MeetingDate'))}
+                                    maximumDate= { new Date() }
                                 />
                             }
-                            <Text style={globalStyles.errormsg}>{props.touched.MeetingDate && props.errors.MeetingDate}</Text>
                             </View>
+                            <Text style={globalStyles.errormsg}>{props.touched.MeetingDate && props.errors.MeetingDate}</Text>
+
                             <Text style={globalStyles.padding}></Text> 
-                        <Text style={globalStyles.label}>Enter/Update Suggestion:</Text>
+                        <Text style={globalStyles.label}>Committee Suggestion <Text style={{color:"red"}}>*</Text> :</Text>
                         
                         <TextInput
                             style={globalStyles.inputText}
@@ -338,7 +340,7 @@ export default class CommitteeScreen extends React.Component {
                         /> 
                      <Text style={globalStyles.errormsg}>{props.touched.Suggestion && props.errors.Suggestion}</Text>
                      {/* <Text style={globalStyles.padding}></Text>  */}
-                      <Text style={globalStyles.label}>Select Staff:</Text>                   
+                      <Text style={globalStyles.label}>Select Staff <Text style={{color:"red"}}>*</Text> :</Text>                   
              {
               this.state.staffMembers.map((staffMember,index) => {
                return(
@@ -375,7 +377,7 @@ export default class CommitteeScreen extends React.Component {
                );
              })
             }
-
+            
              <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
 
              </View>
@@ -388,7 +390,7 @@ export default class CommitteeScreen extends React.Component {
                 <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
                     <View style={globalStyles.MainContainer}>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                        <SuccessDisplay successDisplay={this.state.successDisplay} type='suggestions given by committee' childNo={this.state.child.firstName} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='committee details for' childNo={this.state.child.firstName} />
                     </View>
                 </Modal>
                 <LoadingDisplay loading={this.state.loading} />

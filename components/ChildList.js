@@ -32,15 +32,15 @@ export default class ChildList extends Component {
             search: null,
             errorDisplay: false,
             refresh: true,
-            currentTime: null,
             modalItems: [
                 { key: 'Status', page: 'ChildStatus' },
                 { key: 'Health', page: 'Health' },
                 { key: 'Education', page: 'Education' },
+                { key: 'Result', page: 'ChildResult' },
                 { key: 'Family', page: 'Family' },
                 { key: 'Communication', page: 'Communication' },
                 { key: 'General Info', page: 'GeneralInfo' },
-                { key: 'View Profile', page: 'Profile' },
+                { key: 'Update Profile Description', page: 'Profile' },
                 { key: 'Committee', page: 'Committee' },
                 { key: 'Follow Up', page: 'FollowUpBy' },
             ],
@@ -78,7 +78,7 @@ export default class ChildList extends Component {
 
     }
 
-    async getData() {
+     async getData() {
         console.log('inside get');
         let orgId = getOrgId();
         this.setState({
@@ -110,7 +110,7 @@ export default class ChildList extends Component {
                 this.setState({ data: sortedResponse, loading: false });
 
                 alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
-                
+
 
             } else {
 
@@ -166,7 +166,7 @@ export default class ChildList extends Component {
         this.navigateToOtherScreen(screen);
     }
     searchFilterFunction = text => {
-       
+
         this.setState({ search: text });
         if ('' == text) {
             this.setState({
@@ -179,7 +179,7 @@ export default class ChildList extends Component {
                 let admissionDate = moment(item.admissionDate).format('DD/MM/YYYY');
                 let exitStatus = (item.childStatus === 'Closed') ? 'Exit' : '';
                 let fullName = item.firstName + ' ' + item.lastName;
-               
+
                 return (item.firstName.toLowerCase().includes(text.toLowerCase())
                     || item.lastName.toLowerCase().includes(text.toLowerCase())
                     || dateOfBirth.includes(text)
@@ -197,7 +197,7 @@ export default class ChildList extends Component {
         return (
             <View style={{ flexDirection: 'row' }}>
                 <SearchBar
-                    placeholder="Search by Name,DOB,Status,Admdate"
+                    placeholder="Type Here..."
                     lightTheme
                     round
                     onChangeText={text => this.searchFilterFunction(text)}
@@ -228,7 +228,7 @@ export default class ChildList extends Component {
         } else if (status == 'Closed') {
             return styles.pink;
         } else if (status == 'Absent') {
-            if (this.checkStatusDateExpired(childStatusDate, status)) {
+            if (this.checkStatusDateExpired(childMap, status)) {
                 this.state.data[index].style = styles.red;
                 return styles.red;
             } else {
@@ -329,15 +329,15 @@ export default class ChildList extends Component {
             <View style={styles.MainContainer} pointerEvents={this.state.loading ? 'none' : 'auto'} >
                 {this.state.loading ?
 
-                    <View style={{ position: 'absolute', top: "45%", right: 0, left: 0, zIndex: 10 }}>
+                    <View style={{ position: 'absolute', top: "45%", right: 0, left: 0, zIndex: 10   }}>
                         <View>
                             <ActivityIndicator animating={this.state.loading} size="large" color="black" />
                         </View>
                         <View>
                             <Text style={styles.loading}>Loading..... </Text>
                         </View>
-                    </View>
-                    : null}
+                        </View>
+                     : null}
 
                 {this.state.errorDisplay ?
                     <ErrorDisplay errorDisplay={this.state.errorDisplay} />
@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         position: 'absolute',
         top: '70%',
-        left: Dimensions.get('window').width / 3 + 15
+        left: Dimensions.get('window').width / 3+15
 
     },
     cardContent: {
