@@ -50,7 +50,8 @@ export default class StatusScreen extends React.Component {
             checkEmail: null,
             checkPhNo: null,
             phNoError: false,
-            emailContainerEmpty: false
+            emailContainerEmpty: false,
+            actionTakenItems: []
             
         }
         this.pickDob = this.pickDob.bind(this);
@@ -61,28 +62,28 @@ export default class StatusScreen extends React.Component {
   
     //setting the dropdown options according to current status
     static getDerivedStateFromProps(props, state) {
-        if (state.child.childStatus.childStatusId == 1) {
+        if (state.child.childStatusId == 1) {
             
             return {
                 statusOptions: global.status.filter((item)  => {
                     return item.childStatusId == 2 || item.childStatusId == 3;
             })
             }
-        }  else if (state.child.childStatus.childStatusId == 2) {
+        } else if (state.child.childStatusId == 2) {
             
             return {
                 statusOptions: global.status.filter((item) => {
                     return (item.childStatusId == 4) || (item.childStatusId == 3) ;
                 })
             }
-        } else if (state.child.childStatus.childStatusId == 3) {
+        } else if (state.child.childStatusId == 3) {
             
             return {
                 statusOptions: global.status.filter((item) => {
                     return item.childStatusId == 2 || item.childStatusId == 4;
                 })
             }
-        } else if (state.child.childStatus.childStatusId == 4) {
+        } else if (state.child.childStatusId == 4) {
             //setting the option as readmission when current option is close
             return {
                 statusOptions: global.status.filter((item) => {
@@ -317,7 +318,7 @@ export default class StatusScreen extends React.Component {
                                     />
                                    
                                     {/*Child Status*/}
-                                    <Text style={globalStyles.label}>Child Status:</Text>
+                                    <Text style={globalStyles.label}>Child Status <Text style={{ color: "red" }}>*</Text>:</Text>
                                     <Picker
                                         selectedValue={props.values.ChildStatus}
                                         style={globalStyles.dropDown}
@@ -347,7 +348,7 @@ export default class StatusScreen extends React.Component {
                                         <Text style={globalStyles.errormsg}>{props.touched.ChildStatus && props.errors.ChildStatus}</Text>
 
                                     {/*Date*/}
-                                        <Text style={globalStyles.label}>Date:</Text>
+                                    <Text style={globalStyles.label}>Date <Text style={{ color: "red" }}>*</Text>:</Text>
                                     <View style={globalStyles.dobView}>
                                         <TextInput
                                             style={globalStyles.inputText, globalStyles.dobValue}
@@ -377,7 +378,7 @@ export default class StatusScreen extends React.Component {
 
 
                                     {/*Approved By*/}
-                                    <Text style={globalStyles.label}>Approved By:</Text>
+                                    <Text style={globalStyles.label}>Approved By <Text style={{ color: "red" }}>*</Text>:</Text>
                                     <Picker
                                         selectedValue={props.values.ApprovedBy}
                                         style={globalStyles.dropDown}
@@ -396,7 +397,7 @@ export default class StatusScreen extends React.Component {
                                     {this.state.showElements ?
                                         <View>
                                             {/*Leaving Reason*/}
-                                            <Text style={globalStyles.label}>Leaving Reason:</Text>
+                                            <Text style={globalStyles.label}>Leaving Reason <Text style={{ color: "red" }}>*</Text>:</Text>
                                             <Picker
                                                 selectedValue={props.values.leavingReason}
                                                 style={globalStyles.dropDown}
@@ -413,7 +414,7 @@ export default class StatusScreen extends React.Component {
                                             </View>
 
                                             {/*Reason Description*/}
-                                            <Text style={globalStyles.label}>Reason Description:</Text>
+                                            <Text style={globalStyles.label}>Reason Description <Text style={{ color: "red" }}>*</Text>:</Text>
                                            
                                             <TextInput
                                                 style={globalStyles.inputText}
@@ -430,7 +431,7 @@ export default class StatusScreen extends React.Component {
 
 
                                             {/*Left Place*/}
-                                            <Text style={globalStyles.label}>Child Left Place:</Text>
+                                            <Text style={globalStyles.label}>Child Left Place <Text style={{ color: "red" }}>*</Text>:</Text>
                                             <Picker
                                                 selectedValue={props.values.leftPlace}
                                                 style={globalStyles.dropDown}
@@ -448,7 +449,7 @@ export default class StatusScreen extends React.Component {
 
 
                                             {/*Action taken*/}
-                                            <Text style={globalStyles.label}>Action Taken:</Text>
+                                            <Text style={globalStyles.label}>Action Taken <Text style={{ color: "red" }}>*</Text>:</Text>
                                             <TouchableOpacity onPress = {() => {
                                                 this.setState({
                                                     actionItemsModal: true
@@ -463,12 +464,16 @@ export default class StatusScreen extends React.Component {
                                                                     style={{ flex: 1, padding: 10 }}
                                                                     onClick = {() => {
                                                                         let arr = this.state.actionsTaken
+                                                                        let arrForDisplay = this.state.actionTakenItems
                                                                         if(arr.indexOf(item.actionId) == -1){
-                                                                            arr.push(item.actionId)
+                                                                            arr.push(item.actionId);
+                                                                            arrForDisplay.push(item.actionTaken);
+                                                                            console.log(arrForDisplay);
                                                                         } else{
                                                                             arr.splice(arr.indexOf(item.actionId), 1)
+                                                                            arrForDisplay.splice(arrForDisplay.indexOf(item.actionTaken), 1);
                                                                         }
-                                                                        this.setState({actionsTaken: arr})
+                                                                        this.setState({ actionsTaken: arr, actionTakenItems: arrForDisplay })
                                                                     }}
                                                                     key = {item.actionId}
                                                                     leftText={item.actionTaken}
@@ -476,12 +481,20 @@ export default class StatusScreen extends React.Component {
                                                                     />
                                                     })}
                                                 </View>
+                                                <View style={styles.buttonSize}>
+                                                    <Button style={globalStyles.modalButton} onPress={() => this.setState({actionItemsModal: false })} title="Submit"></Button>
+                                                </View>
                                             </Modal>
                                             <View>
                                                 {this.state.actionTakenError ? < Text style={globalStyles.errormsg}>Action Taken is required</Text> : null}
                                             </View>
+                                            <View>
+                                                <Text style={styles.selecetdOptions}>{this.state.actionTakenItems.toString()}</Text> 
+                                            </View>
 
-                                            <Text style={globalStyles.label}>Place of Stay After Leaving RH:</Text>
+                                            {/*Place of stay fater leaving RH */}
+
+                                            <Text style={globalStyles.label}>Place of Stay After Leaving RH <Text style={{ color: "red" }}>*</Text>:</Text>
                                             <TextInput
                                                 style={globalStyles.inputText}
                                                 onChangeText={(stay) => { this.setState({ stayError: false }); props.setFieldValue('stay', stay) }}
@@ -493,7 +506,7 @@ export default class StatusScreen extends React.Component {
 
 
                                             {/*FollowUp By*/}
-                                            <Text style={globalStyles.label}>FollowUp By:</Text>
+                                            <Text style={globalStyles.label}>FollowUp By <Text style={{ color: "red" }}>*</Text>:</Text>
                                             <Picker
                                                 selectedValue={props.values.followUpBy}
                                                 style={globalStyles.dropDown}
@@ -512,7 +525,7 @@ export default class StatusScreen extends React.Component {
 
 
                                             {/*User Credentials*/}
-                                            <Text style={globalStyles.label}>Create User Credentials: (optional) </Text>
+                                            <Text style={globalStyles.label}>Create User Credentials : (optional) </Text>
                                             <View>
                                             <RadioForm
                                                 style={{marginLeft: 10, marginTop:5}}
@@ -588,6 +601,7 @@ export default class StatusScreen extends React.Component {
                     <View style={styles.MainContainer}>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName} />
+                     
                     </View>
                 </Modal>
                 
@@ -639,5 +653,14 @@ const styles = StyleSheet.create({
         //top: 150,
         borderColor: 'black',
         borderRadius: 30
-    }
+    },
+    buttonSize: {
+        maxWidth: Dimensions.get('window').width / 4,
+        marginLeft: Dimensions.get('window').width / 4 + 30,
+        justifyContent: 'center',
+    },
+    selecetdOptions: {
+        color: 'green'
+    },
+   
 });

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert,  ToolbarAndroid, Button, FlatList, Image, Dimensions, PixelRatio, BackHandler  } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert, ToolbarAndroid, Button, FlatList, Image, Dimensions, PixelRatio, BackHandler } from 'react-native'
 import { Card, CardImage, CardContent } from 'react-native-cards'
 import Modal from 'react-native-modal';
 import { SearchBar, Overlay } from 'react-native-elements';
@@ -32,6 +32,7 @@ export default class ChildList extends Component {
             search: null,
             errorDisplay: false,
             refresh: true,
+            currentTime: null,
             modalItems: [
                 { key: 'Status', page: 'ChildStatus' },
                 { key: 'Health', page: 'Health' },
@@ -75,12 +76,15 @@ export default class ChildList extends Component {
             search: null,
             errorDisplay: false
         });
-     
+
     }
 
      async getData() {
         console.log('inside get');
         let orgId = getOrgId();
+        this.setState({
+            currentTime: new Date()
+        });
         const path = 'https://rest-service.azurewebsites.net/api/v1/childrenWithProfileStatus/' + orgId;
         console.log(path, 'lllll');
         this.setState({ search: null, loading: true });
@@ -94,33 +98,35 @@ export default class ChildList extends Component {
             if (const1.ok) {
                 //console.log('inside ok')
                 let response = await const1.json();
-                //console.log(response,'response-----');
-                response = this.setCounterForItemsInList(response);
+               //   console.log(response,'response-----');
+                let sortedResponse = response.sort((a, b) => a.firstName.localeCompare(b.firstName));
+                sortedResponse = this.setCounterForItemsInList(sortedResponse);
                 // console.log(response, 'ddddddddddd');
-               
-                    //await this.getAddedData(response);
-                    //console.log(this.state.data,'final');
 
-                   
-                    this.arrayholder = response;
-                    this.setState({ data:response, loading: false });
-                    
-                    if (response.profileUpdateFlag == 'Y') {
-                        console.log('alert');
-                        alert('Please "Update Profile Description" for children whose Profile Update Status: Yes');
-                    }
-                
-                    }else {
-                    
-                        // this.setState({ loading: false, errorDisplay: true });
-                        throw Error(const1.status);
-                    }
+                //await this.getAddedData(response);
+                //console.log(this.state.data,'final');
+
+
+                this.arrayholder = sortedResponse;
+                this.setState({ data: sortedResponse, loading: false });
+
+                alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
+
+
+            } else {
+
+                // this.setState({ loading: false, errorDisplay: true });
+                throw Error(const1.status);
+            }
         }
         catch (error) {
             console.log(error, 'error in getting data');
             this.setState({ loading: false, errorDisplay: true });
         }
         this.setState({ refresh: false });
+        //  console.log(this.state.currentTime.getSeconds());
+        console.log("no of seconds taken");
+        console.log(new Date().getSeconds() - this.state.currentTime.getSeconds());
     }
 
 
@@ -143,7 +149,7 @@ export default class ChildList extends Component {
 
     }
 
-   
+
     navigateToOtherScreen(screen) {
         // console.log(this.state.navItems);
         // this.setState({ refresh: true });
@@ -162,7 +168,6 @@ export default class ChildList extends Component {
     }
     searchFilterFunction = text => {
 
-        // console.log(text);
         this.setState({ search: text });
         if ('' == text) {
             this.setState({
@@ -173,11 +178,16 @@ export default class ChildList extends Component {
             this.state.data = this.arrayholder.filter(function (item) {
                 let dateOfBirth = moment(item.dateOfBirth).format('DD/MM/YYYY');
                 let admissionDate = moment(item.admissionDate).format('DD/MM/YYYY');
+                let exitStatus = (item.childStatus === 'Closed') ? 'Exit' : '';
+                let fullName = item.firstName + ' ' + item.lastName;
+
                 return (item.firstName.toLowerCase().includes(text.toLowerCase())
                     || item.lastName.toLowerCase().includes(text.toLowerCase())
                     || dateOfBirth.includes(text)
                     || admissionDate.includes(text)
-                    || item.childStatus.childStatus.includes(text));
+                    || item.childStatus.toLowerCase().includes(text.toLowerCase())
+                    || exitStatus.toLowerCase().includes(text.toLowerCase())
+                    || fullName.toLowerCase().includes(text.toLowerCase()));
             });
             if (this.state.data.length === 0) {
                 alert("Please refresh if new child is added");
@@ -188,7 +198,7 @@ export default class ChildList extends Component {
         return (
             <View style={{ flexDirection: 'row' }}>
                 <SearchBar
-                    placeholder="Type Here..."
+                    placeholder="Search by Name,DOB,Status,Admdate"
                     lightTheme
                     round
                     onChangeText={text => this.searchFilterFunction(text)}
@@ -202,12 +212,12 @@ export default class ChildList extends Component {
         );
     };
 
-    getStyles(status, childMap, childNo) {
+    getStyles(status, childStatusDate, childNo) {
 
         let index = this.state.data.findIndex((item) => item.childNo == childNo);
 
         if (status == 'Observation') {
-            if (this.checkStatusDateExpired(childMap, status)) {
+            if (this.checkStatusDateExpired(childStatusDate, status)) {
                 this.state.data[index].style = styles.red;
                 return styles.red;
             } else {
@@ -219,7 +229,7 @@ export default class ChildList extends Component {
         } else if (status == 'Closed') {
             return styles.pink;
         } else if (status == 'Absent') {
-            if (this.checkStatusDateExpired(childMap, status)) {
+            if (this.checkStatusDateExpired(childStatusDate, status)) {
                 this.state.data[index].style = styles.red;
                 return styles.red;
             } else {
@@ -232,20 +242,11 @@ export default class ChildList extends Component {
 
     }
 
-    checkStatusDateExpired(childMap, status) {
+    checkStatusDateExpired(childStatusDate, status) {
 
-        let date = childMap.map((item) => {
-            if (item.childStatusID.childStatus == status) {
+        const date = moment(childStatusDate).format('YYYY-MM-DD');
 
-                return moment(item.childStatusDate).format('YYYY-MM-DD');
-            } else {
-                return '';
-            }
-        });
-        date.sort();
-        date.reverse();
-
-        let diff = this.getDiffBetweenDates(new Date(date[0]), new Date());
+        let diff = this.getDiffBetweenDates(new Date(date), new Date());
         //   console.log(diff.toFixed(0));
         return diff >= 30 ? true : false;
     }
@@ -264,7 +265,7 @@ export default class ChildList extends Component {
     getModalItems(item) {
 
         let updatedList = this.state.modalItems;
-        if (item.childStatus.childStatus !== 'Closed') {
+        if (item.childStatus !== 'Closed') {
             updatedList = this.state.modalItems.filter(item => item.key !== 'Follow Up');
         }
         return updatedList;
@@ -273,7 +274,7 @@ export default class ChildList extends Component {
     getImageUri(picture, gender) {
 
         if (picture === null || picture === "") {
-            if (gender === 1) {
+            if (gender === 2) {
                 return require('../assets/girl.jpg');
             } else {
                 return require('../assets/boy.jpg');
@@ -321,82 +322,82 @@ export default class ChildList extends Component {
         if (this.state.refresh) {
             await this.getData();
         }
-       
+
     }
     render() {
 
         return (
             <View style={styles.MainContainer} pointerEvents={this.state.loading ? 'none' : 'auto'} >
                 {this.state.loading ?
-                   
-                    <View style={{ position: 'absolute', top: "45%", right: 0, left: 0, zIndex: 10   }}>
+
+                    <View style={{ position: 'absolute', top: "45%", right: 0, left: 0, zIndex: 10 }}>
                         <View>
                             <ActivityIndicator animating={this.state.loading} size="large" color="black" />
                         </View>
                         <View>
                             <Text style={styles.loading}>Loading..... </Text>
                         </View>
-                        </View>
-                     : null}
+                    </View>
+                    : null}
 
-                    {this.state.errorDisplay ?
-                            <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                            :
-                            <FlatList
-                                data={this.state.data}
-                                renderItem={({ item }) => (
-                                    <View style={{
-                                        flex: 1 / 2, flexDirection: 'column', justifyContent: 'space-evenly'
-                                    }}>
-                                        <TouchableOpacity style={this.getContainerStyles(item)} onPress={(event) => { this.onPress(item) }}>
-                                            {/*react-native-elements Card*/}
-                                            <Card style={this.getStyles(item.childStatus.childStatus, item.childMaps, item.childNo)} >
+                {this.state.errorDisplay ?
+                    <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                    :
+                    <FlatList
+                        data={this.state.data}
+                        renderItem={({ item }) => (
+                            <View style={{
+                                flex: 1 / 2, flexDirection: 'column', justifyContent: 'space-evenly'
+                            }}>
+                                <TouchableOpacity style={this.getContainerStyles(item)} onPress={(event) => { this.onPress(item) }}>
+                                    {/*react-native-elements Card*/}
+                                    <Card style={this.getStyles(item.childStatus, item.childStatusDate, item.childNo)} >
 
-                                                <View>
-                                                    <Image
-                                                        source={this.getImageUri(item.picture, item.gender)}
-                                                        style={this.getImageStyle(item.style)}
-                                                    />
-                                                </View>
+                                        <View>
+                                            <Image
+                                                source={this.getImageUri(item.picture, item.gender)}
+                                                style={this.getImageStyle(item.style)}
+                                            />
+                                        </View>
 
-                                                <View style={styles.paragraph}>
-                                                    <View style={{ flexDirection: 'row' }}>
-                                                        <Text style={styles.heading}>Name:</Text >
-                                                        <Text style={styles.cardContent}>{`${item.firstName} ${item.lastName}`}</Text>
-                                                    </View>
-                                                    <View style={{ flexDirection: 'row' }}>
-                                                        <Text style={styles.heading}>Adm Date:</Text >
-                                                        <Text style={styles.cardContent}>{moment(item.admissionDate).format('DD/MM/YYYY')}</Text>
-                                                    </View>
-                                                    <View style={{ flexDirection: 'row' }}>
-                                                        <Text style={styles.heading}>DOB:</Text >
-                                                        <Text style={styles.cardContent}>{moment(item.dateOfBirth).format('DD/MM/YYYY')}</Text>
-                                                    </View>
-                                                    <View style={{ flexDirection: 'row' }}>
-                                                        <Text style={styles.heading}>Status:</Text >
-                                                        {item.childStatus.childStatus == 'Closed' ? <Text style={styles.cardContent}>Exit</Text> :
-                                                            <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>}
-                                                        {item.style == styles.red ? < Ionicons name="md-warning" size={20} color="red" /> : null}
-                                                    </View>
-                                                    <View style={{ flexDirection: 'row' }}>
-                                                        <Text style={styles.heading}>Profile Update: </Text >
-                                                        {item.profileUpdateFlag == 'Y' ? <Text style={styles.cardContent}>Yes</Text> :
-                                                            <Text style={styles.cardContent}>No</Text>}
-                                                    </View>
-                                                </View>
+                                        <View style={styles.paragraph}>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text style={styles.heading}>Name:</Text >
+                                                <Text style={styles.cardContent}>{`${item.firstName} ${item.lastName}`}</Text>
+                                            </View>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text style={styles.heading}>Adm Date:</Text >
+                                                <Text style={styles.cardContent}>{moment(item.admissionDate).format('DD/MM/YYYY')}</Text>
+                                            </View>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text style={styles.heading}>DOB:</Text >
+                                                <Text style={styles.cardContent}>{moment(item.dateOfBirth).format('DD/MM/YYYY')}</Text>
+                                            </View>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text style={styles.heading}>Status:</Text >
+                                                {item.childStatus == 'Closed' ? <Text style={styles.cardContent}>Exit</Text> :
+                                                    <Text style={styles.cardContent}>{item.childStatus}</Text>}
+                                                {item.style == styles.red ? < Ionicons name="md-warning" size={20} color="red" /> : null}
+                                            </View>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <Text style={styles.heading}>Profile Update: </Text >
+                                                {item.profileStatusFlag === 'Y' ? <Text style={styles.cardContent}>Yes</Text> :
+                                                    <Text style={styles.cardContent}>No</Text>}
+                                            </View>
+                                        </View>
 
-                                            </Card>
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
+                                    </Card>
+                                </TouchableOpacity>
+                            </View>
+                        )}
 
-                                //Setting the number of column
-                                numColumns={2}
-                                keyExtractor={item => item.childNo}
-                                ListHeaderComponent={this.renderHeader}
-                            />
-                    }
-                
+                        //Setting the number of column
+                        numColumns={2}
+                        keyExtractor={item => item.childNo}
+                        ListHeaderComponent={this.renderHeader}
+                    />
+                }
+
                 <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
                     <View style={styles.optionsContainer}>
                         <FlatList data={this.state.modalItemsForCurrentItem} renderItem={({ item }) => (
@@ -488,7 +489,7 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 15,
         fontFamily: 'sans-serif-medium',
-        
+
     },
     loading: {
         color: 'black',
@@ -498,7 +499,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: '70%',
         left: Dimensions.get('window').width / 3+15
-      
+
     },
     cardContent: {
         color: 'black',

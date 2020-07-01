@@ -301,6 +301,7 @@ export const globalStyles = StyleSheet.create({
         borderRadius: 6,
         marginBottom: 5,
         fontSize: 14,
+       
     },
     Header: {
         padding: 5,

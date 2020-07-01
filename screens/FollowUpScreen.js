@@ -125,7 +125,7 @@ export default class FollowUpScreen extends React.Component {
                             <ScrollView>
                                 <View>
                                     {/*FollowUp By*/}
-                                    <Text style={globalStyles.label}>FollowUp By:</Text>
+                                    <Text style={globalStyles.label}>FollowUp By <Text style={{ color: "red" }}>*</Text>:</Text>
                                     <Picker
                                         selectedValue={props.values.FollowUpBy}
                                         style={globalStyles.dropDown}
@@ -144,7 +144,7 @@ export default class FollowUpScreen extends React.Component {
 
 
                                     {/*Date*/}
-                                    <Text style={globalStyles.label}>Date:</Text>
+                                    <Text style={globalStyles.label}>Date <Text style={{ color: "red" }}>*</Text>:</Text>
                                     <View style={globalStyles.dateView}>
                                         <TextInput
                                             style={globalStyles.inputText, globalStyles.dobValue}
@@ -173,7 +173,7 @@ export default class FollowUpScreen extends React.Component {
 
 
                                     {/*Comments*/}
-                                    <Text style={globalStyles.label}>Comments:</Text>
+                                    <Text style={globalStyles.label}>Comments <Text style={{ color: "red" }}>*</Text>:</Text>
 
                                     <TextInput
                                         style={globalStyles.input}
