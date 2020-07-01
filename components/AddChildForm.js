@@ -11,7 +11,7 @@ import moment from 'moment';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import {base_url,getDataAsync} from '../constants/Base';
 import { ActivityIndicator } from 'react-native';
-import { getOrgId } from '../constants/LoginConstant';
+import { getOrgId, getHomeCode } from '../constants/LoginConstant';
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
 import * as Permissions from 'expo-permissions';
 import {guidGenerator} from '../constants/Base';
@@ -64,6 +64,7 @@ export default class AddChild extends React.Component{
         submitAlertMessage: '',
         photoUploadMessage: '',
         orgid: '',
+        homecode: '',
         isVisible: false,
         sucessDisplay: false,
         errorDisplay: false,
@@ -77,6 +78,9 @@ export default class AddChild extends React.Component{
         this.addChildConstants();
         let orgId = getOrgId();
         this.setState({orgid: orgId});
+        let homeCode = getHomeCode();
+        this.setState({homecode: homeCode});
+        console.log(this.state.homeCode);
     }
 
     
@@ -173,29 +177,11 @@ export default class AddChild extends React.Component{
         this.addChildConstants();
     }
 
-    changeprevstyle() {
-        if(this.state.currentPage == 1) {
-            return globalStyles.prevnextbuttonsgrey;
-        }
-        else {
-            return globalStyles.prevnextbuttons;
-        }
-    }
-
-    resetForm() {
-        this.setState({currentPage: 1});
-        this.setState({pageOne: true,pageTwo: false, pageThree: false});
+    resetdatesandradio() {
         this.setState({dob:'',doa:''});
         this.setState({image : null});
-    }
-
-    changenextstyle() {
-        if(this.state.currentPage == 3) {
-            return globalStyles.prevnextbuttonsgrey;
-        }
-        else {
-            return globalStyles.prevnextbuttons;
-        }
+        this.setState({gender: 2});
+        this.setState({age:''});
     }
 
     _submitAddChildForm(values) {
@@ -268,7 +254,7 @@ export default class AddChild extends React.Component{
                         else {
                                     this.state.photoUploadMessage = ".Error uploading image";
                         }
-                        this.setState({submitAlertMessage: 'Successfully added Child '+childName+' in '+this.state.orgid+ this.state.photoUploadMessage});
+                        this.setState({submitAlertMessage: 'Successfully added Child '+childName+' in '+getHomeCode()+ this.state.photoUploadMessage});
                         Alert.alert(
                                     'Added Child',
                                     this.state.submitAlertMessage,
@@ -282,7 +268,7 @@ export default class AddChild extends React.Component{
                     })
                     .catch((error)=> {
                         this.state.photoUploadMessage = ".Error uploading image";
-                        this.setState({submitAlertMessage: 'Successfully added Child '+childName+' in '+this.state.orgid+ this.state.photoUploadMessage});
+                        this.setState({submitAlertMessage: 'Successfully added Child '+childName+' in '+getHomeCode()+ this.state.photoUploadMessage});
                         Alert.alert(
                             'Added Child',
                             this.state.submitAlertMessage,
@@ -360,11 +346,29 @@ export default class AddChild extends React.Component{
                 validationSchema = {AddChildSchema}
                 onSubmit = {async (values, actions) => {
                     console.log("Submit method called here ");
-                    this.setState({showLoader: true,loaderIndex:10});
-                    let result = this._submitAddChildForm(values);
-                    let alertMessage = this.state.submitAlertMessage;
-                    console.log(result);
-                    actions.resetForm();
+                    let dob = moment(values.DOB);
+                    console.log(values.DOB);
+                    console.log(values.DOA);
+                    let doa = moment(values.DOA);
+                    console.log(doa.isBefore(values.DOB));
+                    if(doa.isBefore(values.DOB)) {
+                        Alert.alert(
+                            'To Add Child',
+                            'Date of Admission cannt be bofore Date of Birth',
+                            [
+                                { text: 'OK', onPress: () => {} },
+                            ],
+                            { cancelable: false },
+                        ); 
+                    }
+                    else {
+                        this.setState({showLoader: true,loaderIndex:10});
+                        let result = this._submitAddChildForm(values);
+                        let alertMessage = this.state.submitAlertMessage;
+                        console.log(result);
+                        this.resetdatesandradio();
+                        actions.resetForm();
+                    }
                 }}
                 >
                     {props => (
@@ -425,13 +429,13 @@ export default class AddChild extends React.Component{
                                 <RadioForm
                                         style={{marginLeft: 10}}
                                         radio_props={radio_props}
-                                        initial={this.state.gender}
                                         buttonSize={10}
                                         buttonOuterSize={20}
                                         buttonColor={'black'}
                                         buttonInnerColor={'black'}
                                         selectedButtonColor={'blue'}
                                         formHorizontal={false}
+                                        initial={this.state.gender}
                                         onPress={(value) => this._changeGender(value,props.handleChange('Gender'))}
                                 />
                                 <Text style = {globalStyles.errormsg}>{props.touched.Gender && props.errors.Gender}</Text>

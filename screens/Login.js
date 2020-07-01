@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {base_url} from '../constants/Base';
 import {globalStyles} from '../styles/global';
-import { setOrgId, getOrgId } from '../constants/LoginConstant'
+import { setOrgId, getOrgId, setHomeCode, getHomeCode } from '../constants/LoginConstant'
 
 export default class Login extends Component {
 
@@ -32,6 +32,10 @@ export default class Login extends Component {
 
     updateOrgId(id) {
         setOrgId(id);
+    }
+
+    updateHomeCode(code) {
+        setHomeCode(code);
     }
 
     _userLogin = () => {
@@ -60,6 +64,8 @@ export default class Login extends Component {
                 console.log(responseJson.orgId);
                 console.log(getOrgId());
                 this.updateOrgId(responseJson.orgId);
+                this.updateHomeCode(responseJson.homeCode);
+                console.log(getHomeCode());
                 console.log("=========");
                 this.props.onLoginPress();
             }
