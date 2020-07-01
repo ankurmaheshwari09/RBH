@@ -32,6 +32,7 @@ export default class ChildList extends Component {
             search: null,
             errorDisplay: false,
             refresh: true,
+            currentTime: null,
             modalItems: [
                 { key: 'Status', page: 'ChildStatus' },
                 { key: 'Health', page: 'Health' },
@@ -197,7 +198,7 @@ export default class ChildList extends Component {
         return (
             <View style={{ flexDirection: 'row' }}>
                 <SearchBar
-                    placeholder="Type Here..."
+                    placeholder="Search by Name,DOB,Status,Admdate"
                     lightTheme
                     round
                     onChangeText={text => this.searchFilterFunction(text)}
@@ -228,7 +229,7 @@ export default class ChildList extends Component {
         } else if (status == 'Closed') {
             return styles.pink;
         } else if (status == 'Absent') {
-            if (this.checkStatusDateExpired(childMap, status)) {
+            if (this.checkStatusDateExpired(childStatusDate, status)) {
                 this.state.data[index].style = styles.red;
                 return styles.red;
             } else {
@@ -329,15 +330,15 @@ export default class ChildList extends Component {
             <View style={styles.MainContainer} pointerEvents={this.state.loading ? 'none' : 'auto'} >
                 {this.state.loading ?
 
-                    <View style={{ position: 'absolute', top: "45%", right: 0, left: 0, zIndex: 10   }}>
+                    <View style={{ position: 'absolute', top: "45%", right: 0, left: 0, zIndex: 10 }}>
                         <View>
                             <ActivityIndicator animating={this.state.loading} size="large" color="black" />
                         </View>
                         <View>
                             <Text style={styles.loading}>Loading..... </Text>
                         </View>
-                        </View>
-                     : null}
+                    </View>
+                    : null}
 
                 {this.state.errorDisplay ?
                     <ErrorDisplay errorDisplay={this.state.errorDisplay} />
