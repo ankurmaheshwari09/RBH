@@ -32,6 +32,7 @@ export default class ChildList extends Component {
             search: null,
             errorDisplay: false,
             refresh: true,
+            currentTime: null,
             modalItems: [
                 { key: 'Status', page: 'ChildStatus' },
                 { key: 'Health', page: 'Health' },
@@ -80,6 +81,9 @@ export default class ChildList extends Component {
     async getData() {
         console.log('inside get');
         let orgId = getOrgId();
+        this.setState({
+            currentTime: new Date()
+        });
         const path = 'https://rest-service.azurewebsites.net/api/v1/childrenWithProfileStatus/' + orgId;
         console.log(path, 'lllll');
         this.setState({ search: null, loading: true });
@@ -93,21 +97,20 @@ export default class ChildList extends Component {
             if (const1.ok) {
                 //console.log('inside ok')
                 let response = await const1.json();
-                //console.log(response,'response-----');
-                response = this.setCounterForItemsInList(response);
+               //   console.log(response,'response-----');
+                let sortedResponse = response.sort((a, b) => a.firstName.localeCompare(b.firstName));
+                sortedResponse = this.setCounterForItemsInList(sortedResponse);
                 // console.log(response, 'ddddddddddd');
 
                 //await this.getAddedData(response);
                 //console.log(this.state.data,'final');
 
 
-                this.arrayholder = response;
-                this.setState({ data: response, loading: false });
+                this.arrayholder = sortedResponse;
+                this.setState({ data: sortedResponse, loading: false });
 
-                if (response.profileUpdateFlag == 'Y') {
-                    console.log('alert');
-                    alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
-                }
+                alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
+                
 
             } else {
 
@@ -120,6 +123,9 @@ export default class ChildList extends Component {
             this.setState({ loading: false, errorDisplay: true });
         }
         this.setState({ refresh: false });
+        //  console.log(this.state.currentTime.getSeconds());
+        console.log("no of seconds taken");
+        console.log(new Date().getSeconds() - this.state.currentTime.getSeconds());
     }
 
 
@@ -160,8 +166,7 @@ export default class ChildList extends Component {
         this.navigateToOtherScreen(screen);
     }
     searchFilterFunction = text => {
-
-        // console.log(text);
+       
         this.setState({ search: text });
         if ('' == text) {
             this.setState({
@@ -172,11 +177,16 @@ export default class ChildList extends Component {
             this.state.data = this.arrayholder.filter(function (item) {
                 let dateOfBirth = moment(item.dateOfBirth).format('DD/MM/YYYY');
                 let admissionDate = moment(item.admissionDate).format('DD/MM/YYYY');
+                let exitStatus = (item.childStatus === 'Closed') ? 'Exit' : '';
+                let fullName = item.firstName + ' ' + item.lastName;
+               
                 return (item.firstName.toLowerCase().includes(text.toLowerCase())
                     || item.lastName.toLowerCase().includes(text.toLowerCase())
                     || dateOfBirth.includes(text)
                     || admissionDate.includes(text)
-                    || item.childStatus.childStatus.includes(text));
+                    || item.childStatus.toLowerCase().includes(text.toLowerCase())
+                    || exitStatus.toLowerCase().includes(text.toLowerCase())
+                    || fullName.toLowerCase().includes(text.toLowerCase()));
             });
             if (this.state.data.length === 0) {
                 alert("Please refresh if new child is added");
@@ -187,7 +197,7 @@ export default class ChildList extends Component {
         return (
             <View style={{ flexDirection: 'row' }}>
                 <SearchBar
-                    placeholder="Type Here..."
+                    placeholder="Search by Name,DOB,Status,Admdate"
                     lightTheme
                     round
                     onChangeText={text => this.searchFilterFunction(text)}
@@ -201,12 +211,12 @@ export default class ChildList extends Component {
         );
     };
 
-    getStyles(status, childMap, childNo) {
+    getStyles(status, childStatusDate, childNo) {
 
         let index = this.state.data.findIndex((item) => item.childNo == childNo);
 
         if (status == 'Observation') {
-            if (this.checkStatusDateExpired(childMap, status)) {
+            if (this.checkStatusDateExpired(childStatusDate, status)) {
                 this.state.data[index].style = styles.red;
                 return styles.red;
             } else {
@@ -218,7 +228,7 @@ export default class ChildList extends Component {
         } else if (status == 'Closed') {
             return styles.pink;
         } else if (status == 'Absent') {
-            if (this.checkStatusDateExpired(childMap, status)) {
+            if (this.checkStatusDateExpired(childStatusDate, status)) {
                 this.state.data[index].style = styles.red;
                 return styles.red;
             } else {
@@ -231,20 +241,11 @@ export default class ChildList extends Component {
 
     }
 
-    checkStatusDateExpired(childMap, status) {
+    checkStatusDateExpired(childStatusDate, status) {
 
-        let date = childMap.map((item) => {
-            if (item.childStatusID.childStatus == status) {
+        const date = moment(childStatusDate).format('YYYY-MM-DD');
 
-                return moment(item.childStatusDate).format('YYYY-MM-DD');
-            } else {
-                return '';
-            }
-        });
-        date.sort();
-        date.reverse();
-
-        let diff = this.getDiffBetweenDates(new Date(date[0]), new Date());
+        let diff = this.getDiffBetweenDates(new Date(date), new Date());
         //   console.log(diff.toFixed(0));
         return diff >= 30 ? true : false;
     }
@@ -263,7 +264,7 @@ export default class ChildList extends Component {
     getModalItems(item) {
 
         let updatedList = this.state.modalItems;
-        if (item.childStatus.childStatus !== 'Closed') {
+        if (item.childStatus !== 'Closed') {
             updatedList = this.state.modalItems.filter(item => item.key !== 'Follow Up');
         }
         return updatedList;
@@ -272,7 +273,7 @@ export default class ChildList extends Component {
     getImageUri(picture, gender) {
 
         if (picture === null || picture === "") {
-            if (gender === 1) {
+            if (gender === 2) {
                 return require('../assets/girl.jpg');
             } else {
                 return require('../assets/boy.jpg');
@@ -349,7 +350,7 @@ export default class ChildList extends Component {
                             }}>
                                 <TouchableOpacity style={this.getContainerStyles(item)} onPress={(event) => { this.onPress(item) }}>
                                     {/*react-native-elements Card*/}
-                                    <Card style={this.getStyles(item.childStatus.childStatus, item.childMaps, item.childNo)} >
+                                    <Card style={this.getStyles(item.childStatus, item.childStatusDate, item.childNo)} >
 
                                         <View>
                                             <Image
@@ -373,13 +374,13 @@ export default class ChildList extends Component {
                                             </View>
                                             <View style={{ flexDirection: 'row' }}>
                                                 <Text style={styles.heading}>Status:</Text >
-                                                {item.childStatus.childStatus == 'Closed' ? <Text style={styles.cardContent}>Exit</Text> :
-                                                    <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>}
+                                                {item.childStatus == 'Closed' ? <Text style={styles.cardContent}>Exit</Text> :
+                                                    <Text style={styles.cardContent}>{item.childStatus}</Text>}
                                                 {item.style == styles.red ? < Ionicons name="md-warning" size={20} color="red" /> : null}
                                             </View>
                                             <View style={{ flexDirection: 'row' }}>
                                                 <Text style={styles.heading}>Profile Update: </Text >
-                                                {item.profileUpdateFlag == 'Y' ? <Text style={styles.cardContent}>Yes</Text> :
+                                                {item.profileStatusFlag === 'Y' ? <Text style={styles.cardContent}>Yes</Text> :
                                                     <Text style={styles.cardContent}>No</Text>}
                                             </View>
                                         </View>
