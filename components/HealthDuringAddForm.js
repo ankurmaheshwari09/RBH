@@ -104,7 +104,7 @@ export default class HealthDuringAdd extends React.Component{
                             showsVerticalScrollIndicator = {false}
                         >
                             <View>
-                                <Text style = {globalStyles.label}>Blood Group:</Text>
+                                <Text style = {globalStyles.label}>Blood Group: <Text style={{ color: "red" }}>*</Text></Text>
                                 <Picker style = {globalStyles.dropDown}
                                 onValueChange = {value => {
                                     props.setFieldValue('bloodGroup', value)
@@ -119,7 +119,7 @@ export default class HealthDuringAdd extends React.Component{
                                 </Picker>
                                 <Text style = {globalStyles.errormsg}>{props.touched.bloodGroup && props.errors.bloodGroup}</Text>
 
-                                <Text style = {globalStyles.label}>General Health:</Text>
+                                <Text style = {globalStyles.label}>General Health: <Text style={{ color: "red" }}>*</Text></Text>
                                 <Picker
                                 selectedValue = {props.values.generalHealth}
                                 style = {globalStyles.dropDown}
@@ -135,7 +135,7 @@ export default class HealthDuringAdd extends React.Component{
                                 </Picker>
                                 <Text style = {globalStyles.errormsg}>{props.touched.generalHealth && props.errors.generalHealth}</Text>
 
-                                <Text style = {globalStyles.label}>Height:</Text>
+                                <Text style = {globalStyles.label}>Height: <Text style={{ color: "red" }}>*</Text></Text>
                                 <TextInput style = {globalStyles.inputText}
                                 onChangeText = {props.handleChange('height')}
                                 value = {props.values.height}
@@ -143,7 +143,7 @@ export default class HealthDuringAdd extends React.Component{
                                 />
                                 <Text style = {globalStyles.errormsg}>{props.touched.height && props.errors.height}</Text>
 
-                                <Text style = {globalStyles.label}>Weight:</Text>
+                                <Text style = {globalStyles.label}>Weight: <Text style={{ color: "red" }}>*</Text></Text>
                                 <TextInput style = {globalStyles.inputText}
                                 onChangeText = {props.handleChange('weight')}
                                 value = {props.values.weight}

@@ -151,7 +151,7 @@ showVisitedDatepicker = () => {
    { props => (
                <ScrollView showsVerticalScrollIndicator = {false}>
                <View>
-                    <Text style={globalStyles.label}>Illness Start Date:</Text>
+                    <Text style={globalStyles.label}>Illness Start Date: <Text style={{ color: "red" }}>*</Text></Text>
                         <View style={globalStyles.dobView}>
                          <TextInput
                           style={globalStyles.inputform, globalStyles.dobValue}
@@ -175,7 +175,8 @@ showVisitedDatepicker = () => {
 
                          </View>
                          <Text style={globalStyles.errormsgform}> {props.touched.IllnessStartDate && props.errors.IllnessStartDate}</Text>
-                    <Text style={globalStyles.label}>Visited Date:</Text>
+
+                    <Text style={globalStyles.label}>Visited Date: <Text style={{ color: "red" }}>*</Text></Text>
                         <View style={globalStyles.dobView}>
                                            <TextInput
                                                style={globalStyles.inputform, globalStyles.dobValue}
@@ -201,19 +202,19 @@ showVisitedDatepicker = () => {
                                     <Text style={globalStyles.errormsgform}>{props.touched.VisitedDate && props.errors.VisitedDate}</Text>
 
 
-               <Text style={globalStyles.label}>Hospital Name:</Text>
+               <Text style={globalStyles.label}>Hospital Name: <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput style={globalStyles.inputText} multiline ={true} value={props.values.HospitalName} onChangeText ={props.handleChange("HospitalName")} onBlur ={props.handleBlur("HospitalName")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.HospitalName && props.errors.HospitalName}
                                         </Text>
 
-               <Text style={globalStyles.label}>Doctor Name:</Text>
+               <Text style={globalStyles.label}>Doctor Name: <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput style={globalStyles.inputText} value={props.values.DoctorName} onChangeText ={props.handleChange("DoctorName")} onBlur ={props.handleBlur("DoctorName")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.DoctorName && props.errors.DoctorName}
                                         </Text>
 
-               <Text style={globalStyles.label}>Diseases Diagnosed:</Text>
+               <Text style={globalStyles.label}>Diseases Diagnosed: <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput style={globalStyles.inputText} multiline ={true} value={props.values.DiseasesDiagnosed} onChangeText ={props.handleChange("DiseasesDiagnosed")} onBlur ={props.handleBlur("DiseasesDiagnosed")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.DiseasesDiagnosed && props.errors.DiseasesDiagnosed}
@@ -225,7 +226,7 @@ showVisitedDatepicker = () => {
                                         {props.touched.FurtherTests && props.errors.FurtherTests}
                                         </Text>
 
-               <Text style={globalStyles.label}>Total Medical Cost(Rs):</Text>
+               <Text style={globalStyles.label}>Total Medical Cost(Rs): <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput style={globalStyles.inputText} value={props.values.TotalMedicalCost} onChangeText ={props.handleChange("TotalMedicalCost")} onBlur ={props.handleBlur("TotalMedicalCost")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.TotalMedicalCost && props.errors.TotalMedicalCost}

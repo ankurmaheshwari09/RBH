@@ -66,8 +66,7 @@ _pickAssessmentDate = (event, date, handleChange) => {
                 "height":values.Height,
                 "weight":values.Weight,
                 "generalHealth":values.GeneralHealth,
-                "comments":values.Comments,
-                "healthStatus": values.HealthStatus
+                "comments":values.Comments
         });
         let result = {};
         fetch(base_url+"/child-health", {
@@ -106,12 +105,11 @@ _pickAssessmentDate = (event, date, handleChange) => {
                         Height: '',
                         Weight: '',
                         GeneralHealth: '',
-                        Comments: '',
+                        Comments: ''
 //                        CreatedBy: 'admin',
 //                        ModifiedBy: 'admin',
 //                        CreatedDate: date + '/' + month + '/' + year,
 //                        ModifiedDate: date + '/' + month + '/' + year,
-                        HealthStatus: '1'
                     }
                 }
                 validationSchema = {ChildGrowthSchema}
@@ -128,7 +126,7 @@ _pickAssessmentDate = (event, date, handleChange) => {
    {props => (
                <ScrollView showsVerticalScrollIndicator = {false}>
                <View >
-               <Text style = {globalStyles.label}>Assessment Date:</Text>
+               <Text style = {globalStyles.label}>Assessment Date: <Text style={{ color: "red" }}>*</Text></Text>
                     <View style={globalStyles.dobView}>
                                              <TextInput
                                               style={globalStyles.inputText, globalStyles.dobValue}
@@ -153,15 +151,17 @@ _pickAssessmentDate = (event, date, handleChange) => {
                     </View>
                     <Text style={globalStyles.errormsgform}>{props.touched.AssessmentDate && props.errors.AssessmentDate}</Text>
 
-               <Text style = {globalStyles.label}>Height(Cm):</Text>
+               <Text style = {globalStyles.label}>Height(Cm): <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput  style={globalStyles.inputText} value = {props.values.Height} onChangeText={props.handleChange("Height")} onBlur={props.handleBlur("Height")}></TextInput>
                     <Text style={globalStyles.errormsgform}>{props.touched.Height && props.errors.Height}</Text>
-               <Text style = {globalStyles.label}>Weight(Kg):</Text>
+
+               <Text style = {globalStyles.label}>Weight(Kg): <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput style={globalStyles.inputText}  value = {props.values.Weight} onChangeText={props.handleChange("Weight")} onBlur={props.handleBlur("Weight")}></TextInput>
                     <Text style={globalStyles.errormsgform}>
                     {props.touched.Weight && props.errors.Weight}
                     </Text>
-               <Text style = {globalStyles.label}>General Health:</Text>
+
+               <Text style = {globalStyles.label}>General Health: <Text style={{ color: "red" }}>*</Text></Text>
                    <Picker
                     selectedValue = {props.values.GeneralHealth}
                     onValueChange = {value => {
@@ -182,12 +182,6 @@ _pickAssessmentDate = (event, date, handleChange) => {
                     <Text style={globalStyles.errormsgform}>
                     {props.touched.Comments && props.errors.Comments}
                     </Text>
-
-               <Text style = {globalStyles.label}>Health Status:</Text>
-                     <TextInput  style={globalStyles.inputText} value = {props.values.HealthStatus}  onBlur={props.handleBlur("HealthStatus")}></TextInput>
-                      <Text style={globalStyles.errormsgform}>
-                      {props.touched.HealthStatus && props.errors.HealthStatus}
-                      </Text>
                <Button  title="Submit" onPress={props.handleSubmit} />
                </View>
                </ScrollView>
