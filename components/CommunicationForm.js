@@ -330,20 +330,20 @@ export default class CommunicationForm extends React.Component {
     }
 }
 
- //const Styles = StyleSheet.create({
-    //     MainContainer: {
-    //         justifyContent: 'space-between',
-    //         flex: 1,
-    //     },
-    //     modalContainer: {
-    //         flex: 1,
-    //         justifyContent: 'center',
-    //         alignItems: 'center',
-    //         alignSelf: 'center',
-    //         backgroundColor: 'white',
-    //         width: Dimensions.get('window').width / 2 + 50,
-    //         maxHeight: Dimensions.get('window').height / 4,
-    //         top: 150,
-    //         borderRadius: 30
-    //     }
- //});
+// const Styles = StyleSheet.create({
+//     MainContainer: {
+//         justifyContent: 'space-between',
+//         flex: 1,
+//     },
+//     modalContainer: {
+//         flex: 1,
+//         justifyContent: 'center',
+//         alignItems: 'center',
+//         alignSelf: 'center',
+//         backgroundColor: 'white',
+//         width: Dimensions.get('window').width / 2 + 50,
+//         maxHeight: Dimensions.get('window').height / 4,
+//         top: 150,
+//         borderRadius: 30
+//     }
+// });
