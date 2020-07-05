@@ -1,18 +1,18 @@
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation'
 import { React } from 'react';
-import FollowUpScreen from '../screens/FollowUpScreen';
+import EducationScreen from '../components/EducationSegInfo';
 
 const screens = {
-    FollowUpBy: {
-        screen: FollowUpScreen,
+    ChildEducation: {
+        screen: EducationScreen,
 
     }
 }
 
-const FollowUpStack = createStackNavigator(screens, {
+const StatusStack = createStackNavigator(screens, {
     defaultNavigationOptions: {
-        title: 'Add Followups',
+        title: 'Child Education',
         headerStyle: {
             height: 50,
         },
@@ -20,4 +20,4 @@ const FollowUpStack = createStackNavigator(screens, {
     }
 })
 
-export default createAppContainer(FollowUpStack)
+export default createAppContainer(StatusStack)

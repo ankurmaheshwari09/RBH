@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import { AuthSession } from 'expo';
 
 export const globalStyles = StyleSheet.create({
     maincontainer: {
@@ -28,8 +29,19 @@ export const globalStyles = StyleSheet.create({
         padding: 10,
         fontSize: 18,
         borderRadius: 6,
+       
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: 'black'
+    },
+    disabledBox: {
+        padding: 10,
+        fontSize: 18,
+        borderRadius: 6,
         backgroundColor: '#fafafa',
-        marginBottom: 1
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: 'black'
     },
     inputform: {
         borderWidth: 3,
@@ -42,7 +54,6 @@ export const globalStyles = StyleSheet.create({
     },
     inputText: {
         borderWidth: 1,
-        // borderColor: '#ddd',
         padding: 10,
         marginBottom: 10,
         fontSize: 18,
@@ -59,7 +70,17 @@ export const globalStyles = StyleSheet.create({
     //     marginBottom: 1,
     //     flexWrap: 'wrap'
     // },
+    PageHeaderView: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    PageHeader: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
     dropDown: {
+        marginTop: -7,
         borderColor: 'black',
         borderWidth: 1,
     },
@@ -155,7 +176,14 @@ export const globalStyles = StyleSheet.create({
         backgroundColor: 'black',
         color: 'black',
     },
+    ModelBtn: {
+        padding: 30,
+        backgroundColor: 'black',
+        color: 'black',
+        width: 20
+    },
     homeScreenText: {
+        top: '30%',
         padding: 30,
         fontSize: 15,
     },
@@ -198,9 +226,24 @@ export const globalStyles = StyleSheet.create({
     label: {
         fontSize: 14,
         paddingTop: 5,
+        paddingBottom: 2,
+        paddingLeft: 5,
         fontWeight: 'bold',
     },
+    backgroundlogoimageview: {
+        position: 'absolute', top:"20%",right: 0, left: 0, zIndex: -2,
+    },
+    backgroundlogoimage: {
+        opacity: 0.2,
+        marginTop: '30%',
+        marginLeft: '29%'
+    },
+    uploadpicbutton: {
+        width: '50%',
+        marginBottom: 5,
+    },
     topView: {
+        flex: 4,
         paddingTop: 5,
     },
     uploadImage: {
@@ -258,6 +301,7 @@ export const globalStyles = StyleSheet.create({
         borderRadius: 6,
         marginBottom: 5,
         fontSize: 14,
+       
     },
     Header: {
         padding: 5,

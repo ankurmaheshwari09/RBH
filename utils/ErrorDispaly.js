@@ -1,6 +1,6 @@
 import React from 'react';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { View, StyleSheet,Text } from 'react-native';
+import { View, StyleSheet, Text, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { globalStyles } from '../styles/global';
 
@@ -22,6 +22,6 @@ const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         alignSelf: 'center',
-        top: 50
+        top: Dimensions.get('window').height / 20
     }
 });

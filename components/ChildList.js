@@ -1,21 +1,24 @@
 import React, { Component } from 'react'
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, ToolbarAndroid, Button, FlatList, Image, Dimensions, PixelRatio } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert, ToolbarAndroid, Button, FlatList, Image, Dimensions, PixelRatio, BackHandler } from 'react-native'
 import { Card, CardImage, CardContent } from 'react-native-cards'
 import Modal from 'react-native-modal';
-import { SearchBar } from 'react-native-elements';
+import { SearchBar, Overlay } from 'react-native-elements';
 import moment from 'moment';
-import Spinner from 'react-native-loading-spinner-overlay';
-import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { getOrgId } from '../constants/LoginConstant';
 import { Ionicons } from '@expo/vector-icons';
 import { base_url, getDataAsync } from '../constants/Base';
-import ScalableText from 'react-native-text';
+import { StackActions } from '@react-navigation/native';
+import { Router, Scene, Actions } from 'react-native-router-flux';
+import { NavigationEvents } from 'react-navigation';
+import { ActivityIndicator } from 'react-native';
+import { globalStyles } from '../styles/global';
 
 export default class ChildList extends Component {
     constructor(props) {
         super(props);
         console.log(PixelRatio.get(), 'ffffffffff');
+        console.log(Dimensions.get('window').width / 5, 'lllllp');
         this.state = {
             dataSource: {},
             isVisible: false,
@@ -28,15 +31,17 @@ export default class ChildList extends Component {
             error: null,
             search: null,
             errorDisplay: false,
+            refresh: true,
+            currentTime: null,
             modalItems: [
                 { key: 'Status', page: 'ChildStatus' },
                 { key: 'Health', page: 'Health' },
                 { key: 'Education', page: 'Education' },
-                { key: 'Childresult', page: 'childresult' },
+                { key: 'Result', page: 'ChildResult' },
                 { key: 'Family', page: 'Family' },
                 { key: 'Communication', page: 'Communication' },
                 { key: 'General Info', page: 'GeneralInfo' },
-                { key: 'View Profile', page: 'Profile' },
+                { key: 'Update Profile Description', page: 'Profile' },
                 { key: 'Committee', page: 'Committee' },
                 { key: 'Follow Up', page: 'FollowUpBy' },
             ],
@@ -53,13 +58,16 @@ export default class ChildList extends Component {
         this.getData = this.getData.bind(this);
         this.getModalItems = this.getModalItems.bind(this);
         this.checkStatusDateExpired = this.checkStatusDateExpired.bind(this);
-        this.getAddedData = this.getAddedData.bind(this);
-      //  this.setStyles = this.setStyles.bind(this);
+        //this.getAddedData = this.getAddedData.bind(this);
+        this.reset = this.reset.bind(this);
+        //  this.setStyles = this.setStyles.bind(this);
         // this.show =this.show.bind(this);
     }
-    async componentDidMount() {
+    /*async componentDidMount() {
+      
         await this.getData();
-    }
+        
+    }*/
 
 
     componentWillUnmount() {
@@ -68,60 +76,16 @@ export default class ChildList extends Component {
             search: null,
             errorDisplay: false
         });
+
     }
 
-    // This function adds a new property to object
-    async getAddedData(data) {
-
-        let result = data.map(async childData => {
-            let res = await fetch(base_url + "/child-profile-all-description/" + childData.childNo, {
-                method: 'GET',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                }
-            })
-            let responseJson = await res.json();
-            if (res.ok) {
-
-                if (responseJson == null) {
-                    childData.changeProfile = true;
-                    this.setState({ checkProfileAlert: true });
-                }
-                else {
-                    let date_modified = responseJson[0].modified_ON;
-                    let dm = moment(date_modified).format("YYYY-MM-DD");
-                    let dm1 = moment(new Date()).format("YYYY-MM-DD");
-                    let a = new Date(dm);
-                    let b = new Date(dm1);
-                    let diffInDate = b - a;
-                    let daysTillToday = Math.floor(diffInDate / (1000 * 60 * 60 * 24));
-                  //  console.log(daysTillToday, childData.childNo, 'daysTillToday');
-                    if (daysTillToday >= 365) {
-                        childData.changeProfile = true;
-                        this.setState({ checkProfileAlert: true });
-                    } else {
-                        this.setState({ checkProfileAlert: false });
-                        childData.changeProfile = false;
-                    }
-                }
-            }
-            else {
-                console.log(res.status);
-                throw Error(res.status);
-            }
-            return childData;
-        });
-
-        let final_result = await Promise.all(result)
-        //console.log(final_result,'finished adding data');
-        this.setState({ data: final_result, loading: false });
-
-    };
-    async getData() {
+     async getData() {
         console.log('inside get');
         let orgId = getOrgId();
-        const path = 'https://rest-service.azurewebsites.net/api/v1/children/' + orgId;
+        this.setState({
+            currentTime: new Date()
+        });
+        const path = 'https://rest-service.azurewebsites.net/api/v1/childrenWithProfileStatus/' + orgId;
         console.log(path, 'lllll');
         this.setState({ search: null, loading: true });
         try {
@@ -131,29 +95,40 @@ export default class ChildList extends Component {
                     'Content-Type': 'application/json'
                 }
             })
-            let response = await const1.json();
-            response = this.setCounterForItemsInList(response);
-           // console.log(response, 'ddddddddddd');
             if (const1.ok) {
-                await this.getAddedData(response);
+                //console.log('inside ok')
+                let response = await const1.json();
+               //   console.log(response,'response-----');
+                let sortedResponse = response.sort((a, b) => a.firstName.localeCompare(b.firstName));
+                sortedResponse = this.setCounterForItemsInList(sortedResponse);
+                // console.log(response, 'ddddddddddd');
+
+                //await this.getAddedData(response);
                 //console.log(this.state.data,'final');
-                
-                if (this.state.checkProfileAlert) {
-                    console.log('alert');
-                    alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
-                }
-                this.arrayholder = response;
+
+
+                this.arrayholder = sortedResponse;
+                this.setState({ data: sortedResponse, loading: false });
+
+                alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
+
+
             } else {
-                console.log(response.status); 
-                throw Error(response.status);
+
+                // this.setState({ loading: false, errorDisplay: true });
+                throw Error(const1.status);
             }
         }
         catch (error) {
             console.log(error, 'error in getting data');
-          //  this.setState({ loading: false, errorDisplay: true });
+            this.setState({ loading: false, errorDisplay: true });
         }
+        this.setState({ refresh: false });
+        //  console.log(this.state.currentTime.getSeconds());
+        console.log("no of seconds taken");
+        console.log(new Date().getSeconds() - this.state.currentTime.getSeconds());
     }
-    
+
 
     setCounterForItemsInList(items) {
         let count = 0;
@@ -163,7 +138,7 @@ export default class ChildList extends Component {
         });
         return items;
     }
-    
+
     onPress(item) {
         let list = this.getModalItems(item);
         this.setState({
@@ -173,8 +148,11 @@ export default class ChildList extends Component {
         });
 
     }
+
+
     navigateToOtherScreen(screen) {
         // console.log(this.state.navItems);
+        // this.setState({ refresh: true });
         this.props.navigation.navigate(screen, { child: this.state.selectedChild, refreshChildList: this.getData.bind(this) });
     }
     closeModal() {
@@ -190,7 +168,6 @@ export default class ChildList extends Component {
     }
     searchFilterFunction = text => {
 
-        // console.log(text);
         this.setState({ search: text });
         if ('' == text) {
             this.setState({
@@ -201,14 +178,19 @@ export default class ChildList extends Component {
             this.state.data = this.arrayholder.filter(function (item) {
                 let dateOfBirth = moment(item.dateOfBirth).format('DD/MM/YYYY');
                 let admissionDate = moment(item.admissionDate).format('DD/MM/YYYY');
+                let exitStatus = (item.childStatus === 'Closed') ? 'Exit' : '';
+                let fullName = item.firstName + ' ' + item.lastName;
+
                 return (item.firstName.toLowerCase().includes(text.toLowerCase())
                     || item.lastName.toLowerCase().includes(text.toLowerCase())
                     || dateOfBirth.includes(text)
                     || admissionDate.includes(text)
-                    || item.childStatus.childStatus.includes(text));
+                    || item.childStatus.toLowerCase().includes(text.toLowerCase())
+                    || exitStatus.toLowerCase().includes(text.toLowerCase())
+                    || fullName.toLowerCase().includes(text.toLowerCase()));
             });
             if (this.state.data.length === 0) {
-                alert("Please Click refresh button if youo cannot find the child which was added");
+                alert("Please refresh if new child is added");
             }
         }
     }
@@ -216,7 +198,7 @@ export default class ChildList extends Component {
         return (
             <View style={{ flexDirection: 'row' }}>
                 <SearchBar
-                    placeholder="Type Here..."
+                    placeholder="Search by Name,DOB,Status,Admdate"
                     lightTheme
                     round
                     onChangeText={text => this.searchFilterFunction(text)}
@@ -230,12 +212,12 @@ export default class ChildList extends Component {
         );
     };
 
-    getStyles(status, childMap, childNo) {
-       
+    getStyles(status, childStatusDate, childNo) {
+
         let index = this.state.data.findIndex((item) => item.childNo == childNo);
-        
+
         if (status == 'Observation') {
-            if (this.checkStatusDateExpired(childMap, status)) {
+            if (this.checkStatusDateExpired(childStatusDate, status)) {
                 this.state.data[index].style = styles.red;
                 return styles.red;
             } else {
@@ -247,7 +229,7 @@ export default class ChildList extends Component {
         } else if (status == 'Closed') {
             return styles.pink;
         } else if (status == 'Absent') {
-            if (this.checkStatusDateExpired(childMap, status)) {
+            if (this.checkStatusDateExpired(childStatusDate, status)) {
                 this.state.data[index].style = styles.red;
                 return styles.red;
             } else {
@@ -256,52 +238,43 @@ export default class ChildList extends Component {
             }
         }
 
-        
-      
+
+
     }
 
-    checkStatusDateExpired(childMap, status) {
-        
-        let date = childMap.map((item) => {
-            if (item.childStatusID.childStatus == status) {
-                
-                return moment(item.childStatusDate).format('YYYY-MM-DD');
-            } else {
-                return '';
-            }
-        });
-        date.sort();
-        date.reverse();
-        
-        let diff = this.getDiffBetweenDates(new Date(date[0]), new Date());
-     //   console.log(diff.toFixed(0));
-       return diff >= 30 ? true : false;
+    checkStatusDateExpired(childStatusDate, status) {
+
+        const date = moment(childStatusDate).format('YYYY-MM-DD');
+
+        let diff = this.getDiffBetweenDates(new Date(date), new Date());
+        //   console.log(diff.toFixed(0));
+        return diff >= 30 ? true : false;
     }
     getDiffBetweenDates(date1, date2) {
-       
+
         // To calculate the time difference of two dates 
         var Difference_In_Time = date2.getTime() - date1.getTime();
 
         // To calculate the no. of days between two dates 
-        var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24); 
+        var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
 
-      //  console.log(Difference_In_Days);
+        //  console.log(Difference_In_Days);
 
         return Difference_In_Days;
     }
     getModalItems(item) {
-        
+
         let updatedList = this.state.modalItems;
-        if (item.childStatus.childStatus !== 'Closed') {
+        if (item.childStatus !== 'Closed') {
             updatedList = this.state.modalItems.filter(item => item.key !== 'Follow Up');
         }
         return updatedList;
     }
 
-    getImageUri(picture,gender) {
-       
+    getImageUri(picture, gender) {
+
         if (picture === null || picture === "") {
-            if (gender === 1) {
+            if (gender === 2) {
                 return require('../assets/girl.jpg');
             } else {
                 return require('../assets/boy.jpg');
@@ -311,7 +284,7 @@ export default class ChildList extends Component {
         }
     }
     getImageStyle(style) {
-       // console.log(style.backgroundColor,'......................');
+        // console.log(style.backgroundColor,'......................');
         if (style === styles.red) {
             return styles.imageWithBorder;
         } else {
@@ -321,7 +294,7 @@ export default class ChildList extends Component {
 
     getContainerStyles(item) {
         if (item.counter % 2 === 0) {
-            return styles.childOnLeft ;
+            return styles.childOnLeft;
         } else {
             return styles.childOnRight;
         }
@@ -330,6 +303,8 @@ export default class ChildList extends Component {
     async refresh() {
         await this.getData();
     }
+
+
 
     calculateCharLength(firstName, lastName) {
         let firstNameLen = firstName.length;
@@ -342,11 +317,29 @@ export default class ChildList extends Component {
             return true;
         }
     }
+
+    async reset() {
+        if (this.state.refresh) {
+            await this.getData();
+        }
+
+    }
     render() {
 
         return (
-            <View style={styles.MainContainer}>
-                <LoadingDisplay loading={this.state.loading} />
+            <View style={styles.MainContainer} pointerEvents={this.state.loading ? 'none' : 'auto'} >
+                {this.state.loading ?
+
+                    <View style={{ position: 'absolute', top: "45%", right: 0, left: 0, zIndex: 10 }}>
+                        <View>
+                            <ActivityIndicator animating={this.state.loading} size="large" color="black" />
+                        </View>
+                        <View>
+                            <Text style={styles.loading}>Loading..... </Text>
+                        </View>
+                    </View>
+                    : null}
+
                 {this.state.errorDisplay ?
                     <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                     :
@@ -358,15 +351,15 @@ export default class ChildList extends Component {
                             }}>
                                 <TouchableOpacity style={this.getContainerStyles(item)} onPress={(event) => { this.onPress(item) }}>
                                     {/*react-native-elements Card*/}
-                                    <Card style={ this.getStyles(item.childStatus.childStatus, item.childMaps, item.childNo)} >
-                                    
+                                    <Card style={this.getStyles(item.childStatus, item.childStatusDate, item.childNo)} >
+
                                         <View>
                                             <Image
                                                 source={this.getImageUri(item.picture, item.gender)}
                                                 style={this.getImageStyle(item.style)}
                                             />
                                         </View>
-                                        
+
                                         <View style={styles.paragraph}>
                                             <View style={{ flexDirection: 'row' }}>
                                                 <Text style={styles.heading}>Name:</Text >
@@ -382,17 +375,17 @@ export default class ChildList extends Component {
                                             </View>
                                             <View style={{ flexDirection: 'row' }}>
                                                 <Text style={styles.heading}>Status:</Text >
-                                                {item.childStatus.childStatus == 'Closed' ? <Text style={styles.cardContent}>Exit</Text> :
-                                                    <Text style={styles.cardContent}>{item.childStatus.childStatus}</Text>}
+                                                {item.childStatus == 'Closed' ? <Text style={styles.cardContent}>Exit</Text> :
+                                                    <Text style={styles.cardContent}>{item.childStatus}</Text>}
                                                 {item.style == styles.red ? < Ionicons name="md-warning" size={20} color="red" /> : null}
                                             </View>
                                             <View style={{ flexDirection: 'row' }}>
                                                 <Text style={styles.heading}>Profile Update: </Text >
-                                                {item.changeProfile ? <Text style={styles.cardContent}>Yes</Text> :
+                                                {item.profileStatusFlag === 'Y' ? <Text style={styles.cardContent}>Yes</Text> :
                                                     <Text style={styles.cardContent}>No</Text>}
                                             </View>
-                                            </View>
-                                        
+                                        </View>
+
                                     </Card>
                                 </TouchableOpacity>
                             </View>
@@ -404,18 +397,24 @@ export default class ChildList extends Component {
                         ListHeaderComponent={this.renderHeader}
                     />
                 }
-                <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={styles.MainContainer}>
-                        <FlatList data={this.state.modalItemsForCurrentItem} renderItem={({ item }) => (
 
-                            < TouchableOpacity style={styles.styleContents} onPress={(event) => this.onPressForList(item.page)}>
-                                <Text style={styles.item}>{item.key}</Text>
-                            </TouchableOpacity>
+                <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                    <View style={styles.optionsContainer}>
+                        <FlatList data={this.state.modalItemsForCurrentItem} renderItem={({ item }) => (
+                            <View style={{
+                                flex: 1, flexDirection: 'column', justifyContent: 'space-evenly'
+                            }}>
+
+                                <TouchableOpacity style={styles.styleContents} onPress={(event) => this.onPressForList(item.page)}>
+                                    <Text style={styles.item}> {item.key}</Text>
+                                </TouchableOpacity>
+                            </View>
 
                         )}
                         />
                     </View>
                 </Modal>
+                <NavigationEvents onDidFocus={() => this.reset()} />
             </View>
         );
     }
@@ -426,6 +425,11 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         flex: 1,
         paddingTop: 10,
+
+    },
+    optionsContainer: {
+        justifyContent: 'space-evenly',
+        flex: 1,
 
     },
     image: {
@@ -441,11 +445,11 @@ const styles = StyleSheet.create({
     paragraph: {
         padding: 15,
         textAlign: 'left',
-       
+
     },
     container: {
-          width : 50,
-       // height: 300,
+        width: 50,
+        // height: 300,
         /*  marginLeft : 10,
           marginTop: 10,
           marginRight: 10,*/
@@ -463,16 +467,17 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         backgroundColor: '#696969',
-        width: Dimensions.get('window').width / 2,
+        width: Dimensions.get('window').width / 2 + 50,
         maxHeight: Dimensions.get('window').height / 2,
-        margin: 90,
-
+        marginTop: Dimensions.get('window').height / 5,
+        marginLeft: Dimensions.get('window').width / 5
     },
     item: {
-        padding: 10,
+        padding: 5,
         fontSize: 18,
-        height: 44,
-        color: 'white'
+        //  height: 44,
+        color: 'white',
+        flexWrap: 'wrap'
 
     },
     styleContents: {
@@ -484,7 +489,17 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 15,
         fontFamily: 'sans-serif-medium',
-        // fontWeight: 'bold',
+
+    },
+    loading: {
+        color: 'black',
+        fontSize: 20,
+        textAlign: 'center',
+        justifyContent: 'center',
+        position: 'absolute',
+        top: '70%',
+        left: Dimensions.get('window').width / 3+15
+
     },
     cardContent: {
         color: 'black',

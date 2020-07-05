@@ -54,7 +54,7 @@ export default class EditChild extends React.Component{
         errorDisplay: false,
         loading: false,
         isVisible: false,
-        photoUploadMessage: ''
+        loadChildList: false
     };
 
     async _pickImage (handleChange) {
@@ -135,6 +135,13 @@ export default class EditChild extends React.Component{
         this.setState({orgid: orgId});
     }
 
+    componentWillUnmount() {
+        if (this.state.loadChildList) {
+            const { params } = this.props.navigation.state;
+            params.refreshChildList();
+        }
+    }
+
     uploadImage(child){
         let photoUrl = base_url+"/upload-image/"+child.childNo;
         console.log(photoUrl);
@@ -145,39 +152,52 @@ export default class EditChild extends React.Component{
         else {
             imageUri = this.state.image;
         }
-        
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "multipart/form-data;boundary=----WebKitFormBoundaryyEmKNDsBKjB7QEqu");
-        var formdata = new FormData();
-        formdata.append("file", {
-            uri: imageUri,
-            name: `${guidGenerator()}.jpg`,
-            type: `image/jpg`
-          });
-        var requestOptions = {
-        method: 'PUT',
-        body: formdata,
-        headers: myHeaders,
-        };
+        if(imageUri !== '')
+        {
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "multipart/form-data;boundary=----WebKitFormBoundaryyEmKNDsBKjB7QEqu");
+            var formdata = new FormData();
+            formdata.append("file", {
+                uri: imageUri,
+                name: `${guidGenerator()}.jpg`,
+                type: `image/jpg`
+            });
+            var requestOptions = {
+            method: 'PUT',
+            body: formdata,
+            headers: myHeaders,
+            };
 
-        fetch(photoUrl, requestOptions)
-        .then((response) => {
-            console.log(response.status)
-            if(response.status == 200){
+            fetch(photoUrl, requestOptions)
+            .then((response) => {
+                console.log(response.status)
                 this.setState({ loading: false, isVisible: true });
-                this.setState({successDisplay: true})    
-            }
-            else{
+                if(response.status == 200){
+                    this.setState({successDisplay: true})   
+                }
+                else{
+                    this.setState({ errorDisplay: true });
+                    throw Error(response.status);
+                }
+            }).catch(error => {
                 this.setState({ loading: false, isVisible: true });
                 this.setState({ errorDisplay: true });
-                throw Error(response.status);
-            }
-        }).catch(error => {
+            });
+        }
+        else
+        {
             this.setState({ loading: false, isVisible: true });
-            this.setState({ errorDisplay: true });
-        });
+            this.setState({successDisplay: true}) 
+        }
     }
 
+    handleLoadChildList(child){
+        let actualChild = this.props.childData
+        if(actualChild.firstName !== child.FirstName || actualChild.lastName !== child.LastName
+            || actualChild.dateOfBirth !== child.DOB || actualChild.admissionDate !== child.DOA){
+                this.setState({loadChildList: true})
+        }
+    }
     _submitEditChildForm(values) {
         this.setState({ loading: true });
         let child = this.props.childData
@@ -201,6 +221,7 @@ export default class EditChild extends React.Component{
             if(response.ok){
                 response.json().then((res) => {
                     this.uploadImage(child)
+                    this.handleLoadChildList(values)
                 }).catch(error => {
                     this.setState({ loading: false, isVisible: true });
                     this.setState({ errorDisplay: true });
@@ -220,7 +241,7 @@ export default class EditChild extends React.Component{
     render() {
         
         return (
-            <View style = {globalStyles.container}>
+            <View style = {globalStyles.scrollContainer}>
                 
 
                 <Formik
@@ -260,17 +281,16 @@ export default class EditChild extends React.Component{
                             
                             <View>
 
-                                <Text style = {globalStyles.text}>Child Image:</Text>
+                                <Text style = {globalStyles.label}>Child Image:</Text>
                                 {
                                     <Image source={{ uri: this.state.image }} style={globalStyles.uploadImage} />
                                 }
-                                <Text style = {globalStyles.errormsg}>{props.touched.ChildPhoto && props.errors.ChildPhoto}</Text>
                                 <Button title="Upload Photo" onPress={() => this._pickImage(props.handleChange('ChildPhoto'))} />
-
+                                <Text style = {globalStyles.errormsg}>{props.touched.ChildPhoto && props.errors.ChildPhoto}</Text>
                         
 
                                 {/* First Name */}
-                                <Text style = {globalStyles.text}>FirstName:</Text>
+                                <Text style = {globalStyles.label}>First Name:</Text>
                                 <TextInput
                                     style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('FirstName')}
@@ -279,7 +299,7 @@ export default class EditChild extends React.Component{
                                 <Text style = {globalStyles.errormsg}>{props.touched.FirstName && props.errors.FirstName}</Text>
 
                                 {/* Last Name */}
-                                <Text style = {globalStyles.text}>LastName:</Text>
+                                <Text style = {globalStyles.label}>Last Name:</Text>
                                 <TextInput
                                     style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('LastName')}
@@ -288,20 +308,20 @@ export default class EditChild extends React.Component{
                                 <Text style = {globalStyles.errormsg}>{props.touched.LastName && props.errors.LastName}</Text>
 
                                 {/* Gender */}
-                                <Text style = {globalStyles.text}>Gender:</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.Gender && props.errors.Gender}</Text>
+                                <Text style = {globalStyles.label}>Gender:</Text>
                                 <Picker
                                     selectedValue = {props.values.Gender}
                                     onValueChange = {props.handleChange('Gender')}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Gender' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Gender' value = ''/>
                                     <Picker.Item label='Male' value = '1'/>
                                     <Picker.Item label='Female' value = '2'/>
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.Gender && props.errors.Gender}</Text>
 
                                 {/* DOB */}
-                                <Text style = {globalStyles.text}>Date Of Birth:</Text>
+                                <Text style = {globalStyles.label}>Date Of Birth:</Text>
                                 <View style={globalStyles.dobView}>
                                     <TextInput
                                         style = {globalStyles.inputText, globalStyles.dobValue}
@@ -323,13 +343,11 @@ export default class EditChild extends React.Component{
                                             onChange= {(e,date) => this._pickDob(e,date,props.handleChange('DOB'))} 
                                         />
                                     }
-                                    <Text style = {globalStyles.errormsg}>{props.touched.DOB && props.errors.DOB}</Text>
                                 </View>
-                                
+                                <Text style = {globalStyles.errormsg}>{props.touched.DOB && props.errors.DOB}</Text>
 
                                 {/* Religion */}
-                                <Text style = {globalStyles.text}>Religion:</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.Religion && props.errors.Religion}</Text>
+                                <Text style = {globalStyles.label}>Religion:</Text>
                                 <Picker
                                     selectedValue = {props.values.Religion}
                                     onValueChange = {value => {
@@ -337,17 +355,17 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Religion' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Religion' value = ''/>
                                     { 
                                         global.religions.map((item) => {
                                             return <Picker.Item key = {item.religionId} label = {item.religion} value = {item.religionId}/>
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.Religion && props.errors.Religion}</Text>
 
                                 {/* Community */}
-                                <Text style = {globalStyles.text}>Community:</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.Community && props.errors.Community}</Text>
+                                <Text style = {globalStyles.label}>Community:</Text>
                                 <Picker
                                     selectedValue = {props.values.Community}
                                     onValueChange = {value => {
@@ -355,17 +373,17 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Community' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Community' value = ''/>
                                     {
                                         global.communities.map((item) => {
                                             return <Picker.Item key = {item.communityId} label = {item.community} value = {item.communityId}/>
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.Community && props.errors.Community}</Text>
 
                                 {/* Mother Tongue */}
-                                <Text style = {globalStyles.text}>Mother Tongue:</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.MotherTongue && props.errors.MotherTongue}</Text>
+                                <Text style = {globalStyles.label}>Mother Tongue:</Text>
                                 <Picker
                                     selectedValue = {props.values.MotherTongue}
                                     onValueChange = {value => {
@@ -373,17 +391,17 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Mother Tongue' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Mother Tongue' value = ''/>
                                     {
                                         global.motherTongues.map((item) => {
                                             return <Picker.Item key = {item.motherTongueId} label = {item.motherTongue} value = {item.motherTongueId}/>
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.MotherTongue && props.errors.MotherTongue}</Text>
 
                                 {/* Parental Status */}
-                                <Text style = {globalStyles.text}>Parental Status:</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.ParentalStatus && props.errors.ParentalStatus}</Text>
+                                <Text style = {globalStyles.label}>Parental Status:</Text>
                                 <Picker
                                     selectedValue = {props.values.ParentalStatus}
                                     onValueChange = {value => {
@@ -391,17 +409,17 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Parental Status' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Parental Status' value = ''/>
                                     {
                                         global.parentalStatusList.map((item) => {
                                             return <Picker.Item key = {item.parentalStatusId} label = {item.parentalStatus} value = {item.parentalStatusId}/>
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.ParentalStatus && props.errors.ParentalStatus}</Text>
 
                                 {/* Reason For Admission */}
-                                <Text style = {globalStyles.text}>Reason For Admission:</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.ReasonForAdmission && props.errors.ReasonForAdmission}</Text>
+                                <Text style = {globalStyles.label}>Reason For Admission:</Text>
                                 <Picker
                                     selectedValue = {props.values.ReasonForAdmission}
                                     onValueChange = {value => {
@@ -409,17 +427,17 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Reason For Admission' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Reason For Admission' value = ''/>
                                     {
                                         global.admissionReasons.map((item) => {
                                             return <Picker.Item key = {item.reasonForAdmissionId} label = {item.reasonForAdmission} value = {item.reasonForAdmissionId}/>
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.ReasonForAdmission && props.errors.ReasonForAdmission}</Text>
 
                                 {/* Previous Education Status */}
-                                <Text style = {globalStyles.text}>Previous Education Status:</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.PreviousEducationStatus && props.errors.PreviousEducationStatus}</Text>
+                                <Text style = {globalStyles.label}>Previous Education Status:</Text>
                                 <Picker
                                     selectedValue = {props.values.PreviousEducationStatus}
                                     onValueChange = {value => {
@@ -427,17 +445,17 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Previous Education Status' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Previous Education Status' value = ''/>
                                     {
                                         global.educationStatusList.map((item) => {
                                             return <Picker.Item key = {item.educationStatusId} label = {item.educationStatus} value = {item.educationStatusId}/>
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.PreviousEducationStatus && props.errors.PreviousEducationStatus}</Text>
 
                                 {/* Admitted By */}
-                                <Text style = {globalStyles.text}>Admitted By:</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.AdmittedBy && props.errors.AdmittedBy}</Text>
+                                <Text style = {globalStyles.label}>Admitted By:</Text>
                                 <Picker
                                     selectedValue = {props.values.AdmittedBy}
                                     onValueChange = {value => {
@@ -445,16 +463,17 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Admitted By' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Admitted By' value = ''/>
                                     {
                                         global.homeStaffList.map((item) => {
                                             return <Picker.Item key = {item.staffNo} label = {item.firstName + ' ' + item.lastName} value = {item.staffNo}/>
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.AdmittedBy && props.errors.AdmittedBy}</Text>
 
                                 {/* DOA */}
-                                <Text style = {globalStyles.text}>Date Of Admission:</Text>
+                                <Text style = {globalStyles.label}>Date Of Admission:</Text>
                                 <View style={globalStyles.dobView}>
                                     <TextInput
                                         style = {globalStyles.inputText, globalStyles.dobValue}
@@ -476,12 +495,11 @@ export default class EditChild extends React.Component{
                                             onChange= {(e,date) => this._pickDoa(e,date,props.handleChange('DOA'))} 
                                         />
                                     }
-                                    <Text style = {globalStyles.errormsg}>{props.touched.DOB && props.errors.DOB}</Text>
                                 </View>
+                                <Text style = {globalStyles.errormsg}>{props.touched.DOA && props.errors.DOA}</Text>
 
                                 {/* Referred Source */}
-                                <Text style = {globalStyles.text}>Referred Source:</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.ReferredSource && props.errors.ReferredSource}</Text>
+                                <Text style = {globalStyles.label}>Referred Source:</Text>
                                 <Picker
                                     selectedValue = {props.values.ReferredSource}
                                     onValueChange = {value => {
@@ -489,24 +507,24 @@ export default class EditChild extends React.Component{
                                     }}
                                     style = {globalStyles.dropDown}
                                 >
-                                    <Picker.Item label='Select Referred Source' value = ''/>
+                                    <Picker.Item color = 'grey' label='Select Referred Source' value = ''/>
                                     {
                                         global.referralSourcesList.map((item) => {
                                             return <Picker.Item key = {item.referralSourceId} label = {item.referralSource} value = {item.referralSourceId}/>
                                         })
                                     }
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.ReferredSource && props.errors.ReferredSource}</Text>
 
                                 {/* Referred By */}
-                                <Text style = {globalStyles.text}>Referred By:</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.ReferredBy && props.errors.ReferredBy}</Text>
+                                <Text style = {globalStyles.label}>Referred By:</Text>
                                 <TextInput
                                     style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('ReferredBy')}
                                     value = {props.values.ReferredBy}
                                     // onBlur = {props.handleBlur('PSOName')} this can be used for real-time validation
                                 />
-
+                                <Text style = {globalStyles.errormsg}>{props.touched.ReferredBy && props.errors.ReferredBy}</Text>
                                 <Button style = {globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                             </View>
                         </ScrollView>  

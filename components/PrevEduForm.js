@@ -40,12 +40,13 @@ export default class PrevEduForm extends React.Component{
         return moment(date_to).format('YYYY')
     }
 
-    getApiMethod(data, path){
+    getApiMethod(prevEducation){
         if('newChild' in this.props.prevEducation){
-            return UpdateApi.addData(data, path)
+            prevEducation.modified_on = new Date()
+            return UpdateApi.addData(JSON.stringify(prevEducation), 'child-education')
         }
         else{
-            return UpdateApi.updateData(data, path)
+            return UpdateApi.updateData(JSON.stringify(prevEducation), 'child-education')
         }
     }
     _submitPrevEdu(values){
@@ -53,16 +54,15 @@ export default class PrevEduForm extends React.Component{
 
         let prevEducation = this.props.prevEducation
         prevEducation.dropoutReason = values.dropOutReason
-        prevEducation.date_from = new Date(parseInt(values.yearOfStudied) - 1, 4)
-        prevEducation.date_to = new Date(parseInt(values.yearOfStudied), 4)
+        prevEducation.date_from = new Date(parseInt(values.yearOfStudied) - 1, 5)
+        prevEducation.date_to = new Date(parseInt(values.yearOfStudied), 5)
         prevEducation.medium = values.medium,
         prevEducation.schoolName = values.schoolName,
         prevEducation.schooltype = values.schooltype,
         prevEducation.studyingclass = values.class,
         prevEducation.address = values.schoolPlace,
-        prevEducation.modified_on = new Date()
 
-        this.getApiMethod(JSON.stringify(prevEducation), 'child-education').then((response) => {
+        this.getApiMethod(prevEducation).then((response) => {
             this.setState({ loading: false, isVisible: true });
             if(response.ok){
                 response.json().then((res) => {
@@ -80,7 +80,7 @@ export default class PrevEduForm extends React.Component{
     }
     render() {
         return (
-            <View style = {globalStyles.container}>
+            <View style = {globalStyles.scrollContainer}>
                 <Formik
                     initialValues = {
                         {
@@ -111,24 +111,23 @@ export default class PrevEduForm extends React.Component{
                                     showsVerticalScrollIndicator = {false}
                                 >
                                     <View>
-                                        <Text style = {globalStyles.text}>Drop Out Reason:</Text>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.dropoutReason && props.errors.dropoutReason }</Text>
+                                        <Text style = {globalStyles.label}>Drop Out Reason:</Text>
                                         <TextInput
                                         style = {globalStyles.inputText}
                                         onChangeText = {props.handleChange('dropoutReason')}
                                         value = {props.values.dropoutReason}
                                         />
+                                        <Text style = {globalStyles.errormsg}>{ props.touched.dropoutReason && props.errors.dropoutReason }</Text>
 
-                                        <Text style = {globalStyles.text}>Year Of Studied:</Text>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.yearOfStudied && props.errors.yearOfStudied }</Text>
+                                        <Text style = {globalStyles.label}>Year Of Studied:</Text>
                                         <TextInput
                                         style = {globalStyles.inputText}
                                         onChangeText = {props.handleChange('yearOfStudied')}
                                         value = {props.values.yearOfStudied}
                                         />
+                                        <Text style = {globalStyles.errormsg}>{ props.touched.yearOfStudied && props.errors.yearOfStudied }</Text>
 
-                                        <Text style = {globalStyles.text}>Medium:</Text>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.medium && props.errors.medium }</Text>
+                                        <Text style = {globalStyles.label}>Medium:</Text>
                                         <Picker
                                         selectedValue = {props.values.medium}
                                         style = {globalStyles.dropDown}
@@ -136,23 +135,23 @@ export default class PrevEduForm extends React.Component{
                                             props.setFieldValue('medium', value)
                                         }}
                                         >
-                                            <Picker.Item label="Select Medium" value="" />
+                                            <Picker.Item color = 'grey' label="Select Medium" value="" />
                                             {global.medium.map((item) => {
                                                 return <Picker.Item key = {item.motherTongueId} label = {item.motherTongue} value = {item.motherTongueId}/>
                                             })}
                                     
                                         </Picker>
+                                        <Text style = {globalStyles.errormsg}>{ props.touched.medium && props.errors.medium }</Text>
 
-                                        <Text style = {globalStyles.text}>School Name:</Text>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.schoolName && props.errors.schoolName }</Text>
+                                        <Text style = {globalStyles.label}>School Name:</Text>
                                         <TextInput
                                         style = {globalStyles.inputText}
                                         onChangeText = {props.handleChange('schoolName')}
                                         value = {props.values.schoolName}
                                         />
+                                        <Text style = {globalStyles.errormsg}>{ props.touched.schoolName && props.errors.schoolName }</Text>
 
-                                        <Text style = {globalStyles.text}>School Type:</Text>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.schooltype && props.errors.schooltype }</Text>
+                                        <Text style = {globalStyles.label}>School Type:</Text>
                                         <Picker
                                         selectedValue = {props.values.schooltype}
                                         style = {globalStyles.dropDown}
@@ -160,15 +159,15 @@ export default class PrevEduForm extends React.Component{
                                             props.setFieldValue('schooltype', value)
                                         }}
                                         >
-                                            <Picker.Item label="Select School Type" value="" />
+                                            <Picker.Item color = 'grey' label="Select School Type" value="" />
                                             {global.schoolType.map((item) => {
                                                 return <Picker.Item key = {item.schoolTypeID} label = {item.schoolType} value = {item.schoolTypeID}/>
                                             })}
                                     
                                         </Picker>
+                                        <Text style = {globalStyles.errormsg}>{ props.touched.schooltype && props.errors.schooltype }</Text>
 
-                                        <Text style = {globalStyles.text}>Class:</Text>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.class && props.errors.class }</Text>
+                                        <Text style = {globalStyles.label}>Class:</Text>
                                         <Picker
                                         selectedValue = {props.values.class}
                                         style = {globalStyles.dropDown}
@@ -176,20 +175,22 @@ export default class PrevEduForm extends React.Component{
                                             props.setFieldValue('class', value)
                                         }}
                                         >
-                                            <Picker.Item label="Select Class" value="" />
+                                            <Picker.Item color = 'grey' label="Select Class" value="" />
                                             {global.class.map((item) => {
                                                 return <Picker.Item key = {item.studyingclassId} label = {item.studyingclass} value = {item.studyingclassId}/>
                                             })}
                                     
                                         </Picker>
+                                        <Text style = {globalStyles.errormsg}>{ props.touched.class && props.errors.class }</Text>
 
-                                        <Text style = {globalStyles.text}>School Place:</Text>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.schoolPlace && props.errors.schoolPlace }</Text>
+                                        <Text style = {globalStyles.label}>School Place:</Text>
                                         <TextInput
                                         style = {globalStyles.inputText}
                                         onChangeText = {props.handleChange('schoolPlace')}
                                         value = {props.values.schoolPlace}
                                         />
+                                        <Text style = {globalStyles.errormsg}>{ props.touched.schoolPlace && props.errors.schoolPlace }</Text>
+
                                         <Button style = {globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                                     </View>
                                 </ScrollView>
