@@ -175,7 +175,7 @@ export default class CommunicationForm extends React.Component {
                             <ScrollView showsVerticalScrollIndicator = {false}>
 
                                 <View>
-                                    <Text style={globalStyles.label}>Present(Local)Address Details:{"\n"}(Street No/Name,Village Name)</Text>
+                                    <Text style={globalStyles.label}>Present(Local)Address Details:{"\n"}(Street No/Name,Village Name) <Text style={{ color: "red" }}>*</Text> </Text>
 
                                     <TextInput
                                         style={globalStyles.inputText}
@@ -183,7 +183,7 @@ export default class CommunicationForm extends React.Component {
                                         value={props.values.PresentAddress}
                                     />
                                     <Text style={globalStyles.errormsg}>{props.touched.PresentAddress && props.errors.PresentAddress}</Text>
-                                    <Text style={globalStyles.label}>Area/Town/City Name:</Text>
+                                    <Text style={globalStyles.label}>Area/Town/City Name: <Text style={{ color: "red" }}>*</Text> </Text>
 
                                     <TextInput
                                         style={globalStyles.inputText}
@@ -191,7 +191,7 @@ export default class CommunicationForm extends React.Component {
                                         value={props.values.Area}
                                     />
                                     <Text style={globalStyles.errormsg}>{props.touched.Area && props.errors.Area}</Text>
-                                    <Text style={globalStyles.label}>Country:</Text>
+                                    <Text style={globalStyles.label}>Country: <Text style={{ color: "red" }}>*</Text> </Text>
 
                                     <Picker
                                         selectedValue={props.values.Country}
@@ -222,7 +222,7 @@ export default class CommunicationForm extends React.Component {
                                     <Text style={globalStyles.errormsg}>{props.touched.Country && props.errors.Country}</Text>
                                     {this.state.showPresentState ?
                                         <View>
-                                        <Text style={globalStyles.label}>State:</Text>
+                                        <Text style={globalStyles.label}>State: <Text style={{ color: "red" }}>*</Text> </Text>
                                         <Text style={globalStyles.errormsg}>{props.touched.State && props.errors.State}</Text>
                                         <Picker
                                             selectedValue={props.values.State}
@@ -254,7 +254,7 @@ export default class CommunicationForm extends React.Component {
 
                                     {this.state.showPresentDistrictAndPincode ?
                                         <View>
-                                        <Text style={globalStyles.label}>District:</Text>
+                                        <Text style={globalStyles.label}>District: <Text style={{ color: "red" }}>*</Text> </Text>
 
                                         <Picker
                                             selectedValue={props.values.District}
@@ -275,7 +275,7 @@ export default class CommunicationForm extends React.Component {
                                             }
                                         </Picker>
                                         <Text style={globalStyles.errormsg}>{props.touched.District && props.errors.District}</Text>
-                                        <Text style={globalStyles.text}>Pin Code:</Text>
+                                        <Text style={globalStyles.text}>Pin Code: <Text style={{ color: "red" }}>*</Text> </Text>
 
                                         <TextInput
                                             style={globalStyles.inputText}
@@ -294,7 +294,7 @@ export default class CommunicationForm extends React.Component {
                                         value={props.values.Mobile}
                                     />
                                     <Text style={globalStyles.errormsg}>{props.touched.Mobile && props.errors.Mobile}</Text>
-                                    <Text style={globalStyles.text}>Phone Number(Relatives/Neighbours):</Text>
+                                    <Text style={globalStyles.text}>Phone Number(Relatives/Neighbours): <Text style={{ color: "red" }}>*</Text> </Text>
 
                                     <TextInput
                                         style={globalStyles.inputText}
@@ -308,6 +308,7 @@ export default class CommunicationForm extends React.Component {
                                         style={globalStyles.inputText}
                                         onChangeText={props.handleChange('PermanentAddress')}
                                         value={props.values.PermanentAddress}
+                                        multiline={true}
                                     />
                                     <Text style={globalStyles.errormsg}>{props.touched.PermanentAddress && props.errors.PermanentAddress}</Text>
                                     <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
@@ -329,20 +330,20 @@ export default class CommunicationForm extends React.Component {
     }
 }
 
-// const Styles = StyleSheet.create({
-//     MainContainer: {
-//         justifyContent: 'space-between',
-//         flex: 1,
-//     },
-//     modalContainer: {
-//         flex: 1,
-//         justifyContent: 'center',
-//         alignItems: 'center',
-//         alignSelf: 'center',
-//         backgroundColor: 'white',
-//         width: Dimensions.get('window').width / 2 + 50,
-//         maxHeight: Dimensions.get('window').height / 4,
-//         top: 150,
-//         borderRadius: 30
-//     }
-// });
+ //const Styles = StyleSheet.create({
+    //     MainContainer: {
+    //         justifyContent: 'space-between',
+    //         flex: 1,
+    //     },
+    //     modalContainer: {
+    //         flex: 1,
+    //         justifyContent: 'center',
+    //         alignItems: 'center',
+    //         alignSelf: 'center',
+    //         backgroundColor: 'white',
+    //         width: Dimensions.get('window').width / 2 + 50,
+    //         maxHeight: Dimensions.get('window').height / 4,
+    //         top: 150,
+    //         borderRadius: 30
+    //     }
+ //});
