@@ -7,7 +7,7 @@ import HealthScreen from '../screens/HealthScreen';
 //import InfoGeneral from '../screens/InfoGeneral';
 
 const screens = {
-    Modify: {
+    ChildHealth: {
         screen: SegmentedHealthView
     },
     HealthScreen: {
@@ -17,6 +17,7 @@ const screens = {
 
 const HomeStack = createStackNavigator(screens, {
     defaultNavigationOptions: {
+      title: 'Child Health',
       headerStyle: {
         height: 50
       },

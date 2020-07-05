@@ -15,13 +15,13 @@ import { SuccessDisplay } from "../utils/SuccessDisplay";
 const HealthDuringAddSchema = yup.object({
     bloodGroup: yup.string(),
     generalHealth: yup.string(),
-    height: yup.string()
+    height: yup.number()
         .test('is-height-valid', 'Enter a valid height', (height) => {
-            return height == undefined || parseFloat(height) > 0;
+            return height !== undefined && parseFloat(height) > 0;
         }),
-    weight: yup.string()
+    weight: yup.number()
         .test('is-weight-valid', 'Enter a valid weight', (weight) => {
-            return weight == undefined || parseFloat(weight) > 0;
+            return weight !== undefined && parseFloat(weight) > 0;
         }),
     comments: yup.string()
 })
@@ -30,7 +30,7 @@ export default class HealthDuringAdd extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            child: this.props.navigation.getParam('child'),
+            child: this.props.childData,
             childHealth: this.props.childHealth,
             sucessDisplay: false,
             errorDisplay: false,
@@ -39,26 +39,26 @@ export default class HealthDuringAdd extends React.Component{
         }
         console.log(this.state.childHealth)
     }
-    getApiMethod(data, childHealth){
+    getApiMethod(childHealth){
         if('newChild' in this.props.childHealth){
-            return UpdateApi.addData(data, 'child-health')
+            childHealth.healthDate = new Date()
+            return UpdateApi.addData(JSON.stringify(childHealth), 'child-health')
         }
         else{
-            return UpdateApi.updateData(data, `child-health/${childHealth.healthNo}`)
+            return UpdateApi.updateData(JSON.stringify(childHealth), `child-health/${childHealth.healthNo}`)
         }
     }
     _submitHealthDuringAdd(values){
         this.setState({ loading: true });
 
         let childHealth = this.props.childHealth
-        childHealth.bloodGroup = parseInt(values.bloodGroup)
+        childHealth.bloodGroup = values.bloodGroup
         childHealth.generalHealth = values.generalHealth
-        childHealth.healthDate = new Date()
         childHealth.height =  values.height
         childHealth.weight = values.weight
         childHealth.comments =  values.comments
 
-        this.getApiMethod(JSON.stringify(childHealth), childHealth).then((response) => {
+        this.getApiMethod(childHealth).then((response) => {
             this.setState({ loading: false, isVisible: true });
             if(response.ok){
                 response.json().then((res) => {
@@ -73,38 +73,14 @@ export default class HealthDuringAdd extends React.Component{
             console.log(error, 'ffff');
             this.setState({ errorDisplay: true });
             });
-        // fetch(url, {
-        //     method: apimethod,
-        //     headers: {
-        //         Accept: '*/*',
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(childHealth),
-        // })
-        // .then((response) => {console.log(response.status);return response.json()})
-        // .then((responseJson) => {
-        //     console.log(responseJson);
-        //     this.setState({submitAlertMessage: 'Successfully updated child with Child Number '+this.state.child.childNo});
-        //     alert(this.state.submitAlertMessage);
-        //     this.setState({showLoader: false,loaderIndex:0});
-        // })
-        // .catch((error) => {
-        //     this.setState({submitAlertMessage: 'Unable to update child. Plesae contact the Admin.'});
-        //     alert(this.state.submitAlertMessage);
-        //     console.log(error);
-        //     this.setState({showLoader: false,loaderIndex:0});
-        // });
     }
     render() {
         return (
-            <View style = {globalStyles.container}>
-                {/* <View style={{ position: 'absolute', top:"45%",right: 0, left: 0, zIndex: this.state.loaderIndex }}>
-                    <ActivityIndicator animating={this.state.showLoader} size="large" color="red" />
-                </View> */}
+            <View style = {globalStyles.scrollContainer}>
                 <Formik
                     initialValues = {
                         {
-                            bloodGroup: this.state.child.bloodGroup ? this.state.child.bloodGroup.toString() : '',
+                            bloodGroup: this.state.child.bloodGroup ? this.state.child.bloodGroup : '',
                             generalHealth: this.state.childHealth.generalHealth ? this.state.childHealth.generalHealth : '',
                             height: this.state.childHealth.height ? this.state.childHealth.height : '',
                             weight: this.state.childHealth.weight ? this.state.childHealth.weight : '',
@@ -113,12 +89,10 @@ export default class HealthDuringAdd extends React.Component{
                     }
                     validationSchema = {HealthDuringAddSchema}
                     onSubmit = {(values, actions) => {
-                        //actions.resetForm()
                         console.log(values)
                         this.setState({showLoader: true,loaderIndex:10});
                         let result = this._submitHealthDuringAdd(values);
                         let alertMessage = this.state.submitAlertMessage;
-                        //this.props.navigation.push('InfoGeneral', values)
                     }}
                 >
                     {props => (
@@ -130,21 +104,22 @@ export default class HealthDuringAdd extends React.Component{
                             showsVerticalScrollIndicator = {false}
                         >
                             <View>
-                                <Text style = {globalStyles.text}>Blood Group:</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.bloodGroup && props.errors.bloodGroup}</Text>
+                                <Text style = {globalStyles.label}>Blood Group: <Text style={{ color: "red" }}>*</Text></Text>
                                 <Picker style = {globalStyles.dropDown}
-                                onValueChange = {props.handleChange('bloodGroup')}
+                                onValueChange = {value => {
+                                    props.setFieldValue('bloodGroup', value)
+                                }}
                                 selectedValue = {props.values.bloodGroup}
                                 >
-                                    <Picker.Item label = 'Select Blood Group' value = '0'/>
-                                    <Picker.Item label = 'O+' value = "1"/>
-                                    <Picker.Item label = 'B+' value = "2"/>
-                                    <Picker.Item label = 'AB-' value = "3"/>
-                                    <Picker.Item label = 'A+' value = "4"/>
-                                </Picker>
+                                    <Picker.Item color = 'grey' label = 'Select Blood Group' value = ''/>
+                                    {global.bloodGroup.map((item) => {
+                                        return <Picker.Item key = {item.bloodGroupID} label = {item.bloodGroup} value = {item.bloodGroupID}/>
+                                    })}
 
-                                <Text style = {globalStyles.text}>General Helath:</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.generalHealth && props.errors.generalHealth}</Text>
+                                </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.bloodGroup && props.errors.bloodGroup}</Text>
+
+                                <Text style = {globalStyles.label}>General Health: <Text style={{ color: "red" }}>*</Text></Text>
                                 <Picker
                                 selectedValue = {props.values.generalHealth}
                                 style = {globalStyles.dropDown}
@@ -152,34 +127,37 @@ export default class HealthDuringAdd extends React.Component{
                                     props.setFieldValue('generalHealth', value)
                                 }}
                                 >
-                                    <Picker.Item label="Select General Health" value="" />
+                                    <Picker.Item color = 'grey' label="Select General Health" value="" />
                                     {global.generalHealth.map((item) => {
                                         return <Picker.Item key = {item.generalHealthID} label = {item.generalHealth} value = {item.generalHealthID}/>
                                     })}
                                     
                                 </Picker>
+                                <Text style = {globalStyles.errormsg}>{props.touched.generalHealth && props.errors.generalHealth}</Text>
 
-                                <Text style = {globalStyles.text}>Height:</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.height && props.errors.height}</Text>
+                                <Text style = {globalStyles.label}>Height: <Text style={{ color: "red" }}>*</Text></Text>
                                 <TextInput style = {globalStyles.inputText}
                                 onChangeText = {props.handleChange('height')}
                                 value = {props.values.height}
+                                placeholder = 'Enter height in cm'
                                 />
+                                <Text style = {globalStyles.errormsg}>{props.touched.height && props.errors.height}</Text>
 
-                                <Text style = {globalStyles.text}>Weight:</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.weight && props.errors.weight}</Text>
+                                <Text style = {globalStyles.label}>Weight: <Text style={{ color: "red" }}>*</Text></Text>
                                 <TextInput style = {globalStyles.inputText}
                                 onChangeText = {props.handleChange('weight')}
                                 value = {props.values.weight}
+                                placeholder = 'Enter weight in kg'
                                 />
-
-                                <Text style = {globalStyles.text}>Comments:</Text>
-                                <Text style = {globalStyles.errormsg}>{props.touched.comments && props.errors.comments}</Text>
+                                <Text style = {globalStyles.errormsg}>{props.touched.weight && props.errors.weight}</Text>
+                                <Text style = {globalStyles.label}>Comments:</Text>
                                 <TextInput style = {globalStyles.inputText}
                                 onChangeText = {props.handleChange('comments')}
                                 value = {props.values.comments}
                                 multiline = {true}
                                 />
+                                <Text style = {globalStyles.errormsg}>{props.touched.comments && props.errors.comments}</Text>
+
                                 <Button style = {globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                             </View>
                         </ScrollView>

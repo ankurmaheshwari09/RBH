@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Text, TextInput, View, Picker, ScrollView,
+import {Button, Text, TextInput, View, Picker, ScrollView, Image,
     KeyboardAvoidingView,Alert} from 'react-native';
 import {Formik} from 'formik';
 import * as yup from 'yup';
@@ -120,7 +120,9 @@ showVisitedDatepicker = () => {
     render() {
         return (
             <View style = {globalStyles.formcontainer}>
-                <Text style ={globalStyles.healthformheading}>       Child Medical Treatment      </Text>
+            <View style={globalStyles.backgroundlogoimageview}>
+                <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+            </View>
                 <Formik
                 initialValues = {
                     {
@@ -149,7 +151,7 @@ showVisitedDatepicker = () => {
    { props => (
                <ScrollView showsVerticalScrollIndicator = {false}>
                <View>
-                    <Text style={globalStyles.textform}>Illness Start Date</Text>
+                    <Text style={globalStyles.label}>Illness Start Date: <Text style={{ color: "red" }}>*</Text></Text>
                         <View style={globalStyles.dobView}>
                          <TextInput
                           style={globalStyles.inputform, globalStyles.dobValue}
@@ -170,9 +172,11 @@ showVisitedDatepicker = () => {
                                                                     onChange={(e, date) => this._pickStartDate(e, date, props.handleChange('IllnessStartDate'))}
                                                                 />
                                                             }
-                          <Text style={globalStyles.errormsgform}> {props.touched.IllnessStartDate && props.errors.IllnessStartDate}</Text>
+
                          </View>
-                    <Text style={globalStyles.textform}>Visited Date</Text>
+                         <Text style={globalStyles.errormsgform}> {props.touched.IllnessStartDate && props.errors.IllnessStartDate}</Text>
+
+                    <Text style={globalStyles.label}>Visited Date: <Text style={{ color: "red" }}>*</Text></Text>
                         <View style={globalStyles.dobView}>
                                            <TextInput
                                                style={globalStyles.inputform, globalStyles.dobValue}
@@ -194,40 +198,41 @@ showVisitedDatepicker = () => {
                                                    onChange={(e, date) => this._pickVisitedDate(e, date, props.handleChange('VisitedDate'))}
                                                />
                                            }
+                                      </View>
                                     <Text style={globalStyles.errormsgform}>{props.touched.VisitedDate && props.errors.VisitedDate}</Text>
-                         </View>
 
-               <Text style={globalStyles.text}>Hospital Name</Text>
+
+               <Text style={globalStyles.label}>Hospital Name: <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput style={globalStyles.inputText} multiline ={true} value={props.values.HospitalName} onChangeText ={props.handleChange("HospitalName")} onBlur ={props.handleBlur("HospitalName")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.HospitalName && props.errors.HospitalName}
                                         </Text>
 
-               <Text style={globalStyles.text}>Doctor Name</Text>
+               <Text style={globalStyles.label}>Doctor Name: <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput style={globalStyles.inputText} value={props.values.DoctorName} onChangeText ={props.handleChange("DoctorName")} onBlur ={props.handleBlur("DoctorName")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.DoctorName && props.errors.DoctorName}
                                         </Text>
 
-               <Text style={globalStyles.text}>Diseases Diagnosed</Text>
+               <Text style={globalStyles.label}>Diseases Diagnosed: <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput style={globalStyles.inputText} multiline ={true} value={props.values.DiseasesDiagnosed} onChangeText ={props.handleChange("DiseasesDiagnosed")} onBlur ={props.handleBlur("DiseasesDiagnosed")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.DiseasesDiagnosed && props.errors.DiseasesDiagnosed}
                                         </Text>
 
-               <Text style={globalStyles.text}>Further Tests</Text>
+               <Text style={globalStyles.label}>Further Tests:</Text>
                     <TextInput style={globalStyles.inputText} multiline ={true}  value={props.values.FurtherTests} onChangeText ={props.handleChange("FurtherTests")} onBlur ={props.handleBlur("FurtherTests")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.FurtherTests && props.errors.FurtherTests}
                                         </Text>
 
-               <Text style={globalStyles.text}>Total Medical Cost(Rs)</Text>
+               <Text style={globalStyles.label}>Total Medical Cost(Rs): <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput style={globalStyles.inputText} value={props.values.TotalMedicalCost} onChangeText ={props.handleChange("TotalMedicalCost")} onBlur ={props.handleBlur("TotalMedicalCost")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.TotalMedicalCost && props.errors.TotalMedicalCost}
                                         </Text>
 
-               <Text style={globalStyles.text}>Remarks</Text>
+               <Text style={globalStyles.label}>Remarks:</Text>
                     <TextInput style={globalStyles.inputText} multiline ={true} value={props.values.Remarks} onChangeText ={props.handleChange("Remarks")} onBlur ={props.handleBlur("Remarks")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.Remarks && props.errors.Remarks}

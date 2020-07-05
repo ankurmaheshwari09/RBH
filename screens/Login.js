@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {base_url} from '../constants/Base';
 import {globalStyles} from '../styles/global';
-import { setOrgId, getOrgId } from '../constants/LoginConstant'
+import { setOrgId, getOrgId, setHomeCode, getHomeCode } from '../constants/LoginConstant'
 
 export default class Login extends Component {
 
@@ -34,6 +34,10 @@ export default class Login extends Component {
         setOrgId(id);
     }
 
+    updateHomeCode(code) {
+        setHomeCode(code);
+    }
+
     _userLogin = () => {
         this.setState({ isLoggingIn: true, message: 'Logging In, Please wait' });
         this.setState({ showLoader: true, loaderIndex: 10 });
@@ -51,14 +55,17 @@ export default class Login extends Component {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            console.log("*******");
+            console.log("*******Login json********");
             console.log(responseJson);
+            console.log("*************************")
             if(responseJson.authStatus == true) {
                 this.setState({ isLoggingIn: false, message: '' });
                 this.setState({showLoader: false,loaderIndex:0});
                 console.log(responseJson.orgId);
                 console.log(getOrgId());
                 this.updateOrgId(responseJson.orgId);
+                this.updateHomeCode(responseJson.homeCode);
+                console.log(getHomeCode());
                 console.log("=========");
                 this.props.onLoginPress();
             }
@@ -67,18 +74,6 @@ export default class Login extends Component {
                 this.setState({showLoader: false,loaderIndex:0});
             }
         })
-         /*if(this.state.username == "admin" && this.state.password == "admin") {
-             if(this.props.onLoginPress) {
-                this.props.onLoginPress();
-                this.setState({ isLoggingIn: false, message: 'Please enter a valid usernam and password' });
-             }
-             else {
-                 this.props.navigation.navigate('Home');
-             }
-         }
-         else {
-             this.setState({ isLoggingIn: false, message: 'Please enter a valid usernam and password' });
-         }*/
     }
 
     clearUsername = () => {
@@ -99,7 +94,7 @@ export default class Login extends Component {
                                                     keyboardVerticalOffset={0}>
             <ScrollView showsVerticalScrollIndicator={false}>
             <View style={titlestyle.container}>
-                <Image source={ require('../assets/RBHlogo.png') } style = {titlestyle.logoicon}/>
+                <Image source={ require('../assets/RBHsmall.png') } style = {titlestyle.logoicon}/>
                 <Text style={titlestyle.header}>
                     Login
                 </Text>
@@ -165,7 +160,8 @@ const titlestyle = StyleSheet.create({
     borderColor: 'lightgreen',
   },
   logoicon: {
-      marginLeft: '-10%',
+      marginTop: '40%',
+      marginLeft: '5%',
   },
   logotext: {
       marginTop: '20%',

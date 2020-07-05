@@ -1,7 +1,7 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Formik } from "formik";
 import React from 'react';
-import { Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View, Dimensions  } from 'react-native';
+import { Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View, Dimensions, Image  } from 'react-native';
 import * as yup from "yup";
 import { globalStyles } from "../styles/global";
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -14,9 +14,9 @@ import { SuccessDisplay } from "../utils/SuccessDisplay";
 import UpdateApi from "../constants/UpdateApi";
 
 const followUpSchema = yup.object({
-    followUpBy: yup.string().required(),
-    date: yup.string().required(),
-    comments: yup.string().required(),
+    FollowUpBy: yup.string().required(),
+    Date: yup.string().required(),
+    Comments: yup.string().required(),
 });
 
 export default class FollowUpScreen extends React.Component {
@@ -40,9 +40,9 @@ export default class FollowUpScreen extends React.Component {
     updateFollowUp(values) {
         let request_body = JSON.stringify({
             "childNo": this.state.child.childNo,
-            "staffNo": values.followUpBy,
-            "followupDate": values.date,
-            "comments": values.comments
+            "staffNo": values.FollowUpBy,
+            "followupDate": values.Date,
+            "comments": values.Comments
         });
         this.setState({ loading: true });
         console.log(request_body);
@@ -81,23 +81,31 @@ export default class FollowUpScreen extends React.Component {
 
     };
 
-    componentWillUnmount() {
-        const { params } = this.props.navigation.state;
-        params.refreshChildList();
+    navigateToChildListScreen() {
+        this.setState({ isVisible: false }, () => {
+            if (this.state.successDisplay) {
+                this.props.navigation.navigate('ViewChild');
+            }
+        })
 
     }
 
-
+   
     render() {
 
         return (
             <View style={globalStyles.container}>
+
+                {/*Background Image*/}
+                <View style={globalStyles.backgroundlogoimageview}>
+                    <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
+                </View>
                 
                 <Formik
                     initialValues={{
-                        followUpBy: '',
-                        date: '',
-                        comments: ''
+                        FollowUpBy: '',
+                        Date: '',
+                        Comments: ''
                     }}
                     validationSchema={followUpSchema}
                     onSubmit={(values, actions) => {                                          
@@ -116,30 +124,33 @@ export default class FollowUpScreen extends React.Component {
 
                             <ScrollView>
                                 <View>
-
-                                    <Text style={globalStyles.text}>FollowUp By:</Text>
+                                    {/*FollowUp By*/}
+                                    <Text style={globalStyles.label}>FollowUp By <Text style={{ color: "red" }}>*</Text>:</Text>
                                     <Picker
-                                        selectedValue={props.values.followUpBy}
+                                        selectedValue={props.values.FollowUpBy}
                                         style={globalStyles.dropDown}
                                         //                                style={{height: 50, width: 100}}
-                                        onValueChange={(follwUpBy) => { this.setState({ followUpByError: false }); props.setFieldValue('followUpBy', follwUpBy) }}
-                                        value={props.values.followUpBy}>
+                                        onValueChange={(follwUpBy) => { this.setState({ followUpByError: false }); props.setFieldValue('FollowUpBy', follwUpBy) }}
+                                        value={props.values.FollowUpBy}>
                                         <Picker.Item label="Select Staff " value="" />
                                        
                                         {global.staff.map((item) => {
                                             return <Picker.Item key={item.staffNo} label={item.firstName} value={item.staffNo} />
                                         })}
                                     </Picker>
-                                    < Text style={globalStyles.errormsg}>{props.touched.followUpBy && props.errors.followUpBy}</Text> 
+                                    <View>
+                                        <Text style={globalStyles.errormsg}>{props.touched.FollowUpBy && props.errors.FollowUpBy}</Text>
+                                    </View>
 
-                                    <Text style={globalStyles.text}>Date:</Text>
+
+                                    {/*Date*/}
+                                    <Text style={globalStyles.label}>Date <Text style={{ color: "red" }}>*</Text>:</Text>
                                     <View style={globalStyles.dateView}>
                                         <TextInput
-                                            style={globalStyles.inputText}
-
+                                            style={globalStyles.inputText, globalStyles.dobValue}
                                             value={this.state.date}
                                             editable={false}
-                                            onValueChange={props.handleChange('date')}
+                                            onValueChange={props.handleChange('Date')}
                                         />
                                         <TouchableHighlight onPress={this.showDatepicker}>
                                             <View>
@@ -147,28 +158,34 @@ export default class FollowUpScreen extends React.Component {
                                             </View>
                                         </TouchableHighlight>
                                         {/* <Button style= {addChildStyles.dobBtn} onPress={this.showDatepicker} title="Select DOB" /> */}
-                                        <Text style={globalStyles.errormsg}>{props.touched.date && props.errors.date}</Text>
-                                        {this.state.show &&
+                                         {this.state.show &&
                                             <DateTimePicker
                                                 style={{ width: 200 }}
                                                 mode="date" //The enum of date, datetime and time
                                                 value={new Date()}
                                                 mode={'date'}
-                                                onChange={(e, date) => { this.pickDob(e, date, props.handleChange('date')) }}
+                                                onChange={(e, date) => { this.pickDob(e, date, props.handleChange('Date')) }}
                                             />
                                         }
                                     </View>
-                                    <Text style={globalStyles.text}>Comments:</Text>
+                                    <Text style={globalStyles.errormsg}>{props.touched.Date && props.errors.Date}</Text>
+
+
+
+                                    {/*Comments*/}
+                                    <Text style={globalStyles.label}>Comments <Text style={{ color: "red" }}>*</Text>:</Text>
 
                                     <TextInput
                                         style={globalStyles.input}
-                                        onChangeText={props.handleChange('comments')}
+                                        onChangeText={props.handleChange('Comments')}
                                         multiline={true}
                                         numberOfLines={10}
-                                        value={props.values.comments} //value updated in 'values' is reflected here
+                                        value={props.values.Comments} //value updated in 'values' is reflected here
+                                        placeholder={'Enter Comments'}
                                     />
-                                    < Text style={globalStyles.errormsg}>{props.touched.comments && props.errors.comments}</Text> 
-
+                                    <View>
+                                    <Text style={globalStyles.errormsg}>{props.touched.Comments && props.errors.Comments}</Text> 
+                                    </View>
                                     
                                     <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
 
@@ -177,7 +194,7 @@ export default class FollowUpScreen extends React.Component {
                         </KeyboardAvoidingView>
                     )}
                 </Formik>
-                <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.navigateToChildListScreen()}>
                     <View style={styles.MainContainer}>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Followup Status' childNo={this.state.child.firstName} />
