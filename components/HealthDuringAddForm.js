@@ -104,7 +104,7 @@ export default class HealthDuringAdd extends React.Component{
                             showsVerticalScrollIndicator = {false}
                         >
                             <View>
-                                <Text style = {globalStyles.label}>Blood Group: <Text style={{ color: "red" }}>*</Text></Text>
+                                <Text style = {globalStyles.label}>Blood Group: </Text>
                                 <Picker style = {globalStyles.dropDown}
                                 onValueChange = {value => {
                                     props.setFieldValue('bloodGroup', value)
