@@ -14,7 +14,7 @@ import {
 import {HealthScreen} from '../screens/HealthScreen';
 
 export default class HomeScreen extends Component {
-
+s
 displayHealthRemainder = () => {
     console.log('Health Ignore Value:'+ global.Ignore)
     if(global.Ignore == undefined){global.Ignore = 0}
@@ -22,8 +22,8 @@ displayHealthRemainder = () => {
     var date = new Date().getDate();//current Date
     if((month == 1 || month == 4 || month == 7 || month == 10 ) && global.Ignore < 3){
         Alert.alert(
-          'Health Assessment Remainder',
-          ' Do the Health-Checkup',
+          'Health Assessment Reminder',
+          ' Update the height and weight of every child in the current quarter',
           [
             {text: 'Ignore',onPress: () => {global.Ignore++;console.log('Ignore Pressed');}},
             {text: 'Update Later', onPress: () => console.log('UpdateLater Pressed')},
