@@ -141,9 +141,7 @@ export default class EducationScreen extends React.Component {
                         CDetail: '',
                         BridgeCourseSchoolName: '',
                         ScholarshipSponsorship: '',
-                        scholorshiptype: '',
-                        Literacytatus: '',
-                        FirstGenLearner: '',
+                        scholorshiptype: ''
                     }
                 }
                 validationSchema={EducationFormSchema}
@@ -396,23 +394,6 @@ export default class EducationScreen extends React.Component {
                                 </View>
                                     : null}
 
-
-                                {/*Literacy status*/}
-                                <Text style={globalStyles.label}>Literacy Status:</Text>
-
-                                {/*First Generation Learner*/}
-                                <Text style={globalStyles.label}>First Generation Learner:</Text>
-                                <Picker
-                                    selectedValue={props.values.FirstGenLearner}
-                                    style={globalStyles.dropDown}
-                                    onValueChange={(FirstGenLearner) => props.setFieldValue('FirstGenLearner', FirstGenLearner)}
-                                    value={props.values.FirstGenLearner}
-                                >
-                                    <Picker.Item color='grey' label="Select" value="" />
-                                    <Picker.Item label="Yes" value="Yes" />
-                                    <Picker.Item label="No" value="No" />
-                                </Picker>
-
                                 <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
 
                             </View>
@@ -425,7 +406,7 @@ export default class EducationScreen extends React.Component {
             <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
                 <View style={globalStyles.MainContainer}>
                     <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                    <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName} />
+                    <SuccessDisplay successDisplay={this.state.successDisplay} type='Education' childNo={this.state.child.firstName} />
                 </View>
             </Modal>
             <LoadingDisplay loading={this.state.loading} />
