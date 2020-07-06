@@ -17,6 +17,7 @@ export function educationConstants() {
     global.scholorshiptype;
     getDataAsync(base_url + '/scholarship-type').then(data => { global.scholorshiptype = data })
 
-
+    global.literacyStatus;
+    getDataAsync(base_url + '/literacyStatus').then(data => { global.literacyStatus = data })
 }
 

@@ -1,10 +1,13 @@
 import React from 'react';
-import {Text, KeyboardAvoidingView, Picker, View, ScrollView, 
-    TextInput, Button, ActivityIndicator} from 'react-native';
-import {Formik} from 'formik';
+import {
+    Text, KeyboardAvoidingView, Picker, View, ScrollView,
+    TextInput, Button, ActivityIndicator
+} from 'react-native';
+import { Formik } from 'formik';
 import * as yup from 'yup';
-import {globalStyles} from '../styles/global';
+import { globalStyles } from '../styles/global';
 import moment from 'moment';
+import CheckBox from 'react-native-check-box';
 import UpdateApi from "../constants/UpdateApi";
 import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
@@ -24,8 +27,8 @@ const PrevEduSchema = yup.object({
     schoolPlace: yup.string()
 })
 
-export default class PrevEduForm extends React.Component{
-    constructor(props){
+export default class PrevEduForm extends React.Component {
+    constructor(props) {
         super(props)
         this.state = {
             child: this.props.navigation.getParam('child'),
@@ -33,23 +36,24 @@ export default class PrevEduForm extends React.Component{
             errorDisplay: false,
             loading: false,
             isVisible: false,
+            literacyStatus: [],
         }
     }
 
-    getYear(date_to){
+    getYear(date_to) {
         return moment(date_to).format('YYYY')
     }
 
-    getApiMethod(prevEducation){
-        if('newChild' in this.props.prevEducation){
+    getApiMethod(prevEducation) {
+        if ('newChild' in this.props.prevEducation) {
             prevEducation.modified_on = new Date()
             return UpdateApi.addData(JSON.stringify(prevEducation), 'child-education')
         }
-        else{
+        else {
             return UpdateApi.updateData(JSON.stringify(prevEducation), 'child-education')
         }
     }
-    _submitPrevEdu(values){
+    _submitPrevEdu(values) {
         this.setState({ loading: true });
 
         let prevEducation = this.props.prevEducation
@@ -57,143 +61,190 @@ export default class PrevEduForm extends React.Component{
         prevEducation.date_from = new Date(parseInt(values.yearOfStudied) - 1, 5)
         prevEducation.date_to = new Date(parseInt(values.yearOfStudied), 5)
         prevEducation.medium = values.medium,
-        prevEducation.schoolName = values.schoolName,
-        prevEducation.schooltype = values.schooltype,
-        prevEducation.studyingclass = values.class,
-        prevEducation.address = values.schoolPlace,
+            prevEducation.schoolName = values.schoolName,
+            prevEducation.schooltype = values.schooltype,
+            prevEducation.studyingclass = values.class,
+            prevEducation.address = values.schoolPlace,
+            prevEducation.literacyStatus = this.state.literacyStatus.sort().join(','),
+            prevEducation.firstGenLearner = values.FirstGenLearner
 
         this.getApiMethod(prevEducation).then((response) => {
             this.setState({ loading: false, isVisible: true });
-            if(response.ok){
+            if (response.ok) {
                 response.json().then((res) => {
                     console.log(res)
                 })
                 this.setState({ successDisplay: true });
             }
-            else{
+            else {
                 throw Error(response.status);
             }
-            }).catch(error => {
+        }).catch(error => {
             console.log(error, 'ffff');
             this.setState({ errorDisplay: true });
-            });
+        });
     }
     render() {
         return (
-            <View style = {globalStyles.scrollContainer}>
+            <View style={globalStyles.scrollContainer}>
                 <Formik
-                    initialValues = {
+                    initialValues={
                         {
                             dropoutReason: this.state.child.dropoutReason,
-                            yearOfStudied: this.props.prevEducation.date_to ? this.getYear(this.props.prevEducation.date_to): '',
+                            yearOfStudied: this.props.prevEducation.date_to ? this.getYear(this.props.prevEducation.date_to) : '',
                             medium: this.props.prevEducation.medium,
                             schoolName: this.props.prevEducation.schoolName,
                             schooltype: this.props.prevEducation.schooltype,
                             class: this.props.prevEducation.studyingclass,
-                            schoolPlace: this.props.prevEducation.address
+                            schoolPlace: this.props.prevEducation.address,
+                            literacyStatus: '',
+                            FirstGenLearner: '',
                         }
                     }
-                    validationSchema = {PrevEduSchema}
-                    onSubmit = {(values, actions) => {
-                        //actions.resetForm();
+                    validationSchema={PrevEduSchema}
+                    onSubmit={(values, actions) => {
                         console.log(values)
                         let result = this._submitPrevEdu(values);
-                        //this.props.navigation.push('InfoGeneral', values)
                     }}
                 >
 
                     {props => (
-                        <KeyboardAvoidingView behavior = "null"
-                            enabled style = {globalStyles.keyboardavoid}
-                            keyboardVerticalOffset = {0}>
+                        <KeyboardAvoidingView behavior="null"
+                            enabled style={globalStyles.keyboardavoid}
+                            keyboardVerticalOffset={0}>
 
-                                <ScrollView
-                                    showsVerticalScrollIndicator = {false}
-                                >
-                                    <View>
-                                        <Text style = {globalStyles.label}>Drop Out Reason:</Text>
-                                        <TextInput
-                                        style = {globalStyles.inputText}
-                                        onChangeText = {props.handleChange('dropoutReason')}
-                                        value = {props.values.dropoutReason}
-                                        />
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.dropoutReason && props.errors.dropoutReason }</Text>
+                            <ScrollView
+                                showsVerticalScrollIndicator={false}
+                            >
+                                <View>
+                                    {/*Drop Out Reason*/}
+                                    <Text style={globalStyles.label}>Drop Out Reason: <Text style={{ color: "red" }}>*</Text></Text>
+                                    <TextInput
+                                        style={globalStyles.inputText}
+                                        onChangeText={props.handleChange('dropoutReason')}
+                                        value={props.values.dropoutReason}
+                                    />
+                                    <Text style={globalStyles.errormsg}>{props.touched.dropoutReason && props.errors.dropoutReason}</Text>
 
-                                        <Text style = {globalStyles.label}>Year Of Studied:</Text>
-                                        <TextInput
-                                        style = {globalStyles.inputText}
-                                        onChangeText = {props.handleChange('yearOfStudied')}
-                                        value = {props.values.yearOfStudied}
-                                        />
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.yearOfStudied && props.errors.yearOfStudied }</Text>
-
-                                        <Text style = {globalStyles.label}>Medium:</Text>
-                                        <Picker
-                                        selectedValue = {props.values.medium}
-                                        style = {globalStyles.dropDown}
-                                        onValueChange = {value => {
+                                    {/*Year Of Studied*/}
+                                    <Text style={globalStyles.label}>Year Of Studied: <Text style={{ color: "red" }}>*</Text></Text>
+                                    <TextInput
+                                        style={globalStyles.inputText}
+                                        onChangeText={props.handleChange('yearOfStudied')}
+                                        value={props.values.yearOfStudied}
+                                    />
+                                    <Text style={globalStyles.errormsg}>{props.touched.yearOfStudied && props.errors.yearOfStudied}</Text>
+                                    {/*Medium*/}
+                                    <Text style={globalStyles.label}>Medium: <Text style={{ color: "red" }}>*</Text></Text>
+                                    <Picker
+                                        selectedValue={props.values.medium}
+                                        style={globalStyles.dropDown}
+                                        onValueChange={value => {
                                             props.setFieldValue('medium', value)
                                         }}
-                                        >
-                                            <Picker.Item color = 'grey' label="Select Medium" value="" />
-                                            {global.medium.map((item) => {
-                                                return <Picker.Item key = {item.motherTongueId} label = {item.motherTongue} value = {item.motherTongueId}/>
-                                            })}
-                                    
-                                        </Picker>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.medium && props.errors.medium }</Text>
+                                    >
+                                        <Picker.Item color='grey' label="Select Medium" value="" />
+                                        {global.medium.map((item) => {
+                                            return <Picker.Item key={item.motherTongueId} label={item.motherTongue} value={item.motherTongueId} />
+                                        })}
 
-                                        <Text style = {globalStyles.label}>School Name:</Text>
-                                        <TextInput
-                                        style = {globalStyles.inputText}
-                                        onChangeText = {props.handleChange('schoolName')}
-                                        value = {props.values.schoolName}
-                                        />
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.schoolName && props.errors.schoolName }</Text>
+                                    </Picker>
 
-                                        <Text style = {globalStyles.label}>School Type:</Text>
-                                        <Picker
-                                        selectedValue = {props.values.schooltype}
-                                        style = {globalStyles.dropDown}
-                                        onValueChange = {value => {
+                                    {/*School Name*/}
+                                    <Text style={globalStyles.errormsg}>{props.touched.medium && props.errors.medium}</Text>
+
+                                    <Text style={globalStyles.label}>School Name: <Text style={{ color: "red" }}>*</Text></Text>
+                                    <TextInput
+                                        style={globalStyles.inputText}
+                                        onChangeText={props.handleChange('schoolName')}
+                                        value={props.values.schoolName}
+                                    />
+                                    <Text style={globalStyles.errormsg}>{props.touched.schoolName && props.errors.schoolName}</Text>
+
+
+                                    {/*School Type*/}
+                                    <Text style={globalStyles.label}>School Type: <Text style={{ color: "red" }}>*</Text></Text>
+                                    <Picker
+                                        selectedValue={props.values.schooltype}
+                                        style={globalStyles.dropDown}
+                                        onValueChange={value => {
                                             props.setFieldValue('schooltype', value)
                                         }}
-                                        >
-                                            <Picker.Item color = 'grey' label="Select School Type" value="" />
-                                            {global.schoolType.map((item) => {
-                                                return <Picker.Item key = {item.schoolTypeID} label = {item.schoolType} value = {item.schoolTypeID}/>
-                                            })}
-                                    
-                                        </Picker>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.schooltype && props.errors.schooltype }</Text>
+                                    >
+                                        <Picker.Item color='grey' label="Select School Type" value="" />
+                                        {global.schoolType.map((item) => {
+                                            return <Picker.Item key={item.schoolTypeID} label={item.schoolType} value={item.schoolTypeID} />
+                                        })}
 
-                                        <Text style = {globalStyles.label}>Class:</Text>
-                                        <Picker
-                                        selectedValue = {props.values.class}
-                                        style = {globalStyles.dropDown}
-                                        onValueChange = {value => {
+                                    </Picker>
+                                    <Text style={globalStyles.errormsg}>{props.touched.schooltype && props.errors.schooltype}</Text>
+                                    {/*Class*/}
+                                    <Text style={globalStyles.label}>Class <Text style={{ color: "red" }}>*</Text>:</Text>
+                                    <Picker
+                                        selectedValue={props.values.class}
+                                        style={globalStyles.dropDown}
+                                        onValueChange={value => {
                                             props.setFieldValue('class', value)
                                         }}
-                                        >
-                                            <Picker.Item color = 'grey' label="Select Class" value="" />
-                                            {global.class.map((item) => {
-                                                return <Picker.Item key = {item.studyingclassId} label = {item.studyingclass} value = {item.studyingclassId}/>
+                                    >
+                                        <Picker.Item color='grey' label="Select Class" value="" />
+                                        {global.class.map((item) => {
+                                            return <Picker.Item key={item.studyingclassId} label={item.studyingclass} value={item.studyingclassId} />
+                                        })}
+
+                                    </Picker>
+                                    <Text style={globalStyles.errormsg}>{props.touched.class && props.errors.class}</Text>
+
+                                    {/*School Place*/}
+                                    <Text style={globalStyles.label}>School Place: <Text style={{ color: "red" }}>*</Text></Text>
+                                    <TextInput
+                                        style={globalStyles.inputText}
+                                        onChangeText={props.handleChange('schoolPlace')}
+                                        value={props.values.schoolPlace}
+                                    />
+                                    <Text style={globalStyles.errormsg}>{props.touched.schoolPlace && props.errors.schoolPlace}</Text>
+
+                                    {/*Literacy status*/}
+                                    <View>
+                                        <Text style={globalStyles.label}>Literacy status:</Text>
+
+                                        <View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
+                                            {global.literacyStatus.map((item) => {
+                                                return <CheckBox
+                                                    style={{ flex: 1, padding: 10 }}
+                                                    onClick={() => {
+                                                        let arr = this.state.literacyStatus
+                                                        if (arr.indexOf(item.id) == -1) {
+                                                            arr.push(item.id)
+                                                        } else {
+                                                            arr.splice(arr.indexOf(item.id), 1)
+                                                        }
+                                                        this.setState({ literacyStatus: arr })
+                                                    }}
+                                                    key={item.id}
+                                                    leftText={item.description}
+                                                    isChecked={this.state.literacyStatus.indexOf(item.id) !== -1}
+                                                />
                                             })}
-                                    
-                                        </Picker>
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.class && props.errors.class }</Text>
-
-                                        <Text style = {globalStyles.label}>School Place:</Text>
-                                        <TextInput
-                                        style = {globalStyles.inputText}
-                                        onChangeText = {props.handleChange('schoolPlace')}
-                                        value = {props.values.schoolPlace}
-                                        />
-                                        <Text style = {globalStyles.errormsg}>{ props.touched.schoolPlace && props.errors.schoolPlace }</Text>
-
-                                        <Button style = {globalStyles.button} title="Submit" onPress={props.handleSubmit} />
+                                        </View>
                                     </View>
-                                </ScrollView>
+
+                                    {/*First Generation Learner*/}
+                                    <Text style={globalStyles.label}>First Generation Learner:</Text>
+                                    <Picker
+                                        selectedValue={props.values.FirstGenLearner}
+                                        style={globalStyles.dropDown}
+                                        onValueChange={(FirstGenLearner) => props.setFieldValue('FirstGenLearner', FirstGenLearner)}
+                                        value={props.values.FirstGenLearner}
+                                    >
+                                        <Picker.Item color='grey' label="Select" value="" />
+                                        <Picker.Item label="Yes" value="Yes" />
+                                        <Picker.Item label="No" value="No" />
+                                    </Picker>
+                                    <Text></Text>
+                                    <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
+                                </View>
+                            </ScrollView>
                         </KeyboardAvoidingView>
                     )}
 
