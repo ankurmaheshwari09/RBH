@@ -14,6 +14,7 @@ import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 import CheckBox from "react-native-check-box";
+import { Ionicons } from '@expo/vector-icons';
 
 
 const statusSchema = yup.object({
@@ -368,7 +369,8 @@ export default class StatusScreen extends React.Component {
                                             <DateTimePicker
                                                 style={{ width: 200 }}
                                                 mode="date" //The enum of date, datetime and time
-                                                value={new Date()}
+                                            value={new Date()}
+                                            maximumDate={new Date((new Date()).setDate((new Date()).getDate()))}
                                             mode={'date'}
                                             onChange={(e, date) => { this.pickDob(e, date, props.handleChange('Date')) }}
                                             />
@@ -547,7 +549,8 @@ export default class StatusScreen extends React.Component {
                                             </View>
 
                                             <Modal style={styles.emailContainer} isVisible={this.state.isMailModelVisible} onBackdropPress={() => { this.setState({ isMailModelVisible: false }) }}>
-                                                    <View>
+                                                <View>
+                                                    <TouchableOpacity style={styles.closeModalIcon} onPress={() => {this.setState({ isMailModelVisible: false })}} > <Ionicons name="md-close-circle-outline" size={20}></Ionicons> </TouchableOpacity>
                                                     <Text style={globalStyles.label}>Enter Child Email: </Text>
                                                     <TextInput
                                                         style={globalStyles.inputText}
@@ -599,6 +602,7 @@ export default class StatusScreen extends React.Component {
                 </Formik>
                 <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.navigateToChildListScreen()}>
                     <View style={styles.MainContainer}>
+                        <TouchableOpacity style={styles.closeModalIcon} onPress={() => { this.setState({ isMailModelVisible: false }) }} > <Ionicons name="md-close-circle-outline" size={20}></Ionicons> </TouchableOpacity>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName} />
                      
@@ -662,5 +666,7 @@ const styles = StyleSheet.create({
     selecetdOptions: {
         color: 'green'
     },
-   
+    closeModalIcon: {
+        flexDirection: "row-reverse",
+    }
 });

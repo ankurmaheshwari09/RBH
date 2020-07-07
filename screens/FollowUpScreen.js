@@ -164,6 +164,7 @@ export default class FollowUpScreen extends React.Component {
                                                 mode="date" //The enum of date, datetime and time
                                                 value={new Date()}
                                                 mode={'date'}
+                                                maximumDate={new Date((new Date()).setDate((new Date()).getDate()))}
                                                 onChange={(e, date) => { this.pickDob(e, date, props.handleChange('Date')) }}
                                             />
                                         }
