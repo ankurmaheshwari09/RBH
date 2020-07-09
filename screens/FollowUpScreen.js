@@ -199,7 +199,7 @@ export default class FollowUpScreen extends React.Component {
                     <View style={styles.MainContainer}>
                         <TouchableOpacity style={styles.closeModalIcon} onPress={() => { this.navigateToChildListScreen() }}>
                             <View>
-                                <Ionicons name="md-close-circle-outline" size={20}></Ionicons>
+                                 <Ionicons name="md-close" size={22}></Ionicons>
                             </View>
                         </TouchableOpacity>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
