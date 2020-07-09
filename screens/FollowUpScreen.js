@@ -197,6 +197,11 @@ export default class FollowUpScreen extends React.Component {
                 </Formik>
                 <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.navigateToChildListScreen()}>
                     <View style={styles.MainContainer}>
+                        <TouchableOpacity style={styles.closeModalIcon} onPress={() => { this.navigateToChildListScreen() }}>
+                            <View>
+                                <Ionicons name="md-close-circle-outline" size={20}></Ionicons>
+                            </View>
+                        </TouchableOpacity>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Followup Status' childNo={this.state.child.firstName} />
                     </View>
@@ -228,5 +233,9 @@ const styles = StyleSheet.create({
         borderRadius: 30
         //  margin: 90,
 
+    },
+    closeModalIcon: {
+        left: Dimensions.get('window').width / 2.5,
+        top: Dimensions.get('window').height / 70,
     }
 });
