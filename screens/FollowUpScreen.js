@@ -164,6 +164,7 @@ export default class FollowUpScreen extends React.Component {
                                                 mode="date" //The enum of date, datetime and time
                                                 value={new Date()}
                                                 mode={'date'}
+                                                maximumDate={new Date((new Date()).setDate((new Date()).getDate()))}
                                                 onChange={(e, date) => { this.pickDob(e, date, props.handleChange('Date')) }}
                                             />
                                         }
@@ -196,6 +197,11 @@ export default class FollowUpScreen extends React.Component {
                 </Formik>
                 <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.navigateToChildListScreen()}>
                     <View style={styles.MainContainer}>
+                        <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => { this.navigateToChildListScreen() }}>
+                            <View>
+                                 <Ionicons name="md-close" size={22}></Ionicons>
+                            </View>
+                        </TouchableOpacity>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Followup Status' childNo={this.state.child.firstName} />
                     </View>

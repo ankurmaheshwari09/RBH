@@ -37,7 +37,6 @@ export default class ChildList extends Component {
                 { key: 'Status', page: 'ChildStatus' },
                 { key: 'Health', page: 'Health' },
                 { key: 'Education', page: 'Education' },
-                { key: 'Result', page: 'ChildResult' },
                 { key: 'Family', page: 'Family' },
                 { key: 'Communication', page: 'Communication' },
                 { key: 'General Info', page: 'GeneralInfo' },
@@ -79,7 +78,7 @@ export default class ChildList extends Component {
 
     }
 
-     async getData() {
+    async getData() {
         console.log('inside get');
         let orgId = getOrgId();
         this.setState({
@@ -98,7 +97,7 @@ export default class ChildList extends Component {
             if (const1.ok) {
                 //console.log('inside ok')
                 let response = await const1.json();
-               //   console.log(response,'response-----');
+                //   console.log(response,'response-----');
                 let sortedResponse = response.sort((a, b) => a.firstName.localeCompare(b.firstName));
                 sortedResponse = this.setCounterForItemsInList(sortedResponse);
                 // console.log(response, 'ddddddddddd');
@@ -509,7 +508,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         position: 'absolute',
         top: '70%',
-        left: Dimensions.get('window').width / 3+15
+        left: Dimensions.get('window').width / 3 + 15
 
     },
     cardContent: {

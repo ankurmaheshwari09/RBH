@@ -319,6 +319,10 @@ export const globalStyles = StyleSheet.create({
         color: 'white',
         borderWidth: 1,
         borderRadius: 8
+    },
+    closeModalIcon: {
+        left: Dimensions.get('window').width / 2.5,
+        top: Dimensions.get('window').height / 70,
     }
 
 });

@@ -1,10 +1,10 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Formik } from "formik";
 import React from 'react';
-import {  Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, BackHandler, Text, TextInput, View, Dimensions, Image } from 'react-native';
+import { Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, BackHandler, Text, TextInput, View, Dimensions, Image, TouchableOpacity } from 'react-native';
 import * as yup from "yup";
 import { globalStyles } from "../styles/global";
-import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 import moment from 'moment';
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
@@ -14,6 +14,7 @@ import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 import CheckBox from "react-native-check-box";
+import { Ionicons } from '@expo/vector-icons';
 
 
 const statusSchema = yup.object({
@@ -368,7 +369,8 @@ export default class StatusScreen extends React.Component {
                                             <DateTimePicker
                                                 style={{ width: 200 }}
                                                 mode="date" //The enum of date, datetime and time
-                                                value={new Date()}
+                                            value={new Date()}
+                                            maximumDate={new Date((new Date()).setDate((new Date()).getDate()))}
                                             mode={'date'}
                                             onChange={(e, date) => { this.pickDob(e, date, props.handleChange('Date')) }}
                                             />
@@ -547,7 +549,14 @@ export default class StatusScreen extends React.Component {
                                             </View>
 
                                             <Modal style={styles.emailContainer} isVisible={this.state.isMailModelVisible} onBackdropPress={() => { this.setState({ isMailModelVisible: false }) }}>
-                                                    <View>
+                                                <View>
+
+                                                    <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => { this.setState({ isMailModelVisible: false }) }}>
+                                                        <View>
+                                                            <Ionicons name="md-close-circle-outline" size={20}></Ionicons>
+                                                        </View>
+                                                    </TouchableOpacity>
+                                                     
                                                     <Text style={globalStyles.label}>Enter Child Email: </Text>
                                                     <TextInput
                                                         style={globalStyles.inputText}
@@ -598,10 +607,16 @@ export default class StatusScreen extends React.Component {
                     )}
                 </Formik>
                 <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.navigateToChildListScreen()}>
+                  
                     <View style={styles.MainContainer}>
+                        <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => { this.navigateToChildListScreen() }}>
+                            <View>
+                                <Ionicons name="md-close" size={22}></Ionicons>
+                            </View>
+                        </TouchableOpacity>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName} />
-                     
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName} close={true} />
+                       
                     </View>
                 </Modal>
                 
@@ -615,8 +630,16 @@ const styles = StyleSheet.create({
     FontStyle: {
         fontSize: 15
     },
+    myButton: {
+        padding: 5,
+        height: 50,
+        width: 50,  //The Width must be the same as the height
+        borderRadius: 100, //Then Make the Border Radius twice the size of width or Height   
+        backgroundColor: 'rgb(195, 125, 198)',
+
+    },
     MainContainer: {
-        justifyContent: 'space-between',
+      //  justifyContent: 'space-between',
         flex: 1,
     //    paddingTop: 10,
 
@@ -662,5 +685,5 @@ const styles = StyleSheet.create({
     selecetdOptions: {
         color: 'green'
     },
-   
+    
 });
