@@ -29,7 +29,7 @@ export const globalStyles = StyleSheet.create({
         padding: 10,
         fontSize: 18,
         borderRadius: 6,
-       
+
         marginBottom: 12,
         borderWidth: 1,
         borderColor: 'black'
@@ -231,7 +231,7 @@ export const globalStyles = StyleSheet.create({
         fontWeight: 'bold',
     },
     backgroundlogoimageview: {
-        position: 'absolute', top:"20%",right: 0, left: 0, zIndex: -2,
+        position: 'absolute', top: "20%", right: 0, left: 0, zIndex: -2,
     },
     backgroundlogoimage: {
         opacity: 0.2,
@@ -301,7 +301,7 @@ export const globalStyles = StyleSheet.create({
         borderRadius: 6,
         marginBottom: 5,
         fontSize: 14,
-       
+
     },
     Header: {
         padding: 5,
@@ -315,7 +315,7 @@ export const globalStyles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: 15,
         marginTop: 0,
-        backgroundColor:'#48BBEC',
+        backgroundColor: '#48BBEC',
         color: 'white',
         borderWidth: 1,
         borderRadius: 8
@@ -323,6 +323,10 @@ export const globalStyles = StyleSheet.create({
     closeModalIcon: {
         left: Dimensions.get('window').width / 2.5,
         top: Dimensions.get('window').height / 70,
+    },
+    feedbackContainer: {
+        flex: 1
     }
-
 });
+
+
