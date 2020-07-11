@@ -197,7 +197,7 @@ export default class FollowUpScreen extends React.Component {
                 </Formik>
                 <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.navigateToChildListScreen()}>
                     <View style={styles.MainContainer}>
-                        <TouchableOpacity style={styles.closeModalIcon} onPress={() => { this.navigateToChildListScreen() }}>
+                        <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => { this.navigateToChildListScreen() }}>
                             <View>
                                  <Ionicons name="md-close" size={22}></Ionicons>
                             </View>
@@ -233,9 +233,5 @@ const styles = StyleSheet.create({
         borderRadius: 30
         //  margin: 90,
 
-    },
-    closeModalIcon: {
-        left: Dimensions.get('window').width / 2.5,
-        top: Dimensions.get('window').height / 70,
     }
 });

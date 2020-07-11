@@ -551,7 +551,7 @@ export default class StatusScreen extends React.Component {
                                             <Modal style={styles.emailContainer} isVisible={this.state.isMailModelVisible} onBackdropPress={() => { this.setState({ isMailModelVisible: false }) }}>
                                                 <View>
 
-                                                    <TouchableOpacity style={styles.closeModalIcon} onPress={() => { this.setState({ isMailModelVisible: false }) }}>
+                                                    <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => { this.setState({ isMailModelVisible: false }) }}>
                                                         <View>
                                                             <Ionicons name="md-close-circle-outline" size={20}></Ionicons>
                                                         </View>
@@ -609,7 +609,7 @@ export default class StatusScreen extends React.Component {
                 <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.navigateToChildListScreen()}>
                   
                     <View style={styles.MainContainer}>
-                        <TouchableOpacity style={styles.closeModalIcon} onPress={() => { this.navigateToChildListScreen() }}>
+                        <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => { this.navigateToChildListScreen() }}>
                             <View>
                                 <Ionicons name="md-close" size={22}></Ionicons>
                             </View>
@@ -685,8 +685,5 @@ const styles = StyleSheet.create({
     selecetdOptions: {
         color: 'green'
     },
-    closeModalIcon: {
-        left: Dimensions.get('window').width / 2.5,
-        top: Dimensions.get('window').height / 70,
-    }
+    
 });
