@@ -68,10 +68,6 @@ displayHealthRemainder = () => {
     }
     
     componentDidMount() {
-      const { navigation } = this.props;
-      this.focusListener = navigation.addListener('didFocus', () => {
-        this.setState({ count: 0 });
-      });
         this.loadStats()
         NotificationConstants()
         childConstants()
@@ -79,12 +75,6 @@ displayHealthRemainder = () => {
         statusConstants()
         educationConstants()
         this.displayHealthRemainder();
-    }
-
-    componentWillUnmount() {
-      // Remove the event listener before removing the screen from the stack
-      this.focusListener.remove();
-      clearTimeout(this.t);
     }
 
     updateStats = (values) =>{
