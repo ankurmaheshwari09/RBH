@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#000000',
         alignItems: 'center',
         justifyContent: 'center',
+        display: 'flex',
     },
     headerTitle: {
         color: '#ffffff',
@@ -20,6 +21,7 @@ const styles = StyleSheet.create({
         flex: 5,
         alignItems: 'center',
         justifyContent: 'center',
+        marginLeft: -25,
     },
     menuIcon: {
         alignItems: 'flex-start', 
@@ -53,11 +55,11 @@ export default class CustomHeader extends Component {
                         <FontAwesome5 name="bars" size={24} color="#ffffff" />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>{this.props.title}</Text>
-                        <TouchableOpacity onPress={this.Logout} >
-                            <View style={styles.logout}>
-                                <Feather name="power" size={20} color={"white"}/>
-                            </View>
-                        </TouchableOpacity>
+                    <TouchableOpacity onPress={this.Logout} >
+                        <View style={styles.logout}>
+                            <Feather name="power" size={20} color={"white"}/>
+                        </View>
+                    </TouchableOpacity>
                 </View>
         );
     }

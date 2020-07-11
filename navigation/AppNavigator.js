@@ -5,6 +5,7 @@ import { Home, AddChild, ViewChild, Report, LoginScreen } from './Navigation';
 import {Feather} from '@expo/vector-icons';
 import SideBar from '../components/SideBar';
 
+
 const DrawerNavigator = createDrawerNavigator({
     Home: {
         screen: Home,
@@ -27,13 +28,6 @@ const DrawerNavigator = createDrawerNavigator({
             drawerIcon: ({tintColor}) => <Feather name="users" size={20} color={tintColor}/>
         }
     }
-    // Login: {
-    //     screen: LoginScreen,
-    //     navigationOptions: {
-    //         title: "Logout",
-    //         drawerIcon: ({tintColor}) => <Feather name="log-out" size={20} color={tintColor}/>,
-    //     }
-    // }
 }, {
     contentComponent: props => <SideBar {...props} />
 });
