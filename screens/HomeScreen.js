@@ -29,9 +29,6 @@ export default class HomeScreen extends Component {
           showLoader: true,
           count: 0
         }
-        this.t = setInterval(() => {
-          this.setState({ count: this.state.count + 1 });
-        }, 1000);
       }
 
 displayHealthRemainder = () => {
