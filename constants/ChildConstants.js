@@ -29,3 +29,12 @@ export function childConstants(){
     global.childStatusList
     getDataAsync(base_url + '/child-statuses').then(data => {global.childStatusList = data});
 }
+
+export function buildTestImageName(childNo){
+    return `childpic${childNo}.png`
+}
+
+export function buildProdImageName(childStrigId, firstName){
+    date_string = moment(new Date()).format('DDMMYYYYHHmmss')
+    return `${childStrigId}_${firstName}_${date_string}.png`
+}

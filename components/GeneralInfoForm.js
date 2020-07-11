@@ -22,8 +22,14 @@ const GeneralInfoFormSchema = yup.object({
     durationOnStreet: yup.string(),
     psoName: yup.string(),
     cwcRefNo: yup.string(),
-    cwcStayReason: yup.string()
-
+    cwcStayReason: yup.string(),
+    abuseOnStreet: yup.string(),
+    aadharNumber: yup.string()
+    // .test('is-aadharNumber-valid', 'Enter a valid input', (aadharNumber) => {
+    //     return aadharNumber !== undefined && parseFloat(aadharNumber) > 0;
+    // })
+    .matches('^[0-9]{12}$', 'Enter Valid Aadhar number'),
+    noOfTimesLeavingHome: yup.string()
 })
 
 export default class GeneralInfoForm extends React.Component{
@@ -50,6 +56,9 @@ export default class GeneralInfoForm extends React.Component{
         child.organisationName = values.psoName
         child.cWCRefNo =  values.cwcRefNo
         child.stayReason = values.cwcStayReason
+        child.abuseOnStreet = values.abuseOnStreet
+        child.aadharNumber = parseInt(values.aadharNumber)
+        child.noOfTimesLeavingHome = values.noOfTimesLeavingHome
         console.log(child)
         let path = `child/${child.childNo}`
         UpdateApi.updateData(JSON.stringify(child), path).then((response) => {
@@ -87,7 +96,10 @@ export default class GeneralInfoForm extends React.Component{
                         durationOnStreet: this.state.child.duration ? this.state.child.duration : '',
                         psoName: this.state.child.organisationName ? this.state.child.organisationName : '',
                         cwcRefNo: this.state.child.cWCRefNo ? this.state.child.cWCRefNo : '',
-                        cwcStayReason: this.state.child.stayReason ? this.state.child.stayReason : ''
+                        cwcStayReason: this.state.child.stayReason ? this.state.child.stayReason : '',
+                        abuseOnStreet: this.state.child.abuseOnStreet ? this.state.child.abuseOnStreet : '',
+                        aadharNumber : this.state.child.aadharNumber ? this.state.child.aadharNumber : '',
+                        noOfTimesLeavingHome : this.state.child.noOfTimesLeavingHome ? this.state.child.noOfTimesLeavingHome : ''
                     }
                 }
                 validationSchema = {GeneralInfoFormSchema}
@@ -109,7 +121,17 @@ export default class GeneralInfoForm extends React.Component{
                             
                             <View>
                                 
-                                <Text style = {globalStyles.label}>IdentificationPlace 1:</Text>
+                                <Text style = {globalStyles.label}>Aadhar Number:</Text>
+                                <TextInput
+                                    keyboardType = 'numeric'
+                                    style = {globalStyles.inputText}
+                                    onChangeText = {props.handleChange('aadharNumber')} 
+                                    value = {`${props.values.aadharNumber}`}
+                                    maxLength = {12}
+                                />
+                                <Text style = {globalStyles.errormsg}>{ props.touched.aadharNumber && props.errors.aadharNumber }</Text>
+
+                                <Text style = {globalStyles.label}>IdentificationPlace 1<Text style={{color:"red"}}>*</Text>:</Text>
                                 <Picker
                                 selectedValue = {props.values.identificationPlace1}
                                 style = {globalStyles.dropDown}
@@ -125,7 +147,7 @@ export default class GeneralInfoForm extends React.Component{
                                 </Picker>
                                 <Text style = {globalStyles.errormsg}>{ props.touched.identificationPlace1 && props.errors.identificationPlace1 }</Text>
 
-                                <Text style = {globalStyles.label}>MarkType1:</Text>
+                                <Text style = {globalStyles.label}>MarkType1<Text style={{color:"red"}}>*</Text>:</Text>
                                 <Picker
                                 selectedValue = {props.values.markType1}
                                 style = {globalStyles.dropDown}
@@ -214,7 +236,15 @@ export default class GeneralInfoForm extends React.Component{
                                     value = {props.values.durationOnStreet} //value updated in 'values' is reflected here
                                 />
                                 <Text style = {globalStyles.errormsg}>{ props.touched.durationOnStreet && props.errors.durationOnStreet }</Text>
-                                
+
+                                <Text style = {globalStyles.label}>Abuse On Street/Working place:</Text>
+                                <TextInput
+                                    style = {globalStyles.inputText}
+                                    onChangeText = {props.handleChange('abuseOnStreet')} //This will update the IdentificationMArk value in 'values'
+                                    value = {props.values.abuseOnStreet} //value updated in 'values' is reflected here
+                                />
+                                <Text style = {globalStyles.errormsg}>{ props.touched.abuseOnStreet && props.errors.abuseOnStreet }</Text>
+
                                 <Text style = {globalStyles.label}>Previously Stayed Organisation Name:</Text>
                                 <TextInput
                                     style = {globalStyles.inputText}
@@ -222,6 +252,14 @@ export default class GeneralInfoForm extends React.Component{
                                     value = {props.values.psoName}
                                 />
                                 <Text style = {globalStyles.errormsg}>{ props.touched.psoName && props.errors.psoName }</Text>
+
+                                <Text style = {globalStyles.label}>No.of time leaving home:</Text>
+                                <TextInput
+                                    style = {globalStyles.inputText}
+                                    onChangeText = {props.handleChange('noOfTimesLeavingHome')} 
+                                    value = {props.values.noOfTimesLeavingHome}
+                                />
+                                <Text style = {globalStyles.errormsg}>{ props.touched.noOfTimesLeavingHome && props.errors.noOfTimesLeavingHome }</Text>
 
                                 <Text style = {globalStyles.label}>CWC Reference No:</Text>
                                 <TextInput

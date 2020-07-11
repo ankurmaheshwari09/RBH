@@ -167,7 +167,7 @@ export const globalStyles = StyleSheet.create({
         justifyContent: 'space-around'
     },
     addChildBtn: {
-        padding: 30,
+        padding: 15,
         backgroundColor: 'black',
         color: 'black',
     },
