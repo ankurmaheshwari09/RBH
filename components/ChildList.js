@@ -121,8 +121,19 @@ export default class ChildList extends Component {
         //  console.log(this.state.currentTime.getSeconds());
         console.log("no of seconds taken");
         console.log(new Date().getSeconds() - this.state.currentTime.getSeconds());
+        this.loadStats()
     }
 
+    loadStats(){
+        getDataAsync(base_url + '/dashboard/' + getOrgId())
+            .then(data => {
+                let stats = [] 
+                for(let i = 0; i < data.length; i++){
+                    stats.push([data[i].statusValue, data[i].total])
+                }
+                this.props.screenProps.state.params.updateStats(stats)
+             })
+    }
 
     setCounterForItemsInList(items) {
         let count = 0;
@@ -278,7 +289,6 @@ export default class ChildList extends Component {
     }
 
     getImageUri(picture, gender) {
-
         if (picture === null || picture === "") {
             if (gender === 2) {
                 return require('../assets/girl.jpg');
@@ -286,7 +296,8 @@ export default class ChildList extends Component {
                 return require('../assets/boy.jpg');
             }
         } else {
-            return { uri: "http://app.rainbowhome.in/ChildImage/" + picture };
+            // return { uri: "http://app.rainbowhome.in/ChildImage/" + picture };
+            return { uri: "http://test.rainbowhome.in/Images/" + picture}
         }
     }
     getImageStyle(style) {

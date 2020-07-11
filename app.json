@@ -1,11 +1,10 @@
 {
   "expo": {
-    "name": "RBH",
+    "name": "ROR",
     "slug": "trial-run",
     "privacy": "public",
     "sdkVersion": "36.0.0",
     "platforms": [
-      "ios",
       "android",
       "web"
     ],

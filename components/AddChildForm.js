@@ -174,6 +174,17 @@ export default class AddChild extends React.Component{
         console.log("change called");
     }
 
+    loadStats(){
+        getDataAsync(base_url + '/dashboard/' + getOrgId())
+            .then(data => {
+                let stats = [] 
+                for(let i = 0; i < data.length; i++){
+                    stats.push([data[i].statusValue, data[i].total])
+                }
+                this.props.navigation.state.params.updateStats(stats)
+             })
+    }
+
     modalclickOKSuccess = () => {
         this.props.navigation.goBack();
     }
@@ -229,6 +240,7 @@ export default class AddChild extends React.Component{
                 response.json().then((responseJson) => {
                     let childId = responseJson.childNo;
                     let childName = responseJson.firstName;
+                    this.loadStats();
                     let photoUrl = base_url+"/upload-image/"+responseJson.childNo;
                     console.log(photoUrl);
                     let imageUri = '';
