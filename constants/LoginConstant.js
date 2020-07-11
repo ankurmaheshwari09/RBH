@@ -4,6 +4,8 @@ global.OrgId = 0;
 
 global.HomeCode = 0;
 
+global.username = '';
+
 export function getOrgId() {
     return global.OrgId;
 }
@@ -24,4 +26,13 @@ export function getHomeCode() {
 
 export function logOut() {
 	EventRegister.emit('logoutEvent',' Logging out ');
+}
+
+export function setUserName(username) {
+    console.log(username);
+    global.username = username;
+}
+
+export function getUserName() {
+    return global.username; 
 }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, ScrollView, ImageBackground, Image } from 'react-native';
 import { DrawerNavigatorItems } from 'react-navigation-drawer';
 import { Ionicons } from '@expo/vector-icons';
-import { getOrgId, getHomeCode } from '../constants/LoginConstant'
+import { getOrgId, getHomeCode, getUserName } from '../constants/LoginConstant'
 
 export default class SideBar extends Component {
 
@@ -28,6 +28,7 @@ export default class SideBar extends Component {
                 >
                     <Text style={styles.text}>Rainbow Homes</Text>
                     <Text style={styles.text}>Home Code - {getHomeCode()} </Text>
+                    <Text style={styles.text}>{getUserName()}</Text>
                 </ImageBackground>
                 <View>
                     <DrawerNavigatorItems {...this.props} />

@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Text, TextInput, View, Picker, ScrollView,
-    KeyboardAvoidingView, ActivityIndicator} from 'react-native';
+    KeyboardAvoidingView, ActivityIndicator, TouchableOpacity} from 'react-native';
 import {Formik} from 'formik';
 import {globalStyles} from '../styles/global';
 import * as yup from 'yup';
@@ -11,7 +11,7 @@ import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 import { containerCSS } from 'react-select/src/components/containers';
-
+import { Ionicons } from '@expo/vector-icons';
 const GeneralInfoFormSchema = yup.object({
     identificationPlace1: yup.string().required(),
     markType1: yup.string().required(),
@@ -294,7 +294,12 @@ export default class GeneralInfoForm extends React.Component{
 
                 </Formik>
                 <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={globalStyles.MainContainer}>
+                    <View style={globalStyles.feedbackContainer}>
+                        <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
+                             <View>
+                                  <Ionicons name="md-close" size={22}></Ionicons>
+                             </View>
+                         </TouchableOpacity>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='General Info' childNo={this.state.child.firstName} />
                     </View>

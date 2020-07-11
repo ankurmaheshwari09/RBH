@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Text, TextInput, View, Picker, ScrollView,
-    KeyboardAvoidingView , Image, StyleSheet, Alert} from 'react-native';
+    KeyboardAvoidingView , Image, StyleSheet, Alert, TouchableOpacity} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Feather} from '@expo/vector-icons';
 import {Formik} from 'formik';
@@ -20,6 +20,7 @@ import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 import {guidGenerator} from '../constants/Base';
+import { Ionicons } from '@expo/vector-icons';
 
 const EditChildSchema = yup.object({
     // ChildPhoto: yup.object(),
@@ -206,14 +207,25 @@ export default class EditChild extends React.Component{
         let dob = moment(values.DOB);
         let doa = moment(values.DOA);
         console.log(doa.isBefore(values.DOB));
+        let diff = doa.diff(dob,'years',true);
         if(doa.isBefore(values.DOB)) {
             Alert.alert(
                 'To Edit Child',
-                'Date of Admission cannt be bofore Date of Birth',
-                [
-                    { text: 'OK', onPress: () => {} },
-                ],
-                { cancelable: false },
+                'Date of Admission cannt be before Date of Birth',
+                        [
+                            { text: 'OK', onPress: () => {} },
+                        ],
+                    { cancelable: false },
+            ); 
+        }
+        else if(diff < 2) {
+                Alert.alert(
+                    'To Edit Child Information',
+                    'Child age should be atleast 2 years',
+                    [
+                        { text: 'OK', onPress: () => {} },
+                    ],
+                    { cancelable: false },
             ); 
             this.setState({ loading: false});
         }
@@ -301,10 +313,10 @@ export default class EditChild extends React.Component{
                         Community: this.state.child.community ? this.state.child.community : '',
                         MotherTongue: this.state.child.motherTongue ? this.state.child.motherTongue : '',
                         ParentalStatus: this.state.child.parentalStatus ? this.state.child.parentalStatus : '',
-                        ReasonForAdmission: this.state.child.reasonForAdmission ? this.state.child.reasonForAdmission : '',
+                        ReasonForAdmission: this.state.child.reasonForAdmission ? parseInt(this.state.child.reasonForAdmission) : '',
                         PreviousEducationStatus: this.state.child.educationStatus ? this.state.child.educationStatus : '',
                         AdmittedBy: this.state.child.admittedBy ? this.state.child.admittedBy : '',
-                        ReferredSource: this.state.child.referredSource ? this.state.child.referredSource : '',
+                        ReferredSource: this.state.child.referredSource ? parseInt(this.state.child.referredSource) : '',
                         ReferredBy: this.state.child.referredBy ? this.state.child.referredBy : '',
                         //ChildStatus: this.state.child.childStatus ? this.state.child.childStatus : '',
                     }
@@ -589,7 +601,12 @@ export default class EditChild extends React.Component{
 
                 </Formik>
                 <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={globalStyles.MainContainer}>
+                    <View style={globalStyles.feedbackContainer}>
+                        <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
+                             <View>
+                                  <Ionicons name="md-close" size={22}></Ionicons>
+                             </View>
+                         </TouchableOpacity>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Child Info' childNo={this.state.child.firstName} />
                     </View>

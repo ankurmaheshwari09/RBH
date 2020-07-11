@@ -15,7 +15,7 @@ export function childConstants(){
     getDataAsync(base_url + '/parental-statuses').then(data => {global.parentalStatusList = data});
 
     global.admissionReasons;
-    getDataAsync(base_url + '/admission-reasons').then(data => {global.admissionReasons = data});
+    getDataAsync(base_url + '/admission-reasons').then(data => {global.admissionReasons = data; console.log('******'); console.log(data)});
 
     global.educationStatusList;
     getDataAsync(base_url + '/education-statuses').then(data => {global.educationStatusList = data});

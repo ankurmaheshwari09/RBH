@@ -47,6 +47,7 @@ export default class ChildList extends Component {
             modalItemsForCurrentItem: null
         };
         this.arrayholder = [];
+        this.counter = 0;
         this.onPress = this.onPress.bind(this);
         this.navigateToOtherScreen = this.navigateToOtherScreen.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -79,6 +80,7 @@ export default class ChildList extends Component {
     }
 
     async getData() {
+        this.counter = 0;
         console.log('inside get');
         let orgId = getOrgId();
         this.setState({
@@ -100,17 +102,10 @@ export default class ChildList extends Component {
                 //   console.log(response,'response-----');
                 let sortedResponse = response.sort((a, b) => a.firstName.localeCompare(b.firstName));
                 sortedResponse = this.setCounterForItemsInList(sortedResponse);
-                // console.log(response, 'ddddddddddd');
-
-                //await this.getAddedData(response);
-                //console.log(this.state.data,'final');
-
+               //  console.log(response, 'ddddddddddd');
 
                 this.arrayholder = sortedResponse;
                 this.setState({ data: sortedResponse, loading: false });
-
-                alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
-
 
             } else {
 
@@ -177,15 +172,17 @@ export default class ChildList extends Component {
         this.navigateToOtherScreen(screen);
     }
     searchFilterFunction = text => {
-
+        let searchList = [];
         this.setState({ search: text });
         if ('' == text) {
+            searchList = this.arrayholder;
+            this.setCounterForItemsInList(searchList);
             this.setState({
-                data: this.arrayholder
+                data: searchList
             });
             return;
         } else {
-            this.state.data = this.arrayholder.filter(function (item) {
+            searchList = this.arrayholder.filter(function (item) {
                 let dateOfBirth = moment(item.dateOfBirth).format('DD/MM/YYYY');
                 let admissionDate = moment(item.admissionDate).format('DD/MM/YYYY');
                 let exitStatus = (item.childStatus === 'Closed') ? 'Exit' : '';
@@ -199,9 +196,19 @@ export default class ChildList extends Component {
                     || exitStatus.toLowerCase().includes(text.toLowerCase())
                     || fullName.toLowerCase().includes(text.toLowerCase()));
             });
+            this.setCounterForItemsInList(searchList);
+            this.setState({
+                data: searchList
+            });
+
             if (this.state.data.length === 0) {
-                alert("Please refresh if new child is added");
+                this.counter = this.counter + 1;
+                if (this.counter > 10) {
+                    this.counter = 0;
+                    alert("Please enter correct search value or refresh the child list");
+                }
             }
+  
         }
     }
     renderHeader = () => {
@@ -320,7 +327,7 @@ export default class ChildList extends Component {
         let firstNameLen = firstName.length;
         let lastNameLen = lastName.length;
         const total = firstNameLen + lastNameLen;
-        console.log(firstNameLen + lastNameLen, 'llllll');
+        
         if (total > 15) {
             return false;
         } else {
@@ -331,6 +338,7 @@ export default class ChildList extends Component {
     async reset() {
         if (this.state.refresh) {
             await this.getData();
+            alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
         }
 
     }
