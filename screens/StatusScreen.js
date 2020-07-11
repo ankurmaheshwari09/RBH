@@ -37,6 +37,7 @@ export default class StatusScreen extends React.Component {
             stayError: false,
             followUpByError: false,
             child: this.props.navigation.getParam('child'),
+            status: this.props.navigation.getParam('child').childStatusId,
             isVisible: false,
             isMailModelVisible: false,
             loading: false,
@@ -63,28 +64,29 @@ export default class StatusScreen extends React.Component {
   
     //setting the dropdown options according to current status
     static getDerivedStateFromProps(props, state) {
-        if (state.child.childStatusId == 1) {
+       
+        if (state.status == 1) {
             
             return {
                 statusOptions: global.status.filter((item)  => {
                     return item.childStatusId == 2 || item.childStatusId == 3;
             })
             }
-        } else if (state.child.childStatusId == 2) {
+        } else if (state.status == 2) {
             
             return {
                 statusOptions: global.status.filter((item) => {
                     return (item.childStatusId == 4) || (item.childStatusId == 3) ;
                 })
             }
-        } else if (state.child.childStatusId == 3) {
+        } else if (state.status == 3) {
             
             return {
                 statusOptions: global.status.filter((item) => {
                     return item.childStatusId == 2 || item.childStatusId == 4;
                 })
             }
-        } else if (state.child.childStatusId == 4) {
+        } else if (state.status == 4) {
             //setting the option as readmission when current option is close
             return {
                 statusOptions: global.status.filter((item) => {
@@ -147,7 +149,10 @@ export default class StatusScreen extends React.Component {
                     console.log(res);
                    
                 });
-                this.setState({ successDisplay: true });
+                this.setState({ successDisplay: true, status: values.ChildStatus }, () => {
+                    const { params } = this.props.navigation.state;
+                    params.refreshChildList();
+                });
             } else {
                 throw Error(response.status);
             }
@@ -166,9 +171,8 @@ export default class StatusScreen extends React.Component {
     navigateToChildListScreen() {
         this.setState({ isVisible: false }, () => {
             if (this.state.successDisplay) {
-                this.props.navigation.navigate('ViewChild');
-                const { params } = this.props.navigation.state;
-                params.refreshChildList();
+              //  this.props.navigation.navigate('ViewChild');
+              
             }
         })
        
@@ -180,10 +184,7 @@ export default class StatusScreen extends React.Component {
     }
 
     validateEmailContainer() {
-        console.log(this.state.checkEmail,'eeee');
-        console.log(this.state.checkPhNo);
-        console.log(this.state.checkEmail !== '')
-        
+       
         if ((this.state.checkEmail === null || this.state.checkEmail === '') && (this.state.checkPhNo === null || this.state.checkPhNo === '')) {
             console.log("inside empty");
             this.setState({ emailContainerEmpty: true, emailError: false, phNoError: false });
@@ -251,12 +252,10 @@ export default class StatusScreen extends React.Component {
         ];
        
         return (
-            <View style={globalStyles.container}>
+            <View style = {globalStyles.scrollContainer}>
 
                 {/*Background Image*/}
-                <View style={globalStyles.backgroundlogoimageview}>
-                    <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
-                </View>
+               
               
                 <Formik
                     initialValues={{
@@ -551,9 +550,9 @@ export default class StatusScreen extends React.Component {
                                             <Modal style={styles.emailContainer} isVisible={this.state.isMailModelVisible} onBackdropPress={() => { this.setState({ isMailModelVisible: false }) }}>
                                                 <View>
 
-                                                    <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => { this.setState({ isMailModelVisible: false }) }}>
+                                                    <TouchableOpacity style={styles.closeModalIcon} onPress={() => { this.setState({ isMailModelVisible: false }) }}>
                                                         <View>
-                                                            <Ionicons name="md-close-circle-outline" size={20}></Ionicons>
+                                                            <Ionicons name="md-close-circle-outline" size={22}></Ionicons>
                                                         </View>
                                                     </TouchableOpacity>
                                                      
@@ -606,9 +605,9 @@ export default class StatusScreen extends React.Component {
                         </KeyboardAvoidingView>
                     )}
                 </Formik>
-                <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.navigateToChildListScreen()}>
-                  
-                    <View style={styles.MainContainer}>
+                <Modal style={styles.modalContainer} isVisible={this.state.isVisible}>
+
+                    <View style={globalStyles.feedbackContainer}>
                         <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => { this.navigateToChildListScreen() }}>
                             <View>
                                 <Ionicons name="md-close" size={22}></Ionicons>
@@ -684,6 +683,10 @@ const styles = StyleSheet.create({
     },
     selecetdOptions: {
         color: 'green'
+    },
+    closeModalIcon: {
+        left: Dimensions.get('window').width / 2.5,
+        top: Dimensions.get('window').height / 200 ,
     },
     
 });
