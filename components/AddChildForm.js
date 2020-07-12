@@ -237,6 +237,9 @@ export default class AddChild extends React.Component{
         })
         .then((response) =>{
             if(response.ok) {
+                console.log("printing status");
+                console.log(response.status);
+                console.log("printing status");
                 response.json().then((responseJson) => {
                     let childId = responseJson.childNo;
                     let childName = responseJson.firstName;
@@ -300,12 +303,31 @@ export default class AddChild extends React.Component{
                 })
             }
             else {
-                throw Error(response.status);
+                if(response.status == 500) {
+                    response.json().then((responseJson) => {
+                        console.log(responseJson)
+                        if(responseJson.message == "Duplicate profile") {
+                            this.setState({submitAlertMessage: 'Unable to add child. Plesae contact the Admin.'});
+                            Alert.alert(
+                                'Failed To Add Child',
+                                responseJson.message+". Child already present.",
+                                [
+                                    { text: 'OK', onPress: () => console.log("Failed to add child") },
+                                ],
+                                { cancelable: false },
+                            );
+                            this.setState({isVisible: true, errorDisplay: true});
+                            this.setState({showLoader: false,loaderIndex:0});
+                        }
+                    })
+                }
+                else {
+                    throw Error(response.status);
+                }
             }
         })
         .catch((error) => {
             this.setState({submitAlertMessage: 'Unable to add child. Plesae contact the Admin.'});
-            alert(this.state.submitAlertMessage);
             Alert.alert(
                 'Failed To Add Child',
                 this.state.submitAlertMessage,
@@ -314,9 +336,6 @@ export default class AddChild extends React.Component{
                 ],
                 { cancelable: false },
             );
-            this.setState({isVisible: true});
-            this.setState({ errorDisplay: true });
-            console.log(error);
             this.setState({isVisible: true, errorDisplay: true});
             this.setState({showLoader: false,loaderIndex:0});
         });
