@@ -15,6 +15,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
+import { Ionicons } from '@expo/vector-icons';
 
 const FamilyFormSchema = yup.object({
     Name: yup.string().required(),
@@ -367,7 +368,12 @@ export default class FamilyForm extends React.Component {
                     <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
                 </View>
                 <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisibleMsg} onBackdropPress={() => this.setState({ isVisibleMsg: false })}>
-                    <View style={globalStyles.MainContainer}>
+                    <View style={globalStyles.feedbackContainer}>
+                        <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisibleMsg: false })}>
+                            <View>
+                                <Ionicons name="md-close" size={22}></Ionicons>
+                            </View>
+                        </TouchableOpacity>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Family Details' childNo={this.state.child.firstName} />
                     </View>
