@@ -1,6 +1,9 @@
 import { base_url, getDataAsync } from './Base'
+import { getOrgId } from './LoginConstant'
 
 export function educationConstants() {
+    let orgid = getOrgId();
+    console.log(orgid)
 
     global.studyingclass;
     getDataAsync(base_url + '/studying-class').then(data => { global.studyingclass = data })
@@ -19,5 +22,8 @@ export function educationConstants() {
 
     global.literacyStatus;
     getDataAsync(base_url + '/literacyStatus').then(data => { global.literacyStatus = data })
+
+    global.schoolname;
+    getDataAsync(base_url + '/unique-schoolName/' + orgid).then(data => { global.schoolname = data })
 }
 

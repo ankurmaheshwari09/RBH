@@ -1,13 +1,14 @@
 import React from 'react';
 import {
-    Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView, Image, Field, StyleSheet, Dimensions
+    Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView, Image, TouchableOpacity
 } from 'react-native';
 import { Formik } from 'formik';
 import { globalStyles } from '../styles/global';
 import * as yup from 'yup';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import moment from 'moment';
 import CheckBox from 'react-native-check-box';
 import UpdateApi from "../constants/UpdateApi";
@@ -20,6 +21,12 @@ const EducationFormSchema = yup.object({
     Class: yup.string().required(),
     Medium: yup.string().required(),
     SchoolName: yup.string().required(),
+    schoolnamedetails: yup.string()
+        .when('SchoolName', {
+            is: '0',
+            then: yup.string()
+                .required(),
+        }),
     SchoolType: yup.string().required(),
     SchoolPlace: yup.string().required(),
     StartingDate: yup.string().required()
@@ -42,6 +49,7 @@ export default class EducationScreen extends React.Component {
             studyingtype: [],
             childstaytype: [],
             scholoshiptype: [],
+            schoolName: []
         }
     }
     _pickStartDate = (event, date, handleChange) => {
@@ -77,10 +85,12 @@ export default class EducationScreen extends React.Component {
     }
 
     updateEducationDetails(values) {
+        console.log(values.Class);
         this.setState({ loading: true });
         let request_body = JSON.stringify({
+
             "childNo": this.state.child.childNo,
-            "schoolName": values.SchoolName,
+            "schoolName": values.SchoolName == 0 ? values.schoolnamedetails : values.SchoolName,
             "schooltype": values.SchoolType,
             "studyingclass": values.Class,
             "medium": values.Medium,
@@ -132,6 +142,7 @@ export default class EducationScreen extends React.Component {
                         Class: '',
                         Medium: '',
                         SchoolName: '',
+                        schoolnamedetails: '',
                         SchoolType: '',
                         SchoolPlace: '',
                         StartingDate: this.state.startingdate,
@@ -156,7 +167,7 @@ export default class EducationScreen extends React.Component {
                 }}
             >
                 {props => (
-                    <KeyboardAvoidingView behavior="padding"
+                    <KeyboardAvoidingView behavior="null"
                         enabled style={globalStyles.keyboardavoid}
                         keyboardVerticalOffset={200}>
                         <ScrollView showsVerticalScrollIndicator={false}>
@@ -176,7 +187,14 @@ export default class EducationScreen extends React.Component {
                                 <Picker
                                     selectedValue={props.values.Class}
                                     style={globalStyles.dropDown}
-                                    onValueChange={(Class) => props.setFieldValue('Class', Class)}
+                                    onValueChange={(itemValue, itemIndex) => {
+                                        props.setFieldValue('Class', itemValue)
+                                        if (itemValue > 13) {
+                                            this.setState({ showElements: true })
+                                        } else {
+                                            this.setState({ showElements: false })
+                                        }
+                                    }}
                                     value={props.values.Class}
                                 >
                                     <Picker.Item color='grey' label="Select Class" value="" />
@@ -185,6 +203,18 @@ export default class EducationScreen extends React.Component {
                                     })}
                                 </Picker>
                                 <Text style={globalStyles.errormsg}>{props.touched.Class && props.errors.Class}</Text>
+
+                                {this.state.showElements ?
+                                    <View>
+                                        <Text style={globalStyles.label}>Class details:</Text>
+                                        <TextInput
+                                            style={globalStyles.input}
+                                            onChangeText={props.handleChange('CDetail')}
+                                            value={props.values.CDetail}
+                                        />
+                                        <Text></Text>
+                                    </View> : null}
+
 
                                 {/*Child Medium*/}
                                 <Text style={globalStyles.label}>Medium:  <Text style={{ color: "red" }}>*</Text> </Text>
@@ -203,12 +233,39 @@ export default class EducationScreen extends React.Component {
 
                                 {/*School Name*/}
                                 <Text style={globalStyles.label}>School/College/Institution Name: <Text style={{ color: "red" }}>*</Text> </Text>
-                                <TextInput
-                                    style={globalStyles.input}
-                                    onChangeText={props.handleChange('SchoolName')}
+                                <Picker
+                                    selectedValue={props.values.SchoolName}
+                                    style={globalStyles.dropDown}
+                                    onValueChange={(itemValue, itemIndex) => {
+                                        props.setFieldValue('SchoolName', itemValue)
+                                        if (itemValue == 0) {
+                                            this.setState({ showElementss: true })
+                                        } else {
+                                            this.setState({ showElementss: false })
+                                        }
+                                    }}
                                     value={props.values.SchoolName}
-                                />
+                                >
+                                    <Picker.Item color='grey' key="0" label="Select School Name" value="" />
+                                    {global.schoolname.map((item) => {
+                                        return <Picker.Item key={item.rowNum} label={item.schoolName} value={item.schoolName} />
+                                    })}
+                                    <Picker.Item label="Other" value="0" />
+                                </Picker>
                                 <Text style={globalStyles.errormsg}>{props.touched.SchoolName && props.errors.SchoolName}</Text>
+
+                                {this.state.showElementss ?
+                                    <View>
+                                        <Text style={globalStyles.label}>Details:</Text>
+                                        <TextInput
+                                            style={globalStyles.input}
+                                            onChangeText={props.handleChange('schoolnamedetails')}
+                                            value={props.values.schoolnamedetails}
+                                        />
+                                        < Text style={globalStyles.errormsg}>{props.touched.schoolnamedetails && props.errors.schoolnamedetails}</Text>
+
+                                    </View> : null}
+
 
                                 {/*School Type*/}
                                 <Text style={globalStyles.label}>School/College/Institution Type: <Text style={{ color: "red" }}>*</Text> </Text>
@@ -255,6 +312,7 @@ export default class EducationScreen extends React.Component {
                                             value={new Date()}
                                             mode={'date'}
                                             onChange={(e, date) => this._pickStartDate(e, date, props.handleChange('StartingDate'))}
+                                            maximumDate={new Date((new Date()).setDate((new Date()).getDate() - 1))}
                                         />
                                     }
                                 </View>
@@ -333,18 +391,9 @@ export default class EducationScreen extends React.Component {
                                         <Picker.Item label="Rainbow" value="Rainbow" />
                                         <Picker.Item label="Sneha Ghar" value="Sneha Ghar" />
 
-                                    </Picker>
-                                </View> :
-                                    <View>
-                                        <Text style={globalStyles.label}>Class details:</Text>
-                                        <TextInput
-                                            style={globalStyles.input}
-                                            onChangeText={props.handleChange('CDetail')}
-                                            value={props.values.VPCDetail}
-                                        />
-                                    </View>
-                                }
-                                <Text></Text>
+                                    </Picker><Text></Text>
+                                </View> : null}
+
 
                                 {/*Scholarship/Sponsorship*/}
                                 <Text style={globalStyles.label}>Scholarship/Sponsorship:</Text>
@@ -404,7 +453,12 @@ export default class EducationScreen extends React.Component {
 
             </Formik>
             <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                <View style={globalStyles.MainContainer}>
+                <View style={globalStyles.feedbackContainer}>
+                    <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
+                        <View>
+                            <Ionicons name="md-close" size={22}></Ionicons>
+                        </View>
+                    </TouchableOpacity>
                     <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                     <SuccessDisplay successDisplay={this.state.successDisplay} type='Education' childNo={this.state.child.firstName} />
                 </View>

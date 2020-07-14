@@ -17,7 +17,7 @@ export default class EducationSegInfo extends Component {
         super(props)
     }
     state = {
-        formIndex: -1,
+        formIndex: 1,
         loading: false,
         child: this.props.navigation.getParam('child'),
         prevEducation: {
@@ -39,7 +39,7 @@ export default class EducationSegInfo extends Component {
 
     componentDidMount() {
         this.setState({ search: null, loading: true });
-        getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => { this.setState({ childData: data, preedustatus: data.educationStatus, formIndex: 0 }); console.log(data) })
+        getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => { this.setState({ childData: data, preedustatus: data.educationStatus, formIndex: 1 }); console.log(data) })
 
         getDataAsync(base_url + '/child-education/' + this.state.child.childNo).then(data => {
 
@@ -62,7 +62,7 @@ export default class EducationSegInfo extends Component {
     }
 
     render() {
-        const { formIndex } = this.state
+
         return (
             <View style={globalStyles.container}>
                 <View style={globalStyles.backgroundlogoimageview}>
@@ -75,19 +75,21 @@ export default class EducationSegInfo extends Component {
                         showsHorizontalScrollIndicator={false}
                         style={globalStyles.segScrollView}
                     >
-                        {this.state.preedustatus != 1 ?
-                            <View>
-                                <TouchableOpacity style={{ borderBottomWidth: this.state.formIndex == 0 ? 3 : 0, borderBottomColor: this.state.formIndex == 0 ? 'grey' : '#f0f0f0' }} onPress={() => this.setState({ formIndex: 0 })}>
-                                    <Text style={{ paddingLeft: 10, paddingRight: 20, paddingTop: 10 }}>Previous Education</Text>
-                                </TouchableOpacity>
-                            </View> : null}
+                        {(this.state.preedustatus != 1) ?
+                            (this.state.prevEducation.schoolName == null) ?
+                                <View>
+                                    <TouchableOpacity style={{ borderBottomWidth: this.state.formIndex === 0 ? 3 : 0, borderBottomColor: this.state.formIndex === 0 ? 'grey' : '#f0f0f0' }} onPress={() => this.setState({ formIndex: 0 })}>
+                                        <Text style={{ paddingLeft: 10, paddingRight: 20, paddingTop: 10 }}>Previous Education</Text>
+                                    </TouchableOpacity>
+                                </View> : null
+                            : null}
                         <View>
-                            <TouchableOpacity style={{ borderBottomWidth: this.state.formIndex == 1 ? 3 : 0, borderBottomColor: this.state.formIndex == 1 ? 'grey' : '#f0f0f0' }} onPress={() => this.setState({ formIndex: 1 })}>
+                            <TouchableOpacity style={{ borderBottomWidth: this.state.formIndex === 1 ? 3 : 0, borderBottomColor: this.state.formIndex === 1 ? 'grey' : '#f0f0f0' }} onPress={() => this.setState({ formIndex: 1 })}>
                                 <Text style={{ paddingLeft: 10, paddingRight: 20, paddingTop: 10 }}>Education</Text>
                             </TouchableOpacity>
                         </View>
                         <View>
-                            <TouchableOpacity style={{ borderBottomWidth: this.state.formIndex == 2 ? 3 : 0, borderBottomColor: this.state.formIndex == 2 ? 'grey' : '#f0f0f0' }} onPress={() => this.setState({ formIndex: 2 })}>
+                            <TouchableOpacity style={{ borderBottomWidth: this.state.formIndex === 2 ? 3 : 0, borderBottomColor: this.state.formIndex === 2 ? 'grey' : '#f0f0f0' }} onPress={() => this.setState({ formIndex: 2 })}>
                                 <Text style={{ paddingLeft: 10, paddingRight: 20, paddingTop: 10 }}>Exam Result</Text>
                             </TouchableOpacity>
                         </View>
@@ -95,9 +97,15 @@ export default class EducationSegInfo extends Component {
                     </ScrollView>
                 </View>
                 <View style={globalStyles.scrollContainer}>
-                    {formIndex === 0 && <PrevEduForm navigation={this.props.navigation} prevEducation={this.state.prevEducation} />}
-                    {formIndex === 1 && <EducationForm navigation={this.props.navigation} childData={this.state.childData} />}
-                    {formIndex === 2 && <ResultForm navigation={this.props.navigation} prevEducation={this.state.studyingclass} />}
+
+                    {console.log(this.state.prevEducation.educationNo)}
+                    {(this.state.preedustatus != 1) ?
+                        (this.state.prevEducation.schoolName == null) ?
+                            this.state.formIndex === 0 && <PrevEduForm navigation={this.props.navigation} prevEducation={this.state.prevEducation} /> : null
+                        : null}
+
+                    {this.state.formIndex === 1 && <EducationForm navigation={this.props.navigation} childData={this.state.childData} />}
+                    {this.state.formIndex === 2 && <ResultForm navigation={this.props.navigation} prevEducation={this.state.studyingclass} />}
 
                 </View>
             </View >
