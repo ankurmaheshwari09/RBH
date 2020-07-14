@@ -398,7 +398,7 @@ export default class CommitteeScreen extends React.Component {
                     )}
 
                 </Formik>
-                <Modal style={styles.modalContainer} isVisible={this.state.isVisible}>
+                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible}>
 
                     <View style={globalStyles.feedbackContainer}>
                         <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => { this.navigateToChildListScreen() }}>
@@ -454,18 +454,6 @@ const styles = StyleSheet.create({
     },
     FontStyle: {
         fontSize: 15
-    }, 
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',   
-        alignSelf: 'center',
-        backgroundColor: 'white',
-        width: Dimensions.get('window').width /2 + 50,
-        maxHeight: Dimensions.get('window').height / 4,
-        top: 150,
-        borderRadius: 30
-      //  margin: 90,
-    }, 
+    }
 });
 
