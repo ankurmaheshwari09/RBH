@@ -1,12 +1,13 @@
 import React from 'react';
 import {
     Text, KeyboardAvoidingView, Picker, View, ScrollView,
-    TextInput, Button, ActivityIndicator
+    TextInput, Button, TouchableOpacity
 } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { globalStyles } from '../styles/global';
 import moment from 'moment';
+import { Ionicons } from '@expo/vector-icons';
 import CheckBox from 'react-native-check-box';
 import UpdateApi from "../constants/UpdateApi";
 import Modal from 'react-native-modal';
@@ -90,13 +91,13 @@ export default class PrevEduForm extends React.Component {
                 <Formik
                     initialValues={
                         {
-                            dropoutReason: this.state.child.dropoutReason,
-                            yearOfStudied: this.props.prevEducation.date_to ? this.getYear(this.props.prevEducation.date_to) : '',
-                            medium: this.props.prevEducation.medium,
-                            schoolName: this.props.prevEducation.schoolName,
-                            schooltype: this.props.prevEducation.schooltype,
-                            class: this.props.prevEducation.studyingclass,
-                            schoolPlace: this.props.prevEducation.address,
+                            dropoutReason: '',
+                            yearOfStudied: '',
+                            medium: '',
+                            schoolName: '',
+                            schooltype: '',
+                            class: '',
+                            schoolPlace: '',
                             literacyStatus: '',
                             FirstGenLearner: '',
                         }
@@ -250,9 +251,14 @@ export default class PrevEduForm extends React.Component {
 
                 </Formik>
                 <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={globalStyles.MainContainer}>
+                    <View style={globalStyles.feedbackContainer}>
+                        <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
+                            <View>
+                                <Ionicons name="md-close" size={22}></Ionicons>
+                            </View>
+                        </TouchableOpacity>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Prev Edu' childNo={this.state.child.firstName} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Previous Education' childNo={this.state.child.firstName} />
                     </View>
                 </Modal>
                 <LoadingDisplay loading={this.state.loading} />
