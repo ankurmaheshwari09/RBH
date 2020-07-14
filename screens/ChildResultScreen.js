@@ -1,11 +1,12 @@
 import React from 'react';
 import {
-    Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView, Image
+    Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView, Image, TouchableOpacity
 } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { globalStyles } from '../styles/global';
 import UpdateApi from "../constants/UpdateApi";
+import { Ionicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
@@ -22,20 +23,11 @@ export default class ChildResultScreen extends React.Component {
             child: this.props.navigation.getParam('child'),
         }
     }
-    getApiMethod(prevEducation) {
-        if ('newChild' in this.props.prevEducation) {
-            prevEducation.modified_on = new Date()
-            return UpdateApi.addData(JSON.stringify(prevEducation), 'child-education')
-        }
-        else {
-            return UpdateApi.updateData(JSON.stringify(prevEducation), 'child-education')
-        }
-    }
     examResultsubmit(values) {
         this.setState({ loading: true });
         let request_body = JSON.stringify({
             "childNo": this.state.child.childNo,
-            "examId": values.Class,
+            "studyingClass": values.Class,
             "appeared": values.Appeared,
             "result": values.Result,
             "percentage": values.Percentage,
@@ -94,7 +86,7 @@ export default class ChildResultScreen extends React.Component {
                 }}
             >
                 {props => (
-                    <KeyboardAvoidingView behavior="padding"
+                    <KeyboardAvoidingView behavior="null"
                         enabled style={globalStyles.keyboardavoid}
                         keyboardVerticalOffset={200}>
                         <ScrollView showsVerticalScrollIndicator={false}>
@@ -167,8 +159,14 @@ export default class ChildResultScreen extends React.Component {
                 )}
 
             </Formik>
+
             <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                <View style={globalStyles.MainContainer}>
+                <View style={globalStyles.feedbackContainer}>
+                    <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
+                        <View>
+                            <Ionicons name="md-close" size={22}></Ionicons>
+                        </View>
+                    </TouchableOpacity>
                     <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                     <SuccessDisplay successDisplay={this.state.successDisplay} type='Exam Result' childNo={this.state.child.firstName} />
                 </View>
