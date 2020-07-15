@@ -15,14 +15,19 @@ import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 
 const HealthCheckListSchema = yup.object({
-    HIVTest: yup.string().required("HIV Test is a required field"),
-    //HIVTestResult: yup.string().required("HIV Result is a required field"),
-    TBTest: yup.string().required("TB Test is a required field"),
-    //TBTestResult: yup.string().required("TB Result is a required field"),
-    Deworming: yup.string().required("Deworming is a required field"),
+    HIVTest: yup.string(),
+    //HIVTest: yup.string().required("HIV Test is a required field"),
+    //HIVTestResult: yup.string().required("HIV Test Result is a required field"),
+    TBTest: yup.string(),
+    //TBTest: yup.string().required("TB Test is a required field"),
+    //TBTestResult: yup.string().required("TB Test Result is a required field"),
+    Deworming: yup.string(),
+    //Deworming: yup.string().required("Deworming is a required field"),
     //DewormingDate: yup.string().required("Deworming Date is a required field"),
-    CampsCheckUps: yup.string().required("Camps Check Ups is a required field"),
-    Gynecology: yup.string().required("Gynecology is a required field"),
+    //CampsCheckUps: yup.string().required("Camps Check Ups is a required field"),
+    CampsCheckUps: yup.string(),
+    Gynecology: yup.string(),
+    //Gynecology: yup.string().required("Gynecology is a required field"),
     //GynecologyDate: yup.string().required("Gynecology Date is a required field")
 });
 
@@ -336,7 +341,7 @@ export default class ChildHealthCheckList extends React.Component{
                                         }
                                     </View>
                                 :null}
-                                {this.state.DewormingDateError ? <Text style={globalStyles.errormsg}> DewormingDate is a required field </Text> : null}
+                                {this.state.DewormingDateError ? <Text style={globalStyles.errormsg}> Deworming Date is a required field </Text> : null}
 
                                 <Text style = {globalStyles.label}>Camps Check Ups:</Text>
 
@@ -394,7 +399,7 @@ export default class ChildHealthCheckList extends React.Component{
                                         }
                                     </View>
                                 :null}
-                                {this.state.GynecologyDateError ? <Text style={globalStyles.errormsg}> GynecologyDate is a required field </Text> : null}
+                                {this.state.GynecologyDateError ? <Text style={globalStyles.errormsg}> Gynecology Date is a required field </Text> : null}
 
                                 <Button style = {globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                             </View>
