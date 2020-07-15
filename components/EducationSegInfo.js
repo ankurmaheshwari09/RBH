@@ -39,13 +39,13 @@ export default class EducationSegInfo extends Component {
 
     componentDidMount() {
         this.setState({ search: null, loading: true });
-        getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => { this.setState({ childData: data, preedustatus: data.educationStatus, formIndex: 1 }); console.log(data) })
+        getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => { this.setState({ childData: data, preedustatus: data.educationStatus }); console.log(data) })
 
         getDataAsync(base_url + '/child-education/' + this.state.child.childNo).then(data => {
             console.log(data)
-            let edu = data[0];
-            let required_date = new Date(edu.created_on)
             if (data !== null && JSON.stringify(data) !== JSON.stringify([])) {
+                let edu = data[0];
+                let required_date = new Date(edu.created_on)
                 let studyingclass = data[0].studyingclass;
                 for (let i = 1; i < data.length; i++) {
                     console.log(data[i].created_on)
@@ -109,7 +109,7 @@ export default class EducationSegInfo extends Component {
 
                     {console.log(this.state.prevEducation.educationNo)}
                     {(this.state.preedustatus != 1) ?
-                        (this.state.prevEducation.schoolName == null) ?
+                        (this.state.prevEducation.schoolName == null) ? this.setState({ formIndex: 0 }) &&
                             this.state.formIndex === 0 && <PrevEduForm navigation={this.props.navigation} prevEducation={this.state.prevEducation} /> : null
                         : null}
 
