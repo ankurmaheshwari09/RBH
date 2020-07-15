@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView, Image} from 'react-native';
+import {Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView, Image, TouchableOpacity} from 'react-native';
 import {useField, useFormikContext, Formik} from 'formik';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Feather} from '@expo/vector-icons';
@@ -9,6 +9,7 @@ import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
 import {base_url} from '../constants/Base';
 import Modal from 'react-native-modal';
+import { Ionicons } from '@expo/vector-icons';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
@@ -220,7 +221,7 @@ export default class ChildHealthCheckList extends React.Component{
 
                                 {this.state.showHIVTestResult ?
                                     <View>
-                                    <Text style = {globalStyles.text}>HIV Test Result:</Text>
+                                    <Text style = {globalStyles.label}>HIV Test Result:</Text>
                                     <Picker
                                         selectedValue = {props.values.HIVTestResult}
                                         style = {globalStyles.dropDown}
@@ -402,9 +403,14 @@ export default class ChildHealthCheckList extends React.Component{
 
                 </Formik>
                 <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={globalStyles.MainContainer}>
-                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Health CheckList Status' childNo={this.state.child.firstName} />
+                    <View style={globalStyles.feedbackContainer}>
+                      <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
+                          <View>
+                                  <Ionicons name="md-close" size={22}></Ionicons>
+                          </View>
+                      </TouchableOpacity>
+                      <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                      <SuccessDisplay successDisplay={this.state.successDisplay} type='Health CheckList Status' childNo={this.state.child.firstName} />
                     </View>
                 </Modal>
                 <LoadingDisplay loading={this.state.loading} />
