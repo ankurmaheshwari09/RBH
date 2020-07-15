@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView, Image} from 'react-native';
+import {Button, Text, TextInput, View, Picker, ScrollView, KeyboardAvoidingView, Image, TouchableOpacity} from 'react-native';
 import {useField, useFormikContext, Formik} from 'formik';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Feather} from '@expo/vector-icons';
@@ -9,19 +9,25 @@ import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
 import {base_url} from '../constants/Base';
 import Modal from 'react-native-modal';
+import { Ionicons } from '@expo/vector-icons';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 
 const HealthCheckListSchema = yup.object({
-    HIVTest: yup.string().required("HIV Test is a required field"),
-    //HIVTestResult: yup.string().required("HIV Result is a required field"),
-    TBTest: yup.string().required("TB Test is a required field"),
-    //TBTestResult: yup.string().required("TB Result is a required field"),
-    Deworming: yup.string().required("Deworming is a required field"),
+    HIVTest: yup.string(),
+    //HIVTest: yup.string().required("HIV Test is a required field"),
+    //HIVTestResult: yup.string().required("HIV Test Result is a required field"),
+    TBTest: yup.string(),
+    //TBTest: yup.string().required("TB Test is a required field"),
+    //TBTestResult: yup.string().required("TB Test Result is a required field"),
+    Deworming: yup.string(),
+    //Deworming: yup.string().required("Deworming is a required field"),
     //DewormingDate: yup.string().required("Deworming Date is a required field"),
-    CampsCheckUps: yup.string().required("Camps Check Ups is a required field"),
-    Gynecology: yup.string().required("Gynecology is a required field"),
+    //CampsCheckUps: yup.string().required("Camps Check Ups is a required field"),
+    CampsCheckUps: yup.string(),
+    Gynecology: yup.string(),
+    //Gynecology: yup.string().required("Gynecology is a required field"),
     //GynecologyDate: yup.string().required("Gynecology Date is a required field")
 });
 
@@ -220,7 +226,7 @@ export default class ChildHealthCheckList extends React.Component{
 
                                 {this.state.showHIVTestResult ?
                                     <View>
-                                    <Text style = {globalStyles.text}>HIV Test Result:</Text>
+                                    <Text style = {globalStyles.label}>HIV Test Result:</Text>
                                     <Picker
                                         selectedValue = {props.values.HIVTestResult}
                                         style = {globalStyles.dropDown}
@@ -335,7 +341,7 @@ export default class ChildHealthCheckList extends React.Component{
                                         }
                                     </View>
                                 :null}
-                                {this.state.DewormingDateError ? <Text style={globalStyles.errormsg}> DewormingDate is a required field </Text> : null}
+                                {this.state.DewormingDateError ? <Text style={globalStyles.errormsg}> Deworming Date is a required field </Text> : null}
 
                                 <Text style = {globalStyles.label}>Camps Check Ups:</Text>
 
@@ -393,7 +399,7 @@ export default class ChildHealthCheckList extends React.Component{
                                         }
                                     </View>
                                 :null}
-                                {this.state.GynecologyDateError ? <Text style={globalStyles.errormsg}> GynecologyDate is a required field </Text> : null}
+                                {this.state.GynecologyDateError ? <Text style={globalStyles.errormsg}> Gynecology Date is a required field </Text> : null}
 
                                 <Button style = {globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                             </View>
@@ -402,9 +408,14 @@ export default class ChildHealthCheckList extends React.Component{
 
                 </Formik>
                 <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={globalStyles.MainContainer}>
-                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Health CheckList Status' childNo={this.state.child.firstName} />
+                    <View style={globalStyles.feedbackContainer}>
+                      <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
+                          <View>
+                                  <Ionicons name="md-close" size={22}></Ionicons>
+                          </View>
+                      </TouchableOpacity>
+                      <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                      <SuccessDisplay successDisplay={this.state.successDisplay} type='Health CheckList Status' childNo={this.state.child.firstName} />
                     </View>
                 </Modal>
                 <LoadingDisplay loading={this.state.loading} />
