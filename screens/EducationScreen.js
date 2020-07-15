@@ -102,6 +102,7 @@ export default class EducationScreen extends React.Component {
             "sponsorship": values.ScholarshipSponsorship,
             "sponsorshipFor": this.state.scholoshiptype.sort().join(','),
             "modified_on": new Date(),
+            "address": values.SchoolPlace,
 
         });
         console.log(values);
@@ -244,7 +245,7 @@ export default class EducationScreen extends React.Component {
                                             this.setState({ showElementsschool: false })
                                         }
                                     }}
-                                    value={props.values.SchoolName}
+                                //value={props.values.SchoolName}
                                 >
                                     <Picker.Item color='grey' label="Select School Name" value="" />
                                     {global.schoolname.map((item) => {
