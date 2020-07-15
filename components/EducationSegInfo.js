@@ -39,7 +39,7 @@ export default class EducationSegInfo extends Component {
 
     componentDidMount() {
         this.setState({ search: null, loading: true });
-        getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => { this.setState({ childData: data, preedustatus: data.educationStatus }); console.log(data) })
+        getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => { this.setState({ childData: data, preedustatus: data.educationStatus, formIndex: 1 }); console.log(data) })
 
         getDataAsync(base_url + '/child-education/' + this.state.child.childNo).then(data => {
             console.log(data)
@@ -109,7 +109,7 @@ export default class EducationSegInfo extends Component {
 
                     {console.log(this.state.prevEducation.educationNo)}
                     {(this.state.preedustatus != 1) ?
-                        (this.state.prevEducation.schoolName == null) ? this.setState({ formIndex: 0 }) &&
+                        (this.state.prevEducation.schoolName == null) ?
                             this.state.formIndex === 0 && <PrevEduForm navigation={this.props.navigation} prevEducation={this.state.prevEducation} /> : null
                         : null}
 
