@@ -23,7 +23,7 @@ const EducationFormSchema = yup.object({
     SchoolName: yup.string().required(),
     schoolnamedetails: yup.string()
         .when('SchoolName', {
-            is: '0',
+            is: 'Other',
             then: yup.string()
                 .required(),
         }),
@@ -90,7 +90,7 @@ export default class EducationScreen extends React.Component {
         let request_body = JSON.stringify({
 
             "childNo": this.state.child.childNo,
-            "schoolName": values.SchoolName == 0 ? values.schoolnamedetails : values.SchoolName,
+            "schoolName": values.SchoolName == 'Other' ? values.schoolnamedetails : values.SchoolName,
             "schooltype": values.SchoolType,
             "studyingclass": values.Class,
             "medium": values.Medium,
@@ -238,25 +238,26 @@ export default class EducationScreen extends React.Component {
                                     style={globalStyles.dropDown}
                                     onValueChange={(itemValue, itemIndex) => {
                                         props.setFieldValue('SchoolName', itemValue)
-                                        if (itemValue == 0) {
-                                            this.setState({ showElementss: true })
+                                        if (itemValue == 'Other') {
+                                            this.setState({ showElementsschool: true })
                                         } else {
-                                            this.setState({ showElementss: false })
+                                            this.setState({ showElementsschool: false })
                                         }
                                     }}
                                     value={props.values.SchoolName}
                                 >
-                                    <Picker.Item color='grey' key="0" label="Select School Name" value="" />
+                                    <Picker.Item color='grey' label="Select School Name" value="" />
                                     {global.schoolname.map((item) => {
                                         return <Picker.Item key={item.rowNum} label={item.schoolName} value={item.schoolName} />
                                     })}
-                                    <Picker.Item label="Other" value="0" />
+                                    <Picker.Item label="Other" value="Other" />
                                 </Picker>
                                 <Text style={globalStyles.errormsg}>{props.touched.SchoolName && props.errors.SchoolName}</Text>
 
-                                {this.state.showElementss ?
+                                {/*School Nameto enter if other is selected*/}
+                                {this.state.showElementsschool ?
                                     <View>
-                                        <Text style={globalStyles.label}>Details:</Text>
+                                        <Text style={globalStyles.label}>Name:</Text>
                                         <TextInput
                                             style={globalStyles.input}
                                             onChangeText={props.handleChange('schoolnamedetails')}
