@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Text, TextInput, View, Picker, ScrollView, Image,
-    KeyboardAvoidingView} from 'react-native';
+    KeyboardAvoidingView,TouchableOpacity} from 'react-native';
 import {Formik} from 'formik';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -14,6 +14,7 @@ import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
+import { Ionicons } from '@expo/vector-icons';
 
 const ChildGrowthSchema = yup.object({
     AssessmentDate: yup.string().required(),
@@ -189,10 +190,15 @@ _pickAssessmentDate = (event, date, handleChange) => {
    }
     </Formik>
     <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                        <View style={globalStyles.MainContainer}>
-                            <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                            <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName}/ >
-                        </View>
+                         <View style={globalStyles.feedbackContainer}>
+                               <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
+                                   <View>
+                                       <Ionicons name="md-close" size={22}></Ionicons>
+                                    </View>
+                               </TouchableOpacity>
+                  <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                  <SuccessDisplay successDisplay={this.state.successDisplay} type='Child growth Status' childNo={this.state.child.firstName} />
+                  </View>
     </Modal>
     <LoadingDisplay loading={this.state.loading}/>
     </View>

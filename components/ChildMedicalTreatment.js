@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Text, TextInput, View, Picker, ScrollView, Image,
-    KeyboardAvoidingView,Alert} from 'react-native';
+    KeyboardAvoidingView,Alert, TouchableOpacity} from 'react-native';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
@@ -13,6 +13,7 @@ import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
+import { Ionicons } from '@expo/vector-icons';
 
 
 const MedicalTreatmentSchema = yup.object({
@@ -245,10 +246,15 @@ showVisitedDatepicker = () => {
    }
     </Formik>
     <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                            <View style={globalStyles.MainContainer}>
-                                <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                                <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName}/ >
-                            </View>
+                             <View style={globalStyles.feedbackContainer}>
+                                   <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
+                                       <View>
+                                           <Ionicons name="md-close" size={22}></Ionicons>
+                                        </View>
+                                   </TouchableOpacity>
+                             <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                              <SuccessDisplay successDisplay={this.state.successDisplay} type='Child medical treatment Status' childNo={this.state.child.firstName} />
+                              </View>
     </Modal>
      <LoadingDisplay loading={this.state.loading}/>
     </View>
