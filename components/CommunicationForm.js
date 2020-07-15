@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Button, Text, TextInput, View, Picker, ScrollView,Image,
+    Button, Text, TextInput, View, Picker, ScrollView, Image, TouchableOpacity,
     KeyboardAvoidingView
 } from 'react-native';
 import { Formik } from 'formik';
@@ -9,6 +9,7 @@ import * as yup from 'yup';
 import {base_url,getDataAsync} from '../constants/Base';
 import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
+import { Ionicons } from '@expo/vector-icons';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 //import communicationConstants from '../constants/CommunicationConstants';
@@ -319,10 +320,15 @@ export default class CommunicationForm extends React.Component {
 
                 </Formik>
                 <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={globalStyles.MainContainer}>
+                  <View style={globalStyles.feedbackContainer}>
+                        <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
+                             <View>
+                                  <Ionicons name="md-close" size={22}></Ionicons>
+                             </View>
+                         </TouchableOpacity>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Communication Status' childNo={this.state.child.firstName} />
-                    </View>
+                  </View>
                 </Modal>
                 <LoadingDisplay loading={this.state.loading} />
             </View>
