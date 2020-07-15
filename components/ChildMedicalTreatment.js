@@ -255,7 +255,7 @@ showVisitedDatepicker = () => {
                                         </View>
                                    </TouchableOpacity>
                              <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                              <SuccessDisplay successDisplay={this.state.successDisplay} type='Child medical treatment Status' childNo={this.state.child.firstName} />
+                              <SuccessDisplay successDisplay={this.state.successDisplay} type='MedicalTreatment Status' childNo={this.state.child.firstName} />
                               </View>
     </Modal>
      <LoadingDisplay loading={this.state.loading}/>
