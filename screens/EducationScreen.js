@@ -90,7 +90,7 @@ export default class EducationScreen extends React.Component {
         let request_body = JSON.stringify({
 
             "childNo": this.state.child.childNo,
-            "schoolName": values.SchoolName == 0 ? values.schoolnamedetails : values.SchoolName,
+            "schoolName": values.SchoolName == 'Other' ? values.schoolnamedetails : values.SchoolName,
             "schooltype": values.SchoolType,
             "studyingclass": values.Class,
             "medium": values.Medium,
