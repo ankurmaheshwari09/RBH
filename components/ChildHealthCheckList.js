@@ -318,6 +318,7 @@ export default class ChildHealthCheckList extends React.Component{
                                             value={this.state.DewormingDate}
                                             editable={false}
                                             onValueChange={props.handleChange('DewormingDate')}
+
                                         />
                                         <TouchableHighlight onPress={this.showDewormingDatepicker}>
                                             <View>
@@ -331,6 +332,7 @@ export default class ChildHealthCheckList extends React.Component{
                                                 value={new Date()}
                                                 mode={'date'}
                                                 onChange={(e, date) => this._pickDewormingDate(e, date, props.handleChange('DewormingDate'))}
+                                                maximumDate={new Date((new Date()).setDate((new Date()).getDate() - 1))}
                                             />
                                         }
                                     </View>
@@ -389,6 +391,7 @@ export default class ChildHealthCheckList extends React.Component{
                                                 value={new Date()}
                                                 mode={'date'}
                                                 onChange={(e, date) => this._pickGynecologyDate(e, date, props.handleChange('GynecologyDate'))}
+                                                maximumDate={new Date((new Date()).setDate((new Date()).getDate() - 1))}
                                             />
                                         }
                                     </View>

@@ -147,6 +147,7 @@ _pickAssessmentDate = (event, date, handleChange) => {
                                                                                         value={new Date()}
                                                                                         mode={'date'}
                                                                                         onChange={(e, date) => this._pickAssessmentDate(e, date, props.handleChange('AssessmentDate'))}
+                                                                                        maximumDate={new Date((new Date()).setDate((new Date()).getDate() - 1))}
                                                                                     />
                                                                                 }
                     </View>
