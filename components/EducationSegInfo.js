@@ -42,7 +42,7 @@ export default class EducationSegInfo extends Component {
         getDataAsync(base_url + '/child/' + this.state.child.childNo).then(data => { this.setState({ childData: data, preedustatus: data.educationStatus, formIndex: 1 }); console.log(data) })
 
         getDataAsync(base_url + '/child-education/' + this.state.child.childNo).then(data => {
-
+            console.log(data)
             if (data !== null && JSON.stringify(data) !== JSON.stringify([])) {
 
                 let studyingclass = data[0].studyingclass;
