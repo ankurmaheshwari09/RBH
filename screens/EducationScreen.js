@@ -23,7 +23,7 @@ const EducationFormSchema = yup.object({
     SchoolName: yup.string().required(),
     schoolnamedetails: yup.string()
         .when('SchoolName', {
-            is: '0',
+            is: 'Other',
             then: yup.string()
                 .required(),
         }),
