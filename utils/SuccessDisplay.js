@@ -1,6 +1,6 @@
 import React from 'react';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { globalStyles } from '../styles/global';
 
@@ -9,6 +9,7 @@ export function SuccessDisplay(props) {
         
         return (
             <View style={styles.container}>
+               
                 <Ionicons name="md-checkmark-circle" size={60} color="green" />
                 <Text style={styles.text}>Successfully updated</Text>
                 <Text style={styles.text}>{props.type} </Text>
@@ -24,13 +25,18 @@ const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         alignSelf: 'center',
-        top: Dimensions.get('window').height / 20,
-        justifyContent: 'center'
+        top: Dimensions.get('window').height / 40,
+        justifyContent: 'center',
+        
     },
     text: {
         color: '#000000',
         fontSize: 15,
         borderColor: '#000000'
-        },
+    },
+    closeModalIcon: {
+        flexDirection: 'row-reverse',
+        left: Dimensions.get('window').width / 5,
+    }
 });
 

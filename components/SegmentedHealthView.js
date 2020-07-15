@@ -17,7 +17,7 @@ constructor(props) {
     super(props);
     console.log(this.props.navigation.getParam('child').childNo);
     this.state = {
-      customStyleIndex: 0,
+      customStyleIndex: 3,
       loading: false,
       child: this.props.navigation.getParam('child'),
       childHealth: {
@@ -75,7 +75,7 @@ constructor(props) {
                   >
                     <View>
                     <TouchableOpacity style = {{borderBottomWidth: this.state.customStyleIndex == 3 ? 3 : 0 ,borderBottomColor: this.state.customStyleIndex == 3 ? 'grey' : '#f0f0f0'}} onPress = {() => this.setState({customStyleIndex : 3})}>
-                         <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:20}}>Health During Addmission</Text>
+                         <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:20}}>Health During Admission</Text>
                      </TouchableOpacity>
                       </View>
                     <View>

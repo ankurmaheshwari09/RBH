@@ -15,12 +15,13 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
+import { Ionicons } from '@expo/vector-icons';
 
 const FamilyFormSchema = yup.object({
     Name: yup.string().required(),
     Relation: yup.string().required(),
     Occupation: yup.string().required(),
-    Age: yup.string(),
+    Age: yup.number(),
     Present: yup.string().required(),
     Remarks: yup.string(),
     Income: yup.string(),
@@ -367,7 +368,12 @@ export default class FamilyForm extends React.Component {
                     <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
                 </View>
                 <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisibleMsg} onBackdropPress={() => this.setState({ isVisibleMsg: false })}>
-                    <View style={globalStyles.MainContainer}>
+                    <View style={globalStyles.feedbackContainer}>
+                        <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisibleMsg: false })}>
+                            <View>
+                                <Ionicons name="md-close" size={22}></Ionicons>
+                            </View>
+                        </TouchableOpacity>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Family Details' childNo={this.state.child.firstName} />
                     </View>
@@ -434,14 +440,14 @@ export default class FamilyForm extends React.Component {
                                     <ScrollView showsVerticalScrollIndicator={false}>
 
                                             <View>
-                                            <Text style={globalStyles.label}>Name :</Text>
+                                            <Text style={globalStyles.label}>Name <Text style={{ color: "red" }}>*</Text> :</Text>
                                                 <TextInput
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Name')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Name} //value updated in 'values' is reflected here
                                             />
                                             <Text style={globalStyles.errormsg}>{props.touched.Name && props.errors.Name}</Text>
-                                            <Text style={globalStyles.label}>Relation :</Text> 
+                                            <Text style={globalStyles.label}>Relation <Text style={{ color: "red" }}>*</Text> :</Text> 
                                                 <Picker
                                                     selectedValue={props.values.Relation}
                                                     style={globalStyles.dropDown}
@@ -464,7 +470,7 @@ export default class FamilyForm extends React.Component {
                                                     onChangeText={props.handleChange('Age')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Age} //value updated in 'values' is reflected here
                                                 />
-                                            <Text style={globalStyles.label}>Occupation :</Text>
+                                            <Text style={globalStyles.label}>Occupation <Text style={{ color: "red" }}>*</Text> :</Text>
                                                 <Picker
                                                     selectedValue={props.values.Occupation}
                                                     style={globalStyles.dropDown}
@@ -480,7 +486,7 @@ export default class FamilyForm extends React.Component {
                                                     }
                                             </Picker>
                                             <Text style={globalStyles.errormsg}>{props.touched.Occupation && props.errors.Occupation}</Text>
-                                            <Text style={globalStyles.label}>Present :</Text>
+                                            <Text style={globalStyles.label}>Present <Text style={{ color: "red" }}>*</Text> :</Text>
                                                 <Picker
                                                     selectedValue={props.values.Present}
                                                     style={globalStyles.dropDown}
@@ -585,14 +591,14 @@ export default class FamilyForm extends React.Component {
                                     <ScrollView showsVerticalScrollIndicator={false}>
 
                                             <View>
-                                            <Text style={globalStyles.label}>Name :</Text>
+                                            <Text style={globalStyles.label}>Name <Text style={{ color: "red" }}>*</Text> :</Text>
                                                 <TextInput
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Name')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Name} //value updated in 'values' is reflected here
                                             />
                                             <Text style={globalStyles.errormsg}>{props.touched.Name && props.errors.Name}</Text>
-                                            <Text style={globalStyles.label}>Relation :</Text>
+                                            <Text style={globalStyles.label}>Relation <Text style={{ color: "red" }}>*</Text> :</Text>
                                                 <Picker
                                                     selectedValue={props.values.Relation}
                                                     style={globalStyles.dropDown}
@@ -615,7 +621,7 @@ export default class FamilyForm extends React.Component {
                                                     onChangeText={props.handleChange('Age')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Age} //value updated in 'values' is reflected here
                                                 />
-                                            <Text style={globalStyles.label}>Occupation :</Text> 
+                                            <Text style={globalStyles.label}>Occupation <Text style={{ color: "red" }}>*</Text> :</Text> 
                                                 <Picker
                                                     selectedValue={props.values.Occupation}
                                                     style={globalStyles.dropDown}
@@ -631,7 +637,7 @@ export default class FamilyForm extends React.Component {
                                                     }
                                             </Picker>
                                             <Text style={globalStyles.errormsg}>{props.touched.Occupation && props.errors.Occupation}</Text>
-                                            <Text style={globalStyles.label}>Present :</Text>
+                                            <Text style={globalStyles.label}>Present <Text style={{ color: "red" }}>*</Text> :</Text>
                                                 <Picker
                                                     selectedValue={props.values.Present}
                                                     style={globalStyles.dropDown}

@@ -37,7 +37,6 @@ export default class ChildList extends Component {
                 { key: 'Status', page: 'ChildStatus' },
                 { key: 'Health', page: 'Health' },
                 { key: 'Education', page: 'Education' },
-                { key: 'Result', page: 'ChildResult' },
                 { key: 'Family', page: 'Family' },
                 { key: 'Communication', page: 'Communication' },
                 { key: 'General Info', page: 'GeneralInfo' },
@@ -48,6 +47,7 @@ export default class ChildList extends Component {
             modalItemsForCurrentItem: null
         };
         this.arrayholder = [];
+        this.counter = 0;
         this.onPress = this.onPress.bind(this);
         this.navigateToOtherScreen = this.navigateToOtherScreen.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -79,7 +79,8 @@ export default class ChildList extends Component {
 
     }
 
-     async getData() {
+    async getData() {
+        this.counter = 0;
         console.log('inside get');
         let orgId = getOrgId();
         this.setState({
@@ -98,20 +99,13 @@ export default class ChildList extends Component {
             if (const1.ok) {
                 //console.log('inside ok')
                 let response = await const1.json();
-               //   console.log(response,'response-----');
+                //   console.log(response,'response-----');
                 let sortedResponse = response.sort((a, b) => a.firstName.localeCompare(b.firstName));
                 sortedResponse = this.setCounterForItemsInList(sortedResponse);
-                // console.log(response, 'ddddddddddd');
-
-                //await this.getAddedData(response);
-                //console.log(this.state.data,'final');
-
+               //  console.log(response, 'ddddddddddd');
 
                 this.arrayholder = sortedResponse;
                 this.setState({ data: sortedResponse, loading: false });
-
-                alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
-
 
             } else {
 
@@ -127,8 +121,19 @@ export default class ChildList extends Component {
         //  console.log(this.state.currentTime.getSeconds());
         console.log("no of seconds taken");
         console.log(new Date().getSeconds() - this.state.currentTime.getSeconds());
+        this.loadStats()
     }
 
+    loadStats(){
+        getDataAsync(base_url + '/dashboard/' + getOrgId())
+            .then(data => {
+                let stats = [] 
+                for(let i = 0; i < data.length; i++){
+                    stats.push([data[i].statusValue, data[i].total])
+                }
+                this.props.screenProps.state.params.updateStats(stats)
+             })
+    }
 
     setCounterForItemsInList(items) {
         let count = 0;
@@ -167,15 +172,17 @@ export default class ChildList extends Component {
         this.navigateToOtherScreen(screen);
     }
     searchFilterFunction = text => {
-
+        let searchList = [];
         this.setState({ search: text });
         if ('' == text) {
+            searchList = this.arrayholder;
+            this.setCounterForItemsInList(searchList);
             this.setState({
-                data: this.arrayholder
+                data: searchList
             });
             return;
         } else {
-            this.state.data = this.arrayholder.filter(function (item) {
+            searchList = this.arrayholder.filter(function (item) {
                 let dateOfBirth = moment(item.dateOfBirth).format('DD/MM/YYYY');
                 let admissionDate = moment(item.admissionDate).format('DD/MM/YYYY');
                 let exitStatus = (item.childStatus === 'Closed') ? 'Exit' : '';
@@ -189,9 +196,19 @@ export default class ChildList extends Component {
                     || exitStatus.toLowerCase().includes(text.toLowerCase())
                     || fullName.toLowerCase().includes(text.toLowerCase()));
             });
+            this.setCounterForItemsInList(searchList);
+            this.setState({
+                data: searchList
+            });
+
             if (this.state.data.length === 0) {
-                alert("Please refresh if new child is added");
+                this.counter = this.counter + 1;
+                if (this.counter > 10) {
+                    this.counter = 0;
+                    alert("Please enter correct search value or refresh the child list");
+                }
             }
+  
         }
     }
     renderHeader = () => {
@@ -272,7 +289,6 @@ export default class ChildList extends Component {
     }
 
     getImageUri(picture, gender) {
-
         if (picture === null || picture === "") {
             if (gender === 2) {
                 return require('../assets/girl.jpg');
@@ -280,7 +296,8 @@ export default class ChildList extends Component {
                 return require('../assets/boy.jpg');
             }
         } else {
-            return { uri: "http://app.rainbowhome.in/ChildImage/" + picture };
+            // return { uri: "http://app.rainbowhome.in/ChildImage/" + picture };
+            return { uri: "http://test.rainbowhome.in/Images/" + picture}
         }
     }
     getImageStyle(style) {
@@ -310,7 +327,7 @@ export default class ChildList extends Component {
         let firstNameLen = firstName.length;
         let lastNameLen = lastName.length;
         const total = firstNameLen + lastNameLen;
-        console.log(firstNameLen + lastNameLen, 'llllll');
+        
         if (total > 15) {
             return false;
         } else {
@@ -321,6 +338,7 @@ export default class ChildList extends Component {
     async reset() {
         if (this.state.refresh) {
             await this.getData();
+            alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
         }
 
     }
@@ -498,7 +516,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         position: 'absolute',
         top: '70%',
-        left: Dimensions.get('window').width / 3+15
+        left: Dimensions.get('window').width / 3 + 15
 
     },
     cardContent: {
