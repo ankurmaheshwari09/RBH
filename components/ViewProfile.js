@@ -1,17 +1,19 @@
 import React from 'react';
 import {
-    Button, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, View, Dimensions, Image } from 'react-native';
+    Button, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, View, Dimensions, Image, TouchableOpacity } from 'react-native';
 import { Formik } from 'formik';
 import {globalStyles} from '../styles/global';
 import * as yup from 'yup';
 import moment from 'moment';
 import {base_url,getDataAsync} from '../constants/Base';
-import { ActivityIndicator } from 'react-native';
-import UpdateApi from "../constants/UpdateApi";
+//import { ActivityIndicator } from 'react-native';
+//import UpdateApi from "../constants/UpdateApi";
 import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
+import { Ionicons } from '@expo/vector-icons';
+
 const ViewProfileSchema = yup.object({
     Description: yup.string().required(),
 })
@@ -227,12 +229,19 @@ export default class ViewProfile extends React.Component {
                     )}
 
         </Formik>
-            <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.navigateToChildListScreen()}>
-                <View style={globalStyles.MainContainer}>
-                    <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                    <SuccessDisplay successDisplay={this.state.successDisplay} type='Profile description' childNo={this.state.child.firstName}/>
-                </View>
-            </Modal>
+        <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible}>
+
+      <View style={globalStyles.feedbackContainer}>
+    <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => { this.navigateToChildListScreen() }}>
+        <View>
+            <Ionicons name="md-close" size={22}></Ionicons>
+        </View>
+    </TouchableOpacity>
+    <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+    <SuccessDisplay successDisplay={this.state.successDisplay} type='Profile Description' childNo={this.state.child.firstName} close={true} />
+   
+</View>
+</Modal>
             <LoadingDisplay loading={this.state.loading} />
             </View >
         );

@@ -1,7 +1,7 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Formik } from "formik";
 import React from 'react';
-import { Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View, Dimensions, Image  } from 'react-native';
+import { Button, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, View, Dimensions, Image, TouchableOpacity  } from 'react-native';
 import * as yup from "yup";
 import { globalStyles } from "../styles/global";
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -12,6 +12,7 @@ import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 import UpdateApi from "../constants/UpdateApi";
+import { Ionicons } from '@expo/vector-icons';
 
 const followUpSchema = yup.object({
     FollowUpBy: yup.string().required(),
@@ -84,7 +85,7 @@ export default class FollowUpScreen extends React.Component {
     navigateToChildListScreen() {
         this.setState({ isVisible: false }, () => {
             if (this.state.successDisplay) {
-                this.props.navigation.navigate('ViewChild');
+             //   this.props.navigation.navigate('ViewChild');
             }
         })
 
@@ -94,13 +95,9 @@ export default class FollowUpScreen extends React.Component {
     render() {
 
         return (
-            <View style={globalStyles.container}>
+            <View style={globalStyles.scrollContainer}>
 
-                {/*Background Image*/}
-                <View style={globalStyles.backgroundlogoimageview}>
-                    <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
-                </View>
-                
+               
                 <Formik
                     initialValues={{
                         FollowUpBy: '',
@@ -164,6 +161,7 @@ export default class FollowUpScreen extends React.Component {
                                                 mode="date" //The enum of date, datetime and time
                                                 value={new Date()}
                                                 mode={'date'}
+                                                maximumDate={new Date((new Date()).setDate((new Date()).getDate()))}
                                                 onChange={(e, date) => { this.pickDob(e, date, props.handleChange('Date')) }}
                                             />
                                         }
@@ -194,8 +192,13 @@ export default class FollowUpScreen extends React.Component {
                         </KeyboardAvoidingView>
                     )}
                 </Formik>
-                <Modal style={styles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.navigateToChildListScreen()}>
-                    <View style={styles.MainContainer}>
+                <Modal style={styles.modalContainer} isVisible={this.state.isVisible}>
+                    <View style={globalStyles.feedbackContainer}>
+                        <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => { this.navigateToChildListScreen() }}>
+                            <View>
+                                 <Ionicons name="md-close" size={22}></Ionicons>
+                            </View>
+                        </TouchableOpacity>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Followup Status' childNo={this.state.child.firstName} />
                     </View>
@@ -208,12 +211,6 @@ export default class FollowUpScreen extends React.Component {
 const styles = StyleSheet.create({
     FontStyle: {
         fontSize: 15
-    },
-    MainContainer: {
-        justifyContent: 'space-between',
-        flex: 1,
-        //    paddingTop: 10,
-
     },
     modalContainer: {
         flex: 1,

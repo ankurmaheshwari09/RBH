@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     Button, Text, TextInput, View, ScrollView,
-    KeyboardAvoidingView, StyleSheet, Dimensions, Image 
+    KeyboardAvoidingView, StyleSheet, Dimensions, Image, TouchableOpacity
 } from 'react-native';
 import { Formik } from 'formik';
 import { globalStyles } from '../styles/global';
@@ -19,6 +19,7 @@ import { getOrgId } from '../constants/LoginConstant';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
+import { Ionicons } from '@expo/vector-icons';
 
 const CommitteeFormSchema = yup.object({
     Suggestion: yup.string().required(),
@@ -125,6 +126,16 @@ export default class CommitteeScreen extends React.Component {
         this.setState({staffMembers: result});
         
     } 
+
+    navigateToChildListScreen() {
+        this.setState({ isVisible: false }, () => {
+            if (this.state.successDisplay) {
+              //  this.props.navigation.navigate('ViewChild');
+              
+            }
+        })
+       
+    }
 
 
     async componentDidMount() {
@@ -267,7 +278,7 @@ export default class CommitteeScreen extends React.Component {
                     }
                     validationSchema={CommitteeFormSchema}
                     onSubmit={async (values, actions) => {
-                        //actions.resetForm();
+                        actions.resetForm();
                         console.log(values);
                         //this.setState({meetingdate: '', suggestion: ''});
                         let checkUpdate =  this.state.updateDetails;
@@ -387,10 +398,17 @@ export default class CommitteeScreen extends React.Component {
                     )}
 
                 </Formik>
-                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={globalStyles.MainContainer}>
+                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible}>
+
+                    <View style={globalStyles.feedbackContainer}>
+                        <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => { this.navigateToChildListScreen() }}>
+                            <View>
+                                <Ionicons name="md-close" size={22}></Ionicons>
+                            </View>
+                        </TouchableOpacity>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                        <SuccessDisplay successDisplay={this.state.successDisplay} type='committee details for' childNo={this.state.child.firstName} />
+                        <SuccessDisplay successDisplay={this.state.successDisplay} type='committee details' childNo={this.state.child.firstName} close={true} />
+                       
                     </View>
                 </Modal>
                 <LoadingDisplay loading={this.state.loading} />
@@ -434,4 +452,8 @@ const styles = StyleSheet.create({
         fontSize: 40,
         marginRight: 15
     },
+    FontStyle: {
+        fontSize: 15
+    }
 });
+

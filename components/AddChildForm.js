@@ -17,7 +17,7 @@ import * as Permissions from 'expo-permissions';
 import {guidGenerator} from '../constants/Base';
 
 const AddChildSchema = yup.object({
-    // ChildPhoto: yup.object(),
+    // ChildPhoto: yup.object().required(),
     ChildID: yup.string(),
     FirstName: yup.string().required(),
     LastName: yup.string().required(),
@@ -127,23 +127,34 @@ export default class AddChild extends React.Component{
     }
 
     _pickDob = (event,date,handleChange) => {
-        let a = moment(date).format('YYYY-MM-DD');
-        this.setState({dob:a, showdob: false});
-        let today = new Date();
-        let b = moment(today);
-        var age = moment.duration(b.diff(a));
-        var years = age.years();
-        var months = age.months();
-        var days = age.days();
-        var ageResult = years+" years "+months+" months "+days+" days";
-        this.setState({age:ageResult});
-        handleChange(a);
+        console.log(event);
+        if(event["type"] == "dismissed") {
+
+        }
+        else {
+            let a = moment(date).format('YYYY-MM-DD');
+            this.setState({dob:a, showdob: false});
+            let today = new Date();
+            let b = moment(today);
+            var age = moment.duration(b.diff(a));
+            var years = age.years();
+            var months = age.months();
+            var days = age.days();
+            var ageResult = years+" years "+months+" months "+days+" days";
+            this.setState({age:ageResult});
+            handleChange(a);
+        }
     }
 
     _pickDoa = (event,date,handleChange) => {
-        let a = moment(date).format('YYYY-MM-DD');
-        this.setState({doa:a, showdoa: false});
-        handleChange(a);
+        if(event["type"] == "dismissed") {
+
+        }
+        else {
+            let a = moment(date).format('YYYY-MM-DD');
+            this.setState({doa:a, showdoa: false});
+            handleChange(a);
+        }
     }
 
     _changeGender = (value, handleChange) => {
@@ -161,6 +172,17 @@ export default class AddChild extends React.Component{
 
     handleDobChange = () => {
         console.log("change called");
+    }
+
+    loadStats(){
+        getDataAsync(base_url + '/dashboard/' + getOrgId())
+            .then(data => {
+                let stats = [] 
+                for(let i = 0; i < data.length; i++){
+                    stats.push([data[i].statusValue, data[i].total])
+                }
+                this.props.navigation.state.params.updateStats(stats)
+             })
     }
 
     modalclickOKSuccess = () => {
@@ -215,15 +237,13 @@ export default class AddChild extends React.Component{
         })
         .then((response) =>{
             if(response.ok) {
+                console.log("printing status");
+                console.log(response.status);
+                console.log("printing status");
                 response.json().then((responseJson) => {
-                    // console.log(response.status);
-                    // console.log("printing response json");
-                    // console.log(responseJson);
                     let childId = responseJson.childNo;
                     let childName = responseJson.firstName;
-                    // console.log("printing childId")
-                    // console.log(childId);
-                    // console.log(responseJson);
+                    this.loadStats();
                     let photoUrl = base_url+"/upload-image/"+responseJson.childNo;
                     console.log(photoUrl);
                     let imageUri = '';
@@ -283,12 +303,31 @@ export default class AddChild extends React.Component{
                 })
             }
             else {
-                throw Error(response.status);
+                if(response.status == 500) {
+                    response.json().then((responseJson) => {
+                        console.log(responseJson)
+                        if(responseJson.message == "Duplicate profile") {
+                            this.setState({submitAlertMessage: 'Unable to add child. Plesae contact the Admin.'});
+                            Alert.alert(
+                                'Failed To Add Child',
+                                responseJson.message+". Child already present.",
+                                [
+                                    { text: 'OK', onPress: () => console.log("Failed to add child") },
+                                ],
+                                { cancelable: false },
+                            );
+                            this.setState({isVisible: true, errorDisplay: true});
+                            this.setState({showLoader: false,loaderIndex:0});
+                        }
+                    })
+                }
+                else {
+                    throw Error(response.status);
+                }
             }
         })
         .catch((error) => {
             this.setState({submitAlertMessage: 'Unable to add child. Plesae contact the Admin.'});
-            alert(this.state.submitAlertMessage);
             Alert.alert(
                 'Failed To Add Child',
                 this.state.submitAlertMessage,
@@ -297,9 +336,6 @@ export default class AddChild extends React.Component{
                 ],
                 { cancelable: false },
             );
-            this.setState({isVisible: true});
-            this.setState({ errorDisplay: true });
-            console.log(error);
             this.setState({isVisible: true, errorDisplay: true});
             this.setState({showLoader: false,loaderIndex:0});
         });
@@ -350,11 +386,22 @@ export default class AddChild extends React.Component{
                     console.log(values.DOB);
                     console.log(values.DOA);
                     let doa = moment(values.DOA);
+                    let diff = doa.diff(dob,'years',true);
                     console.log(doa.isBefore(values.DOB));
                     if(doa.isBefore(values.DOB)) {
                         Alert.alert(
                             'To Add Child',
-                            'Date of Admission cannt be bofore Date of Birth',
+                            'Date of Admission cannt be before Date of Birth',
+                            [
+                                { text: 'OK', onPress: () => {} },
+                            ],
+                            { cancelable: false },
+                        ); 
+                    }
+                    else if(diff < 2) {
+                        Alert.alert(
+                            'To Add Child',
+                            'Child age should be atleast 2 years',
                             [
                                 { text: 'OK', onPress: () => {} },
                             ],
@@ -390,7 +437,7 @@ export default class AddChild extends React.Component{
                                 </View>
 
                                 {/* Child Photo */}
-                                <Text style = {globalStyles.label}>Child Image:</Text>
+                                <Text style = {globalStyles.label}>Child Image <Text style={{color:"red"}}>*</Text> :</Text>
                                 {
                                     <Image source={{ uri: this.state.image }} style={globalStyles.uploadImage}/>
                                 }
