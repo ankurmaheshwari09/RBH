@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Text, TextInput, View, Picker, ScrollView, Image,
-    KeyboardAvoidingView,Alert} from 'react-native';
+    KeyboardAvoidingView,Alert, TouchableOpacity} from 'react-native';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
@@ -13,6 +13,7 @@ import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
+import { Ionicons } from '@expo/vector-icons';
 
 
 const MedicalTreatmentSchema = yup.object({
@@ -170,6 +171,7 @@ showVisitedDatepicker = () => {
                                                                     value={new Date()}
                                                                     mode={'date'}
                                                                     onChange={(e, date) => this._pickStartDate(e, date, props.handleChange('IllnessStartDate'))}
+                                                                    maximumDate={new Date((new Date()).setDate((new Date()).getDate() - 1))}
                                                                 />
                                                             }
 
@@ -196,19 +198,20 @@ showVisitedDatepicker = () => {
                                                    value={new Date()}
                                                    mode={'date'}
                                                    onChange={(e, date) => this._pickVisitedDate(e, date, props.handleChange('VisitedDate'))}
+                                                   maximumDate={new Date((new Date()).setDate((new Date()).getDate() - 1))}
                                                />
                                            }
                                       </View>
                                     <Text style={globalStyles.errormsgform}>{props.touched.VisitedDate && props.errors.VisitedDate}</Text>
 
 
-               <Text style={globalStyles.label}>Hospital Name: <Text style={{ color: "red" }}>*</Text></Text>
+               <Text style={globalStyles.label}>Hospital Name/Clinic Name: <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput style={globalStyles.inputText} multiline ={true} value={props.values.HospitalName} onChangeText ={props.handleChange("HospitalName")} onBlur ={props.handleBlur("HospitalName")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.HospitalName && props.errors.HospitalName}
                                         </Text>
 
-               <Text style={globalStyles.label}>Doctor Name: <Text style={{ color: "red" }}>*</Text></Text>
+               <Text style={globalStyles.label}>Doctor Name/Nurse Name: <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput style={globalStyles.inputText} value={props.values.DoctorName} onChangeText ={props.handleChange("DoctorName")} onBlur ={props.handleBlur("DoctorName")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.DoctorName && props.errors.DoctorName}
@@ -245,10 +248,15 @@ showVisitedDatepicker = () => {
    }
     </Formik>
     <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                            <View style={globalStyles.MainContainer}>
-                                <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                                <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName}/ >
-                            </View>
+                             <View style={globalStyles.feedbackContainer}>
+                                   <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
+                                       <View>
+                                           <Ionicons name="md-close" size={22}></Ionicons>
+                                        </View>
+                                   </TouchableOpacity>
+                             <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                              <SuccessDisplay successDisplay={this.state.successDisplay} type='MedicalTreatment Status' childNo={this.state.child.firstName} />
+                              </View>
     </Modal>
      <LoadingDisplay loading={this.state.loading}/>
     </View>

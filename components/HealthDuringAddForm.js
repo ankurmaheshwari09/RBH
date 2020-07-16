@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, View, KeyboardAvoidingView, ScrollView, Picker,
-        TextInput, Button} from 'react-native';
+        TextInput, Button,  TouchableOpacity} from 'react-native';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
@@ -11,6 +11,7 @@ import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
+import { Ionicons } from '@expo/vector-icons';
 
 const HealthDuringAddSchema = yup.object({
     bloodGroup: yup.string(),
@@ -168,7 +169,12 @@ export default class HealthDuringAdd extends React.Component{
 
                 </Formik>
                 <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={globalStyles.MainContainer}>
+                     <View style={globalStyles.feedbackContainer}>
+                                            <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
+                                                 <View>
+                                                      <Ionicons name="md-close" size={22}></Ionicons>
+                                                 </View>
+                                             </TouchableOpacity>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Health' childNo={this.state.child.firstName} />
                     </View>
