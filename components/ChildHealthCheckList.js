@@ -13,7 +13,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
-
+import base64 from 'react-native-base64';
+import {getPassword, getUserName} from '../constants/LoginConstant';
 const HealthCheckListSchema = yup.object({
     HIVTest: yup.string(),
     //HIVTest: yup.string().required("HIV Test is a required field"),
@@ -123,6 +124,7 @@ export default class ChildHealthCheckList extends React.Component{
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
             },
             body: request_body,
         })

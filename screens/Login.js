@@ -14,7 +14,8 @@ import {
 } from 'react-native';
 import {base_url} from '../constants/Base';
 import {globalStyles} from '../styles/global';
-import { setOrgId, getOrgId, setHomeCode, getHomeCode, setUserName } from '../constants/LoginConstant'
+import { setOrgId, getOrgId, setHomeCode, getHomeCode, setUserName, setPassword } from '../constants/LoginConstant'
+import base64 from 'react-native-base64';
 
 export default class Login extends Component {
 
@@ -87,6 +88,7 @@ export default class Login extends Component {
     updateHomeCode(code) {
         setHomeCode(code);
         setUserName(this.state.username);
+        setPassword(this.state.password)
     }
 
     _userLogin = () => {

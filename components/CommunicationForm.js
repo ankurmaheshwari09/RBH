@@ -13,6 +13,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 //import communicationConstants from '../constants/CommunicationConstants';
+import base64 from 'react-native-base64';
+import {getPassword, getUserName} from '../constants/LoginConstant';
 
 const CommunicationFormSchema = yup.object({
     PresentAddress: yup.string().required(),
@@ -105,6 +107,7 @@ export default class CommunicationForm extends React.Component {
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
             },
             body: request_body,
         })

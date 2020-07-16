@@ -15,6 +15,8 @@ import { getOrgId, getHomeCode } from '../constants/LoginConstant';
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
 import * as Permissions from 'expo-permissions';
 import {guidGenerator} from '../constants/Base';
+import base64 from 'react-native-base64';
+import {getPassword, getUserName} from '../constants/LoginConstant';
 
 const AddChildSchema = yup.object({
     // ChildPhoto: yup.object().required(),
@@ -232,6 +234,7 @@ export default class AddChild extends React.Component{
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
             },
             body: request_body,
         })
@@ -260,6 +263,7 @@ export default class AddChild extends React.Component{
                         method: 'PUT',
                         headers: {
                             'content-type': 'multipart/form-data;boundary=----WebKitFormBoundaryyEmKNDsBKjB7QEqu',
+                            'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
                         },
                         body: formdata,
                     })

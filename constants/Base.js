@@ -1,3 +1,5 @@
+import base64 from 'react-native-base64';
+import {getPassword, getUserName} from './LoginConstant';
 export let base_url = 'https://rest-service.azurewebsites.net/api/v1'
 
 export async function getDataAsync(url){
@@ -5,7 +7,8 @@ export async function getDataAsync(url){
         let response = await fetch(url, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
             }
         });
         if(response.status == 200){
@@ -30,7 +33,8 @@ export async function postDataAsync(url = '', data = {}){
             method: 'POST',
             headers: {
                 Accept: 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
             },
             body: JSON.stringify(data)
         });
@@ -49,7 +53,8 @@ export async function putDataAsync(url, data){
         method: 'PUT',
         headers: {
             Accept: 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
         },
         body: JSON.stringify(data)
     });
