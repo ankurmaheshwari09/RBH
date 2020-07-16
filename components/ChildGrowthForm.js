@@ -15,7 +15,8 @@ import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 import { Ionicons } from '@expo/vector-icons';
-
+import base64 from 'react-native-base64';
+import {getPassword, getUserName} from '../constants/LoginConstant';
 const ChildGrowthSchema = yup.object({
     AssessmentDate: yup.string().required(),
     Height: yup.number().required(),
@@ -75,6 +76,7 @@ _pickAssessmentDate = (event, date, handleChange) => {
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
             },
             body: request_body,
         })

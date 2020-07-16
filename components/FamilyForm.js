@@ -16,6 +16,8 @@ import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 import { Ionicons } from '@expo/vector-icons';
+import base64 from 'react-native-base64';
+import {getPassword, getUserName} from '../constants/LoginConstant';
 
 const FamilyFormSchema = yup.object({
     Name: yup.string().required(),
@@ -98,6 +100,7 @@ export default class FamilyForm extends React.Component {
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
             },
         })
             .then((res) => res.json())
@@ -159,6 +162,7 @@ export default class FamilyForm extends React.Component {
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
             },
             body: request_body,
         })
@@ -174,6 +178,7 @@ export default class FamilyForm extends React.Component {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
+                        'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
                     },
                 })
                     .then((res) => res.json())
@@ -223,6 +228,7 @@ export default class FamilyForm extends React.Component {
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
             },
             body: request_body,
         })
@@ -238,6 +244,7 @@ export default class FamilyForm extends React.Component {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
+                        'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
                     },
                 })
                     .then((res) => res.json())
@@ -297,6 +304,7 @@ export default class FamilyForm extends React.Component {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
+                        'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
                     },
                     body: request_body,
                 })
@@ -313,6 +321,7 @@ export default class FamilyForm extends React.Component {
                             headers: {
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
+                                'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
                             },
                         })
                             .then((res) => res.json())

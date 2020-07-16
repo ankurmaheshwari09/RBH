@@ -1,3 +1,5 @@
+import base64 from 'react-native-base64';
+import {getPassword, getUserName} from './LoginConstant';
 class UpdateApi {
     static updateData(jsonBody, update) {
         const path = `https://rest-service.azurewebsites.net/api/v1/${update}`;
@@ -8,7 +10,8 @@ class UpdateApi {
             body: jsonBody,
             headers: {
                 Accept: 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
             }
         }).then(response => {
             console.log(response.status, 'kkkkkk');
@@ -25,7 +28,8 @@ class UpdateApi {
             body: jsonBody,
             headers: {
                 Accept: 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
             }
         }).then(response => {
             console.log(response.status, 'kkkkkk');
