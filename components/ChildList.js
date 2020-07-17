@@ -340,7 +340,7 @@ export default class ChildList extends Component {
     async reset() {
         if (this.state.refresh) {
             await this.getData();
-            alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
+            alert('Please "Update Profile Description" for children whose Profile Update Status: Yes');
         }
 
     }
