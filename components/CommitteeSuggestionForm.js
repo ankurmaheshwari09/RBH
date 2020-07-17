@@ -46,6 +46,7 @@ export default class CommitteeScreen extends React.Component {
             errorDisplay: false,
             loading: false,
             isVisible: false,
+            staffError: false
         }
         this.getStaffMembers =this.getStaffMembers.bind(this);
         this.populateSelectedStaff = this.populateSelectedStaff.bind(this);
@@ -278,27 +279,33 @@ export default class CommitteeScreen extends React.Component {
                     initialValues={
                         {
                             Suggestion: this.state.suggestion,
-                            MeetingDate: this.state.meetingdate                            
+                            MeetingDate: this.state.meetingdate,                      
                         }
                     }
                     validationSchema={CommitteeFormSchema}
                     onSubmit={async (values, actions) => {
-                        actions.resetForm();
+                        //actions.resetForm();
                         console.log(values);
                         //this.setState({meetingdate: '', suggestion: ''});
                         let checkUpdate =  this.state.updateDetails;
-                        if(checkUpdate)
-                        {
-                            let result = this._updateCommitteeSuggestionForm(values);
-                            console.log(result);
+                        let staffCheck = this.state.selectedStaff;
+                        if(JSON.stringify(staffCheck) =='[]'){
+                            this.setState({staffError : true});
                         }
-                        else
-                        {
-                          
-                            let result = this._submitCommitteeSuggestionForm(values);
-                            console.log(result);
-                        }
-
+                        if(!(this.state.staffError)){
+                                if(checkUpdate)
+                                {
+                                    this._updateCommitteeSuggestionForm(values);
+                                    //console.log(result);
+                                }
+                                else
+                                {
+                                
+                                    let result = this._submitCommitteeSuggestionForm(values);
+                                    console.log(result);
+                                }
+                                this.setState({staffError : false});
+                       }
                         //this.props.navigation.push('CommitteeSuggestionForm', values)
                     }}
                 >
@@ -361,7 +368,7 @@ export default class CommitteeScreen extends React.Component {
               this.state.staffMembers.map((staffMember,index) => {
                return(
                 <React.Fragment key={staffMember.staffNo}>
-                <CheckBox    style={styles.checkBoxStyle}
+                <CheckBox  style={styles.checkBoxStyle}
                     onClick={()=>{
                     let tempStaffMembers = [...this.state.staffMembers];
                     //console.log(tempStaffMembers);
@@ -384,7 +391,7 @@ export default class CommitteeScreen extends React.Component {
                         this.setState({selectedStaff: temp});
                     }
                     console.log(this.state.selectedStaff,'selected staff');
-                    
+                    this.setState({ staffError: false});
                     }}
                     isChecked={staffMember.isSelected}     
                     rightText={staffMember.firstName + " " + staffMember.lastName}  
@@ -393,6 +400,9 @@ export default class CommitteeScreen extends React.Component {
                );
              })
             }
+            <View>
+                {this.state.staffError ? <Text style={globalStyles.errormsg}>Staff is a required field</Text> : null}
+            </View>
             
              <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
 
