@@ -37,6 +37,7 @@ const AddChildSchema = yup.object({
     ReferredBy: yup.string().required(),
 });
 
+global.imageuri = null;
 
 const defaultImg = require('../assets/person.png');
 
@@ -85,7 +86,6 @@ export default class AddChild extends React.Component{
         console.log(this.state.homeCode);
     }
 
-    
 
     async _pickImage (handleChange) {
         const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -97,7 +97,11 @@ export default class AddChild extends React.Component{
                 quality: 1
             });
             if (!result.cancelled) {
+                console.log("image uri")
+                console.log(result.uri);
                 this.setState({ image: result.uri });
+                global.imageuri = result.uri;
+                console.log(this.state.image);
                 handleChange(result.uri)
             }
         }
@@ -250,12 +254,15 @@ export default class AddChild extends React.Component{
                     let photoUrl = base_url+"/upload-image/"+responseJson.childNo;
                     console.log(photoUrl);
                     let imageUri = '';
-                    if(this.state.image == null) {
+                    if(global.imageuri === null) {
                         imageUri= ''
                     }
                     else {
-                        imageUri = this.state.image;
+                        imageUri = global.imageuri;
                     }
+                    console.log("Image URI");
+                    console.log(imageUri);
+                    console.log("Image URI");
                     var formdata = new FormData();
                     formdata.append('file', { uri: imageUri, name: `${guidGenerator()}.jpg`, type: 'image/jpg' });
                     console.log(imageUri);
@@ -272,11 +279,11 @@ export default class AddChild extends React.Component{
                         console.log(response.status);
                         console.log("******");
                         if(response.status == 200) {
-                                    this.state.photoUploadMessage = "Succesfully uploaded image";
+                                    this.state.photoUploadMessage = ". Succesfully uploaded image";
                                     imageupload = true;
                         }
                         else {
-                                    this.state.photoUploadMessage = ".Error uploading image";
+                                    this.state.photoUploadMessage = ". Error uploading image";
                         }
                         this.setState({submitAlertMessage: 'Successfully added Child '+childName+' in '+getHomeCode()+ this.state.photoUploadMessage});
                         Alert.alert(
