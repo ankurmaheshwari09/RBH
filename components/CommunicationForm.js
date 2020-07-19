@@ -302,7 +302,7 @@ export default class CommunicationForm extends React.Component {
                                         onChangeText={props.handleChange('Phone')}
                                         value={props.values.Phone}
                                     />
-                                    // <Text style={globalStyles.errormsg}>{props.touched.Phone && props.errors.Phone}</Text>
+                                    <Text style={globalStyles.errormsg}>{props.touched.Phone && props.errors.Phone}</Text>
                                     <Text style={globalStyles.text}>Permanent(Native) Address:</Text>
 
                                     <TextInput
