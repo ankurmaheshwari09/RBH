@@ -15,6 +15,7 @@ const screens = {
 
 const HomeStack = createStackNavigator(screens, {
     defaultNavigationOptions: {
+        title: 'Child Communication',
         headerStyle: {
             height: 50
         },
