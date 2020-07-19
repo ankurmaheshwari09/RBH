@@ -293,6 +293,7 @@ export default class CommunicationForm extends React.Component {
                                         style={globalStyles.inputText}
                                         onChangeText={props.handleChange('Mobile')}
                                         value={props.values.Mobile}
+                                        maxLength = {12}
                                     />
                                     <Text style={globalStyles.errormsg}>{props.touched.Mobile && props.errors.Mobile}</Text>
                                     <Text style={globalStyles.text}>Phone Number(Relatives/Neighbours):  </Text>
@@ -301,6 +302,7 @@ export default class CommunicationForm extends React.Component {
                                         style={globalStyles.inputText}
                                         onChangeText={props.handleChange('Phone')}
                                         value={props.values.Phone}
+                                        maxLength = {12}
                                     />
                                     <Text style={globalStyles.errormsg}>{props.touched.Phone && props.errors.Phone}</Text>
                                     <Text style={globalStyles.text}>Permanent(Native) Address:</Text>
