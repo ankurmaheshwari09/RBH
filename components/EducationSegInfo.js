@@ -44,14 +44,23 @@ export default class EducationSegInfo extends Component {
         getDataAsync(base_url + '/child-education/' + this.state.child.childNo).then(data => {
             console.log(data)
             if (data !== null && JSON.stringify(data) !== JSON.stringify([])) {
-
+                let edu = data[0];
+                let required_date = new Date(edu.created_on)
                 let studyingclass = data[0].studyingclass;
                 for (let i = 1; i < data.length; i++) {
+                    console.log(data[i].created_on)
+                    if (data[i].created_on == null)
+                        continue;
+                    let vardate = new Date(data[i].created_on)
+                    if (vardate < required_date) {
+                        edu = data[i]
+                        required_date = new Date(edu.created_on)
+                    } console.log(edu)
                     if (data[i].studyingclass > studyingclass) {
                         studyingclass = data[i].studyingclass
                     }
                 }
-                this.setState({ prevEducation: data[0], studyingclass: studyingclass });
+                this.setState({ prevEducation: edu, studyingclass: studyingclass });
             }
             this.setState({ loading: false })
 
