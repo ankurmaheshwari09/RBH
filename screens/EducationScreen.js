@@ -183,6 +183,20 @@ export default class EducationScreen extends React.Component {
                                     selectTextOnFocus={false}
                                 />
 
+                                {/*Child Stay Type*/}
+                                <Text style={globalStyles.label}>Child Stay Type:</Text>
+                                <Picker
+                                    selectedValue={props.values.ChildStayType}
+                                    style={globalStyles.dropDown}
+                                    onValueChange={(ChildStayType) => props.setFieldValue('ChildStayType', ChildStayType)}
+                                >
+                                    <Picker.Item color='grey' label="Select Child Stay Type" value="" />
+                                    {global.childstaytype.map((item) => {
+                                        return <Picker.Item key={item.id} label={item.description} value={item.id} />
+                                    })}
+                                </Picker>
+                                <Text></Text>
+
                                 {/*Child Class*/}
                                 <Text style={globalStyles.label}>Class: <Text style={{ color: "red" }}>*</Text> </Text>
                                 <Picker
@@ -191,9 +205,9 @@ export default class EducationScreen extends React.Component {
                                     onValueChange={(itemValue, itemIndex) => {
                                         props.setFieldValue('Class', itemValue)
                                         if (itemValue > 13) {
-                                            this.setState({ showElements: true })
+                                            this.setState({ showElementsclass: true })
                                         } else {
-                                            this.setState({ showElements: false })
+                                            this.setState({ showElementsclass: false })
                                         }
                                     }}
                                     value={props.values.Class}
@@ -205,7 +219,7 @@ export default class EducationScreen extends React.Component {
                                 </Picker>
                                 <Text style={globalStyles.errormsg}>{props.touched.Class && props.errors.Class}</Text>
 
-                                {this.state.showElements ?
+                                {this.state.showElementsclass ?
                                     <View>
                                         <Text style={globalStyles.label}>Class details:</Text>
                                         <TextInput
@@ -346,19 +360,7 @@ export default class EducationScreen extends React.Component {
                                 </View>
                                 <Text></Text>
 
-                                {/*Child Stay Type*/}
-                                <Text style={globalStyles.label}>Child Stay Type:</Text>
-                                <Picker
-                                    selectedValue={props.values.ChildStayType}
-                                    style={globalStyles.dropDown}
-                                    onValueChange={(ChildStayType) => props.setFieldValue('ChildStayType', ChildStayType)}
-                                >
-                                    <Picker.Item color='grey' label="Select Child Stay Type" value="" />
-                                    {global.childstaytype.map((item) => {
-                                        return <Picker.Item key={item.id} label={item.description} value={item.id} />
-                                    })}
-                                </Picker>
-                                <Text></Text>
+
 
                                 {/*Bridge course after school*/}
                                 <Text style={globalStyles.label}>Bridge course after school:</Text>
