@@ -278,6 +278,7 @@ export default class GeneralInfoForm extends React.Component{
                                 onValueChange = {value => {
                                     props.setFieldValue('cwcStayReason', value)
                                 }}
+                                enabled = {props.values.cwcRefNo ? true : false}
                                 >
                                     <Picker.Item color = 'grey' label="CWC Stay Reason" value="" />
                                     {global.cwcStayReason.map((item) => {
