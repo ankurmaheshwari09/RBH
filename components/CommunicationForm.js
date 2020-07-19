@@ -281,9 +281,11 @@ export default class CommunicationForm extends React.Component {
                                         <Text style={globalStyles.text}>Pin Code: <Text style={{ color: "red" }}>*</Text> </Text>
 
                                         <TextInput
+                                            keyboardType = 'numeric'
                                             style={globalStyles.inputText}
                                             onChangeText={props.handleChange('Pincode')}
                                             value={props.values.Pincode}
+                                            maxLength = {6}
                                         />
                                         <Text style={globalStyles.errormsg}>{props.touched.Pincode && props.errors.Pincode}</Text>
                                         </View>
