@@ -254,7 +254,7 @@ export default class AddChild extends React.Component{
                     let photoUrl = base_url+"/upload-image/"+responseJson.childNo;
                     console.log(photoUrl);
                     let imageUri = '';
-                    if(global.imageuri === null) {
+                    if(imagePath === null) {
                         imageUri= ''
                     }
                     else {
@@ -265,7 +265,6 @@ export default class AddChild extends React.Component{
                     console.log("Image URI");
                     var formdata = new FormData();
                     formdata.append('file', { uri: imageUri, name: `${guidGenerator()}.jpg`, type: 'image/jpg' });
-                    console.log(imageUri);
                     fetch(photoUrl, {
                         method: 'PUT',
                         headers: {
