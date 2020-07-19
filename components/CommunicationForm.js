@@ -29,8 +29,8 @@ const CommunicationFormSchema = yup.object({
         is: true, then: yup.string().required("PinCode is a required field").matches(/^[0-9]{6}$/, 'Enter 6 digit Pin Code')
     }),
 //    Pincode: yup.string().matches(/^[0-9]{6}$/, 'Pincode is not valid'),
-    Mobile: yup.string().matches(/^[0-9]{10}$/, 'Enter 10 digit mobile number'),
-    Phone: yup.string().required("10 digit Phone No is a required field").matches(/^[0-9]{10}$/, 'Enter 10 digit Phone number'),
+    Mobile: yup.string().required("Mobile No is a required field").matches(/^[0-9]{10}$/, 'Enter 10 digit Mobile number'),
+    Phone: yup.string().matches(/^[0-9]{10}$/, 'Enter 10 digit Phone number'),
     PermanentAddress: yup.string(),
 });
 
@@ -287,7 +287,7 @@ export default class CommunicationForm extends React.Component {
                                         </View>
                                     :null}
 
-                                    <Text style={globalStyles.text}>Mobile Number(Personal):</Text>
+                                    <Text style={globalStyles.text}>Mobile Number(Parents/Guardian): <Text style={{ color: "red" }}>*</Text> </Text>
 
                                     <TextInput
                                         style={globalStyles.inputText}
@@ -295,14 +295,14 @@ export default class CommunicationForm extends React.Component {
                                         value={props.values.Mobile}
                                     />
                                     <Text style={globalStyles.errormsg}>{props.touched.Mobile && props.errors.Mobile}</Text>
-                                    <Text style={globalStyles.text}>Phone Number(Relatives/Neighbours): <Text style={{ color: "red" }}>*</Text> </Text>
+                                    <Text style={globalStyles.text}>Phone Number(Relatives/Neighbours):  </Text>
 
                                     <TextInput
                                         style={globalStyles.inputText}
                                         onChangeText={props.handleChange('Phone')}
                                         value={props.values.Phone}
                                     />
-                                    <Text style={globalStyles.errormsg}>{props.touched.Phone && props.errors.Phone}</Text>
+                                    // <Text style={globalStyles.errormsg}>{props.touched.Phone && props.errors.Phone}</Text>
                                     <Text style={globalStyles.text}>Permanent(Native) Address:</Text>
 
                                     <TextInput
