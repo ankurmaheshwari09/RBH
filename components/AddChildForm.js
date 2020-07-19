@@ -707,6 +707,7 @@ export default class AddChild extends React.Component{
                                             mode= { 'date' }
                                             onChange= {(e,date) => this._pickDoa(e,date,props.handleChange('DOA'))} 
                                             maximumDate= { new Date() }
+                                            minimumDate= { new Date((new Date()).setDate((new Date()).getDate() - 3)) }
                                         />
                                     }
                                 </View>
