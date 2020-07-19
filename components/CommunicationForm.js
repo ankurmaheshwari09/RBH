@@ -292,19 +292,21 @@ export default class CommunicationForm extends React.Component {
                                     <Text style={globalStyles.text}>Mobile Number(Parents/Guardian): <Text style={{ color: "red" }}>*</Text> </Text>
 
                                     <TextInput
+                                        keyboardType = 'numeric'
                                         style={globalStyles.inputText}
                                         onChangeText={props.handleChange('Mobile')}
                                         value={props.values.Mobile}
-                                        maxLength = {12}
+                                        maxLength = {10}
                                     />
                                     <Text style={globalStyles.errormsg}>{props.touched.Mobile && props.errors.Mobile}</Text>
                                     <Text style={globalStyles.text}>Phone Number(Relatives/Neighbours):  </Text>
 
                                     <TextInput
+                                        keyboardType = 'numeric'
                                         style={globalStyles.inputText}
                                         onChangeText={props.handleChange('Phone')}
                                         value={props.values.Phone}
-                                        maxLength = {12}
+                                        maxLength = {10}
                                     />
                                     <Text style={globalStyles.errormsg}>{props.touched.Phone && props.errors.Phone}</Text>
                                     <Text style={globalStyles.text}>Permanent(Native) Address:</Text>
