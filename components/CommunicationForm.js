@@ -33,7 +33,6 @@ const CommunicationFormSchema = yup.object({
     Phone: yup.string().matches(/^[0-9]{10}$/, 'Enter 10 digit Phone number'),
     PermanentAddress: yup.string(),
 });
-
 export default class CommunicationForm extends React.Component {
 
     constructor(props) {
