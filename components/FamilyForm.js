@@ -475,6 +475,7 @@ export default class FamilyForm extends React.Component {
                                             <Text style={globalStyles.label}>Age :</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.Age && props.errors.Age}</Text>
                                                 <TextInput
+                                                    keyboardType = 'numeric'
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Age')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Age} //value updated in 'values' is reflected here
@@ -626,6 +627,7 @@ export default class FamilyForm extends React.Component {
                                             <Text style={globalStyles.label}>Age :</Text>
                                                 <Text style={globalStyles.errormsg}>{props.touched.Age && props.errors.Age}</Text>
                                                 <TextInput
+                                                    keyboardType = 'numeric'
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Age')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Age} //value updated in 'values' is reflected here

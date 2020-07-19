@@ -145,6 +145,7 @@ export default class ChildResultScreen extends React.Component {
                                 {/*Percentage*/}
                                 <Text style={globalStyles.label}>Percentage:</Text>
                                 <TextInput
+                                    keyboardType = 'numeric'
                                     style={globalStyles.input}
                                     onChangeText={props.handleChange('Percentage')}
                                     value={props.values.Percentage}

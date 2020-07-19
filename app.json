@@ -27,7 +27,7 @@
     },
     "android": {
       "versionCode": 1,
-      "package": "com.dummy.RBH",
+      "package": "com.RBH.ROR",
       "permissions": [
         "CAMERA",
         "READ_INTERNAL_STORAGE",
