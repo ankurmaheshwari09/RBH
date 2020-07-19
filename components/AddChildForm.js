@@ -37,7 +37,7 @@ const AddChildSchema = yup.object({
     ReferredBy: yup.string().required(),
 });
 
-global.imageuri = null;
+let imagePath = null;
 
 const defaultImg = require('../assets/person.png');
 
@@ -100,7 +100,7 @@ export default class AddChild extends React.Component{
                 console.log("image uri")
                 console.log(result.uri);
                 this.setState({ image: result.uri });
-                global.imageuri = result.uri;
+                imagePath = result.uri;
                 console.log(this.state.image);
                 handleChange(result.uri)
             }
@@ -258,7 +258,7 @@ export default class AddChild extends React.Component{
                         imageUri= ''
                     }
                     else {
-                        imageUri = global.imageuri;
+                        imageUri = imagePath;
                     }
                     console.log("Image URI");
                     console.log(imageUri);
