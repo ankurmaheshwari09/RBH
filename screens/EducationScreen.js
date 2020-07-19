@@ -265,7 +265,7 @@ export default class EducationScreen extends React.Component {
                                     {global.schoolname.map((item) => {
                                         return <Picker.Item key={item.rowNum} label={item.schoolName} value={item.schoolName} />
                                     })}
-                                    <Picker.Item label="Other" value="Other" />
+                                    <Picker.Item label="Add new School/College/Institution Name" value="Other" />
                                 </Picker>
                                 <Text style={globalStyles.errormsg}>{props.touched.SchoolName && props.errors.SchoolName}</Text>
 
