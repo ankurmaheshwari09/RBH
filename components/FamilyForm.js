@@ -23,12 +23,10 @@ const FamilyFormSchema = yup.object({
     Name: yup.string().required(),
     Relation: yup.string().required(),
     Occupation: yup.string().required(),
-    // Age: yup.number().test('len','Must be exactly 5 characters', (val) => 
-    // { if(val) return vale.toString().length <=3; }),
-    Age: yup.number().positive('Age should be greater than 0'),
+    Age: yup.string().matches('^[1-9][0-9]*', 'Age should not start with 0'),
     Present: yup.string().required(),
     Remarks: yup.string(),
-    Income: yup.number().positive('Income should be greater than 0'),
+    Income: yup.string().min(4).matches('^[1-9][0-9]*', 'Income should not start with 0')
 })
 
 let arr = "";
@@ -580,7 +578,7 @@ export default class FamilyForm extends React.Component {
                                         Name: this.family.name,
                                         Relation: this.family.relation,
                                         Occupation: this.family.occupation,
-                                        Age: this.family.age,
+                                        Age: this.family.age ? (this.family.age).trim() : '',
                                         Present: this.family.presentcondition,
                                         Remarks: this.family.remarks,
                                         Income: this.family.income,
