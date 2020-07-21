@@ -14,6 +14,8 @@ import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 import { Ionicons } from '@expo/vector-icons';
+import base64 from 'react-native-base64';
+import {getPassword, getUserName} from '../constants/LoginConstant';
 
 
 const MedicalTreatmentSchema = yup.object({
@@ -22,7 +24,7 @@ const MedicalTreatmentSchema = yup.object({
     HospitalName: yup.string().required(),
     DoctorName: yup.string().required(),
     DiseasesDiagnosed: yup.string().required(),
-    FurtherTests: yup.string(),
+    FurtherTests: yup.string().required(),
     TotalMedicalCost: yup.number().required(),
     Remarks: yup.string()
 })
@@ -101,6 +103,7 @@ showVisitedDatepicker = () => {
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
             },
             body: request_body,
         })
@@ -223,14 +226,14 @@ showVisitedDatepicker = () => {
                                         {props.touched.DiseasesDiagnosed && props.errors.DiseasesDiagnosed}
                                         </Text>
 
-               <Text style={globalStyles.label}>Further Tests:</Text>
-                    <TextInput style={globalStyles.inputText} multiline ={true}  value={props.values.FurtherTests} onChangeText ={props.handleChange("FurtherTests")} onBlur ={props.handleBlur("FurtherTests")}></TextInput>
+               <Text style={globalStyles.label}>Further Tests: <Text style={{ color: "red" }}>*</Text></Text>
+                    <TextInput style={globalStyles.inputText} multiline ={true}  value={props.values.FurtherTests}  onChangeText ={props.handleChange("FurtherTests")} onBlur ={props.handleBlur("FurtherTests")} placeholder ='If nothing Enter Nil'></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.FurtherTests && props.errors.FurtherTests}
                                         </Text>
 
                <Text style={globalStyles.label}>Total Medical Cost(Rs): <Text style={{ color: "red" }}>*</Text></Text>
-                    <TextInput style={globalStyles.inputText} value={props.values.TotalMedicalCost} onChangeText ={props.handleChange("TotalMedicalCost")} onBlur ={props.handleBlur("TotalMedicalCost")}></TextInput>
+                    <TextInput style={globalStyles.inputText} keyboardType = 'numeric' value={props.values.TotalMedicalCost} onChangeText ={props.handleChange("TotalMedicalCost")} onBlur ={props.handleBlur("TotalMedicalCost")}></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.TotalMedicalCost && props.errors.TotalMedicalCost}
                                         </Text>

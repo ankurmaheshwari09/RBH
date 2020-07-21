@@ -12,6 +12,8 @@ import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 import { containerCSS } from 'react-select/src/components/containers';
 import { Ionicons } from '@expo/vector-icons';
+import base64 from 'react-native-base64';
+import {getPassword, getUserName} from '../constants/LoginConstant';
 const GeneralInfoFormSchema = yup.object({
     identificationPlace1: yup.string().required(),
     markType1: yup.string().required(),
@@ -276,6 +278,7 @@ export default class GeneralInfoForm extends React.Component{
                                 onValueChange = {value => {
                                     props.setFieldValue('cwcStayReason', value)
                                 }}
+                                enabled = {props.values.cwcRefNo ? true : false}
                                 >
                                     <Picker.Item color = 'grey' label="CWC Stay Reason" value="" />
                                     {global.cwcStayReason.map((item) => {

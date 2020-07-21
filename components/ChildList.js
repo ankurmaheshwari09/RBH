@@ -13,7 +13,8 @@ import { Router, Scene, Actions } from 'react-native-router-flux';
 import { NavigationEvents } from 'react-navigation';
 import { ActivityIndicator } from 'react-native';
 import { globalStyles } from '../styles/global';
-
+import base64 from 'react-native-base64';
+import {getPassword, getUserName} from '../constants/LoginConstant';
 export default class ChildList extends Component {
     constructor(props) {
         super(props);
@@ -93,7 +94,8 @@ export default class ChildList extends Component {
             let const1 = await fetch(path, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
                 }
             })
             if (const1.ok) {
@@ -338,7 +340,7 @@ export default class ChildList extends Component {
     async reset() {
         if (this.state.refresh) {
             await this.getData();
-            alert('Please "Update Profile Description" for children with Profile Update Status: Yes');
+            alert('Please "Update Profile Description" for children whose Profile Update Status: Yes');
         }
 
     }
