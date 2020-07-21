@@ -95,15 +95,15 @@ displayHealthRemainder = () => {
                 </View>
                 <View style={globalStyles.homeView}>
                     {/* <Image source = {require("../assets/black.png")} style={{zIndex: -1, position: 'relative',}}/> */}
+                    <View>
+                        <Text style={globalStyles.homeScreenText}>Rainbow Homes Program</Text>
+                        <Text style={globalStyles.homeScreenText}>Rainbow Foundation India</Text>
+                    </View>
                     <View style={globalStyles.backgroundlogoimageview}>
                         {/* <ActivityIndicator animating={true} size="large" color="red" /> */}
-                        <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage}/>
+                        <Image source = {require("../assets/RBHlogoicon.png")} style={globalStyles.homepagelogoimage}/>
                     </View>
                 
-                    
-                    <View>
-                        <Text style={globalStyles.homeScreenText}>Rainbow Homes Child Reporting Tool</Text>
-                    </View>
                     <View style = {{flexDirection: "row"}}>
                       <View style = {{padding: 20}}>
                       <Button style={globalStyles.addChildBtn} title='Add Child' onPress={() => this.props.navigation.navigate('AddChild',{navigation: this.props.navigation, updateStats: this.updateStats.bind(this)})}></Button>

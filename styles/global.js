@@ -183,9 +183,10 @@ export const globalStyles = StyleSheet.create({
         width: 20
     },
     homeScreenText: {
-        top: '30%',
-        padding: 30,
+        top: '-80%',
+        padding: 10,
         fontSize: 15,
+        position: 'relative'
     },
     errormsgform: {
         padding: 1,
@@ -236,6 +237,11 @@ export const globalStyles = StyleSheet.create({
     backgroundlogoimage: {
         opacity: 0.2,
         marginTop: '30%',
+        marginLeft: '29%'
+    },
+    homepagelogoimage: {
+        opacity: 0.2,
+        marginTop: '10%',
         marginLeft: '29%'
     },
     uploadpicbutton: {

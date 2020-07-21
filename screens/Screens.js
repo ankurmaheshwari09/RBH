@@ -12,7 +12,7 @@ export default class Screen extends Component {
         return (
             <View style={styles.container}>
                 <View>
-                    <CustomHeader title="Rainbow Homes Program" navigation={this.props.navigation}/>
+                    <CustomHeader title="Rainbow Online Reporting" navigation={this.props.navigation}/>
                 </View>
                     <PresentScreen screen={this.props.screen} navigation={this.props.navigation}/>
 
