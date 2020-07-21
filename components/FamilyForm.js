@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Button, Text, TextInput, Image, View, Picker, ScrollView, StyleSheet, FlatList, TouchableOpacity,
+    Button, Text, TextInput, Image, View, Picker, ScrollView, StyleSheet, Alert, FlatList, TouchableOpacity,
     KeyboardAvoidingView, Dimensions
 } from 'react-native';
 import Modal from 'react-native-modal';
@@ -23,10 +23,12 @@ const FamilyFormSchema = yup.object({
     Name: yup.string().required(),
     Relation: yup.string().required(),
     Occupation: yup.string().required(),
-    Age: yup.number(),
+    // Age: yup.number().test('len','Must be exactly 5 characters', (val) => 
+    // { if(val) return vale.toString().length <=3; }),
+    Age: yup.number().positive('Age should be greater than 0'),
     Present: yup.string().required(),
     Remarks: yup.string(),
-    Income: yup.string(),
+    Income: yup.number().positive('Income should be greater than 0'),
 })
 
 let arr = "";
@@ -35,6 +37,7 @@ export default class FamilyForm extends React.Component {
     constructor(props) {
         super(props);
         this.getStyles = this.getStyles.bind(this);
+        this.Delete = this.Delete.bind(this);
         // this.show =this.show.bind(this);
     }
     reviews = [];
@@ -83,6 +86,7 @@ export default class FamilyForm extends React.Component {
         ],
         display:[],
         error:null
+        
     };
 
     async familyFormConstants() {
@@ -140,6 +144,17 @@ export default class FamilyForm extends React.Component {
         else {
             return styles.green;
         }
+    }
+
+    Delete(item) {
+        Alert.alert(
+            "Confirm",
+            "Are you sure you want to delete?",
+            [
+                { text: 'OK', onPress: () => this.onPressForDelete(item) },
+            ],
+            { cancelable: true },
+        );
     }
 
     _submitFamilyForm(values) {
@@ -473,13 +488,15 @@ export default class FamilyForm extends React.Component {
                                             </Picker>
                                             <Text style={globalStyles.errormsg}>{props.touched.Relation && props.errors.Relation}</Text>
                                             <Text style={globalStyles.label}>Age :</Text>
-                                                <Text style={globalStyles.errormsg}>{props.touched.Age && props.errors.Age}</Text>
+                                                
                                                 <TextInput
                                                     keyboardType = 'numeric'
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Age')} //This will update the IdentificationMArk value in 'values'
-                                                    value={props.values.Age} //value updated in 'values' is reflected here
+                                                    value={props.values.Age} //value updated in 'values' is reflected here  
+                                                    maxLength={3}
                                                 />
+                                                <Text style={globalStyles.errormsg}>{props.touched.Age && props.errors.Age}</Text>
                                             <Text style={globalStyles.label}>Occupation <Text style={{ color: "red" }}>*</Text> :</Text>
                                                 <Picker
                                                     selectedValue={props.values.Occupation}
@@ -513,19 +530,23 @@ export default class FamilyForm extends React.Component {
                                             </Picker>
                                             <Text style={globalStyles.errormsg}>{props.touched.Present && props.errors.Present}</Text>
                                             <Text style={globalStyles.label}>Income :</Text>
-                                                <Text style={globalStyles.errormsg}>{props.touched.PresentLocalAddress && props.errors.PresentLocalAddress}</Text>
+                                                
                                                 <TextInput
+                                                    keyboardType = 'numeric'
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Income')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Income} //value updated in 'values' is reflected here
+                                                    minLength={4}
                                                 />
+                                                <Text style={globalStyles.errormsg}>{props.touched.Income && props.errors.Income}</Text>
                                             <Text style={globalStyles.label}>Remarks :</Text>
-                                                <Text style={globalStyles.errormsg}>{props.touched.Remarks && props.errors.Remarks}</Text>
+                                                
                                                 <TextInput
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Remarks')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Remarks} //value updated in 'values' is reflected here
                                                 />
+                                                <Text style={globalStyles.errormsg}>{props.touched.Remarks && props.errors.Remarks}</Text>
                                                 <Button style={globalStyles.button} title="Submit" onPress={props.handleSubmit} />
                                             </View>
                                         </ScrollView>
@@ -625,13 +646,15 @@ export default class FamilyForm extends React.Component {
                                             </Picker>
                                             <Text style={globalStyles.errormsg}>{props.touched.Relation && props.errors.Relation}</Text>
                                             <Text style={globalStyles.label}>Age :</Text>
-                                                <Text style={globalStyles.errormsg}>{props.touched.Age && props.errors.Age}</Text>
+                                                
                                                 <TextInput
                                                     keyboardType = 'numeric'
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Age')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Age} //value updated in 'values' is reflected here
+                                                    maxLength={3}
                                                 />
+                                                <Text style={globalStyles.errormsg}>{props.touched.Age && props.errors.Age}</Text>
                                             <Text style={globalStyles.label}>Occupation <Text style={{ color: "red" }}>*</Text> :</Text> 
                                                 <Picker
                                                     selectedValue={props.values.Occupation}
@@ -666,11 +689,13 @@ export default class FamilyForm extends React.Component {
                                             <Text style={globalStyles.errormsg}>{props.touched.Present && props.errors.Present}</Text>
                                             <Text style={globalStyles.label}>Income :</Text>
                                                 <TextInput
+                                                    keyboardType = 'numeric'
                                                     style={globalStyles.inputText}
                                                     onChangeText={props.handleChange('Income')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Income} //value updated in 'values' is reflected here
+                                                    minLength={4}
                                             />
-                                            <Text style={globalStyles.errormsg}>{props.touched.PresentLocalAddress && props.errors.PresentLocalAddress}</Text>
+                                            <Text style={globalStyles.errormsg}>{props.touched.Income && props.errors.Income}</Text>
                                             <Text style={globalStyles.label}>Remarks :</Text>
                                                 <TextInput
                                                     style={globalStyles.inputText}
@@ -754,7 +779,7 @@ export default class FamilyForm extends React.Component {
                                             name='delete'
                                             size={18}
                                             style={styles.Icons}
-                                            onPress={() => this.onPressForDelete(item)}
+                                            onPress={() => this.Delete(item)}
                                         />
 
                                     </Card>
