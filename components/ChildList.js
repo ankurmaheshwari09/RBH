@@ -284,9 +284,7 @@ export default class ChildList extends Component {
     getModalItems(item) {
 
         let updatedList = this.state.modalItems;
-        if (item.childStatus !== 'Closed') {
-            updatedList = this.state.modalItems.filter(item => item.key !== 'Follow Up');
-        }
+      
         return updatedList;
     }
 

@@ -95,7 +95,7 @@ export default class FollowUpScreen extends React.Component {
     render() {
 
         return (
-            <View style={globalStyles.scrollContainer}>
+            <View style={globalStyles.container}>
 
                
                 <Formik
@@ -120,6 +120,9 @@ export default class FollowUpScreen extends React.Component {
                             keyboardVerticalOffset={0}>
 
                             <ScrollView>
+                                <View style={globalStyles.backgroundlogoimageview}>
+                                    <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
+                                </View>
                                 <View>
                                     {/*FollowUp By*/}
                                     <Text style={globalStyles.label}>FollowUp By <Text style={{ color: "red" }}>*</Text>:</Text>
