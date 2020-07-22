@@ -53,6 +53,7 @@ export default class StatusScreen extends React.Component {
             checkPhNo: null,
             phNoError: false,
             emailContainerEmpty: false,
+            selectedStatus: null,
             actionTakenItems: []
             
         }
@@ -98,12 +99,23 @@ export default class StatusScreen extends React.Component {
     }
 
     pickDob = (event, date, handleChange) => {
-        let a = moment(date).format('YYYY-MM-DD');
-        this.setState({ date: a, show: false });
-        handleChange(a);
+        if (date !== null) {
+            let a = moment(date).format('YYYY-MM-DD');
+            this.setState({ date: a, show: false });
+            handleChange(a);
+        } else {
+            this.setState({ date: date, show: false });
+        }
     }
 
     showDatepicker = () => {
+        /*if (this.state.selectedStatus !== null && this.state.selectedStatus !== '') {
+           
+
+        } else {
+            alert("Please select a status ");
+        }*/
+
         this.setState({ show: true });
 
     };
@@ -171,7 +183,7 @@ export default class StatusScreen extends React.Component {
     navigateToChildListScreen() {
         this.setState({ isVisible: false }, () => {
             if (this.state.successDisplay) {
-              //  this.props.navigation.navigate('ViewChild');
+                this.props.navigation.navigate('ViewChild');
               
             }
         })
@@ -239,6 +251,15 @@ export default class StatusScreen extends React.Component {
         this.validateEmailContainer();
     }
 
+    getStylesForDate() {
+        console.log(this.state.selectedStatus);
+        if (this.state.selectedStatus !== null && this.state.selectedStatus !== '') {
+            return globalStyles.inputText, globalStyles.dobValue;
+        } else {
+            return styles.disabledDobBox;
+        }
+    }
+
     render() {
         const radio_props = [
             {
@@ -252,9 +273,12 @@ export default class StatusScreen extends React.Component {
         ];
        
         return (
-            <View style = {globalStyles.scrollContainer}>
+            <View style={globalStyles.container}>
 
                 {/*Background Image*/}
+                <View style={globalStyles.backgroundlogoimageview}>
+                    <Image source={require("../assets/RBHlogoicon.png")} style={globalStyles.backgroundlogoimage} />
+                </View>
                
               
                 <Formik
@@ -326,10 +350,11 @@ export default class StatusScreen extends React.Component {
                                         onValueChange={(itemValue, itemIndex) => {
                                             props.setFieldValue('ChildStatus', itemValue)
                                             if (itemValue == 4) {
-                                                this.setState({ showElements: true })
+                                                this.setState({ showElements: true, selectedStatus: itemValue })
                                             } else {
-                                                this.setState({ showElements: false })
+                                                this.setState({ showElements: false, selectedStatus: itemValue })
                                             }
+                                            this.pickDob(null, null, props.handleChange('Date'));
                                         }}
                                         value={props.values.ChildStatus}>
                                         <Picker.Item label="Select Status" value="" />
@@ -351,7 +376,7 @@ export default class StatusScreen extends React.Component {
                                     <Text style={globalStyles.label}>Date <Text style={{ color: "red" }}>*</Text>:</Text>
                                     <View style={globalStyles.dobView}>
                                         <TextInput
-                                            style={globalStyles.inputText, globalStyles.dobValue}
+                                            style={globalStyles.dobValue}
                                          
                                             value={this.state.date}
                                             editable={false}
@@ -370,6 +395,7 @@ export default class StatusScreen extends React.Component {
                                                 mode="date" //The enum of date, datetime and time
                                             value={new Date()}
                                             maximumDate={new Date((new Date()).setDate((new Date()).getDate()))}
+                                            minimumDate={this.state.selectedStatus === 2 || this.state.selectedStatus === 4 ? new Date((new Date()).setDate((new Date()).getDate()-30)) : null}
                                             mode={'date'}
                                             onChange={(e, date) => { this.pickDob(e, date, props.handleChange('Date')) }}
                                             />
@@ -688,5 +714,16 @@ const styles = StyleSheet.create({
         left: Dimensions.get('window').width / 2.5,
         top: Dimensions.get('window').height / 200 ,
     },
+    disabledDobBox: {
+        borderWidth: 1,
+        borderColor: '#ddd',
+        padding: 10,
+        marginBottom: 10,
+        fontSize: 18,
+        borderRadius: 6,
+        flex: 3,
+        borderColor: 'black',
+        backgroundColor: '#fafafa'
+    }
     
 });
