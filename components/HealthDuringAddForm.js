@@ -18,11 +18,11 @@ const HealthDuringAddSchema = yup.object({
     generalHealth: yup.string(),
     height: yup.number()
         .test('is-height-valid', 'Enter a valid height', (height) => {
-            return height !== undefined && parseFloat(height) > 0;
+            return height !== undefined && parseFloat(height) > 9;
         }),
     weight: yup.number()
         .test('is-weight-valid', 'Enter a valid weight', (weight) => {
-            return weight !== undefined && parseFloat(weight) > 0;
+            return weight !== undefined && parseFloat(weight) > 9;
         }),
     comments: yup.string()
 })

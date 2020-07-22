@@ -17,13 +17,14 @@ import { Ionicons } from '@expo/vector-icons';
 import base64 from 'react-native-base64';
 import {getPassword, getUserName} from '../constants/LoginConstant';
 
+
 const MedicalTreatmentSchema = yup.object({
     IllnessStartDate: yup.string().required(),
     VisitedDate: yup.string().required(),
     HospitalName: yup.string().required(),
     DoctorName: yup.string().required(),
     DiseasesDiagnosed: yup.string().required(),
-    FurtherTests: yup.string(),
+    FurtherTests: yup.string().required(),
     TotalMedicalCost: yup.number().required(),
     Remarks: yup.string()
 })
@@ -225,8 +226,8 @@ showVisitedDatepicker = () => {
                                         {props.touched.DiseasesDiagnosed && props.errors.DiseasesDiagnosed}
                                         </Text>
 
-               <Text style={globalStyles.label}>Further Tests:</Text>
-                    <TextInput style={globalStyles.inputText} multiline ={true}  value={props.values.FurtherTests} onChangeText ={props.handleChange("FurtherTests")} onBlur ={props.handleBlur("FurtherTests")}></TextInput>
+               <Text style={globalStyles.label}>Further Tests: <Text style={{ color: "red" }}>*</Text></Text>
+                    <TextInput style={globalStyles.inputText} multiline ={true}  value={props.values.FurtherTests}  onChangeText ={props.handleChange("FurtherTests")} onBlur ={props.handleBlur("FurtherTests")} placeholder ='If nothing Enter Nil'></TextInput>
                                         <Text style={globalStyles.errormsgform}>
                                         {props.touched.FurtherTests && props.errors.FurtherTests}
                                         </Text>

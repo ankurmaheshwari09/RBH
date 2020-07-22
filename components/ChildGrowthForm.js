@@ -17,10 +17,19 @@ import { SuccessDisplay } from "../utils/SuccessDisplay";
 import { Ionicons } from '@expo/vector-icons';
 import base64 from 'react-native-base64';
 import {getPassword, getUserName} from '../constants/LoginConstant';
+
+
 const ChildGrowthSchema = yup.object({
     AssessmentDate: yup.string().required(),
-    Height: yup.number().required(),
-    Weight: yup.number().required(),
+    Height: yup.number().required()
+         .test('is-height-valid', 'Enter a valid height', (height) => {
+            return height !== undefined && parseFloat(height) > 9;
+              }),
+    Weight: yup.number().required()
+            .test('is-weight-valid', 'Enter a valid weight', (weight) => {
+                return weight !== undefined && parseFloat(weight) > 9;
+            }),
+
     GeneralHealth: yup.string().required(),
     Comments: yup.string()
 })
@@ -150,6 +159,7 @@ _pickAssessmentDate = (event, date, handleChange) => {
                                                                                         mode={'date'}
                                                                                         onChange={(e, date) => this._pickAssessmentDate(e, date, props.handleChange('AssessmentDate'))}
                                                                                         maximumDate={new Date((new Date()).setDate((new Date()).getDate() - 1))}
+                                                                                        minimumDate={new Date((new Date()).setDate((new Date()).getDate() - 90))}
                                                                                     />
                                                                                 }
                     </View>
