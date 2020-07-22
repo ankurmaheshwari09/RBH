@@ -31,13 +31,19 @@ const PrevEduSchema = yup.object({
 export default class PrevEduForm extends React.Component {
     constructor(props) {
         super(props)
+        console.log(this.props.preedustatus != 1)
+
         this.state = {
+
+            count: 1,
+            disabled: this.props.preedustatus != 1 ? ((this.props.prevEducation.schoolName == null) || (this.props.prevEducation.schoolName == 'Never Enrolled') ? true : false) : false,
             child: this.props.navigation.getParam('child'),
             sucessDisplay: false,
             errorDisplay: false,
             loading: false,
             isVisible: false,
             literacyStatus: [],
+            literacy: this.props.prevEducation.literacyStatus,
         }
     }
 
@@ -91,15 +97,15 @@ export default class PrevEduForm extends React.Component {
                 <Formik
                     initialValues={
                         {
-                            dropoutReason: '',
-                            yearOfStudied: '',
-                            medium: '',
-                            schoolName: '',
-                            schooltype: '',
-                            class: '',
-                            schoolPlace: '',
-                            literacyStatus: '',
-                            FirstGenLearner: '',
+                            dropoutReason: this.state.child.dropoutReason,
+                            yearOfStudied: this.props.prevEducation.date_to ? this.getYear(this.props.prevEducation.date_to) : '',
+                            medium: this.props.prevEducation.medium,
+                            schoolName: this.props.prevEducation.schoolName,
+                            schooltype: this.props.prevEducation.schooltype,
+                            class: this.props.prevEducation.studyingclass,
+                            schoolPlace: this.props.prevEducation.address,
+                            literacyStatus: [1, 2, 3],
+                            FirstGenLearner: this.props.prevEducation.firstGenLearner,
                         }
                     }
                     validationSchema={PrevEduSchema}
@@ -117,6 +123,15 @@ export default class PrevEduForm extends React.Component {
                             <ScrollView
                                 showsVerticalScrollIndicator={false}
                             >
+
+                                {/*Child Name*/}
+                                <Text style={globalStyles.label}>Child Name:</Text>
+                                <TextInput
+                                    style={globalStyles.disabledBox}
+                                    value={this.state.child.firstName} //value updated in 'values' is reflected here
+                                    editable={false}
+                                    selectTextOnFocus={false}
+                                />
                                 <View>
                                     {/*Drop Out Reason*/}
                                     <Text style={globalStyles.label}>Drop Out Reason: <Text style={{ color: "red" }}>*</Text></Text>
@@ -124,6 +139,8 @@ export default class PrevEduForm extends React.Component {
                                         style={globalStyles.inputText}
                                         onChangeText={props.handleChange('dropoutReason')}
                                         value={props.values.dropoutReason}
+                                        editable={this.state.disabled}
+                                        selectTextOnFocus={this.state.disabled}
                                     />
                                     <Text style={globalStyles.errormsg}>{props.touched.dropoutReason && props.errors.dropoutReason}</Text>
 
@@ -133,6 +150,8 @@ export default class PrevEduForm extends React.Component {
                                         style={globalStyles.inputText}
                                         onChangeText={props.handleChange('yearOfStudied')}
                                         value={props.values.yearOfStudied}
+                                        editable={this.state.disabled}
+                                        selectTextOnFocus={this.state.disabled}
                                     />
                                     <Text style={globalStyles.errormsg}>{props.touched.yearOfStudied && props.errors.yearOfStudied}</Text>
                                     {/*Medium*/}
@@ -143,6 +162,8 @@ export default class PrevEduForm extends React.Component {
                                         onValueChange={value => {
                                             props.setFieldValue('medium', value)
                                         }}
+                                        enabled={this.state.disabled}
+                                        selectTextOnFocus={this.state.disabled}
                                     >
                                         <Picker.Item color='grey' label="Select Medium" value="" />
                                         {global.medium.map((item) => {
@@ -159,6 +180,8 @@ export default class PrevEduForm extends React.Component {
                                         style={globalStyles.inputText}
                                         onChangeText={props.handleChange('schoolName')}
                                         value={props.values.schoolName}
+                                        editable={this.state.disabled}
+                                        selectTextOnFocus={this.state.disabled}
                                     />
                                     <Text style={globalStyles.errormsg}>{props.touched.schoolName && props.errors.schoolName}</Text>
 
@@ -171,6 +194,8 @@ export default class PrevEduForm extends React.Component {
                                         onValueChange={value => {
                                             props.setFieldValue('schooltype', value)
                                         }}
+                                        enabled={this.state.disabled}
+                                        selectTextOnFocus={this.state.disabled}
                                     >
                                         <Picker.Item color='grey' label="Select School Type" value="" />
                                         {global.schoolType.map((item) => {
@@ -187,6 +212,8 @@ export default class PrevEduForm extends React.Component {
                                         onValueChange={value => {
                                             props.setFieldValue('class', value)
                                         }}
+                                        enabled={this.state.disabled}
+                                        selectTextOnFocus={this.state.disabled}
                                     >
                                         <Picker.Item color='grey' label="Select Class" value="" />
                                         {global.class.map((item) => {
@@ -202,6 +229,8 @@ export default class PrevEduForm extends React.Component {
                                         style={globalStyles.inputText}
                                         onChangeText={props.handleChange('schoolPlace')}
                                         value={props.values.schoolPlace}
+                                        editable={this.state.disabled}
+                                        selectTextOnFocus={this.state.disabled}
                                     />
                                     <Text style={globalStyles.errormsg}>{props.touched.schoolPlace && props.errors.schoolPlace}</Text>
 
@@ -219,17 +248,22 @@ export default class PrevEduForm extends React.Component {
                                                             arr.push(item.id)
                                                         } else {
                                                             arr.splice(arr.indexOf(item.id), 1)
-                                                        }
-                                                        this.setState({ literacyStatus: arr })
+                                                        } this.state.count = this.state.count + 1;
+                                                        this.setState({ literacyStatus: arr }); console.log()
                                                     }}
+
                                                     key={item.id}
                                                     leftText={item.description}
-                                                    isChecked={this.state.literacyStatus.indexOf(item.id) !== -1}
+                                                    isChecked={this.state.count == 1 ? this.state.literacy.indexOf(item.id) !== -1 :
+                                                        this.state.literacyStatus.indexOf(item.id) !== -1}
+                                                    disabled={!this.state.disabled}
+
                                                 />
                                             })}
                                         </View>
                                     </View>
 
+                                    {console.log(this.state.disabled)}
                                     {/*First Generation Learner*/}
                                     <Text style={globalStyles.label}>First Generation Learner:</Text>
                                     <Picker
@@ -237,6 +271,8 @@ export default class PrevEduForm extends React.Component {
                                         style={globalStyles.dropDown}
                                         onValueChange={(FirstGenLearner) => props.setFieldValue('FirstGenLearner', FirstGenLearner)}
                                         value={props.values.FirstGenLearner}
+                                        enabled={this.state.disabled}
+                                        selectTextOnFocus={this.state.disabled}
                                     >
                                         <Picker.Item color='grey' label="Select" value="" />
                                         <Picker.Item label="Yes" value="Yes" />
