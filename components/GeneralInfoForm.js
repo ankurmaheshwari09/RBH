@@ -12,13 +12,15 @@ import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 import { containerCSS } from 'react-select/src/components/containers';
 import { Ionicons } from '@expo/vector-icons';
+import base64 from 'react-native-base64';
+import {getPassword, getUserName} from '../constants/LoginConstant';
 const GeneralInfoFormSchema = yup.object({
     identificationPlace1: yup.string().required(),
     markType1: yup.string().required(),
     identificationPlace2: yup.string(),
     markType2: yup.string(),
-    specialNeed: yup.string(),
-    occupationOnStreet: yup.string(),
+    specialNeed: yup.string().required(),
+    occupationOnStreet: yup.string().required(),
     durationOnStreet: yup.string(),
     psoName: yup.string(),
     cwcRefNo: yup.string(),
@@ -197,7 +199,7 @@ export default class GeneralInfoForm extends React.Component{
                                 </Picker>
                                 <Text style = {globalStyles.errormsg}>{ props.touched.markType2 && props.errors.markType2}</Text>
 
-                                <Text style = {globalStyles.label}>Special Need:</Text>
+                                <Text style = {globalStyles.label}>Special Need<Text style={{color:"red"}}>*</Text>:</Text>
                                 <Picker
                                 selectedValue = {props.values.specialNeed}
                                 style = {globalStyles.dropDown}
@@ -213,7 +215,7 @@ export default class GeneralInfoForm extends React.Component{
                                 </Picker>
                                 <Text style = {globalStyles.errormsg}>{ props.touched.specialNeed && props.errors.specialNeed }</Text>
 
-                                <Text style = {globalStyles.label}>Occupation On Street:</Text>
+                                <Text style = {globalStyles.label}>Occupation On Street<Text style={{color:"red"}}>*</Text>:</Text>
                                 <Picker
                                 selectedValue = {props.values.occupationOnStreet}
                                 style = {globalStyles.dropDown}
@@ -245,14 +247,6 @@ export default class GeneralInfoForm extends React.Component{
                                 />
                                 <Text style = {globalStyles.errormsg}>{ props.touched.abuseOnStreet && props.errors.abuseOnStreet }</Text>
 
-                                <Text style = {globalStyles.label}>Previously Stayed Organisation Name:</Text>
-                                <TextInput
-                                    style = {globalStyles.inputText}
-                                    onChangeText = {props.handleChange('psoName')}
-                                    value = {props.values.psoName}
-                                />
-                                <Text style = {globalStyles.errormsg}>{ props.touched.psoName && props.errors.psoName }</Text>
-
                                 <Text style = {globalStyles.label}>No.of time leaving home:</Text>
                                 <TextInput
                                     style = {globalStyles.inputText}
@@ -260,6 +254,14 @@ export default class GeneralInfoForm extends React.Component{
                                     value = {props.values.noOfTimesLeavingHome}
                                 />
                                 <Text style = {globalStyles.errormsg}>{ props.touched.noOfTimesLeavingHome && props.errors.noOfTimesLeavingHome }</Text>
+
+                                <Text style = {globalStyles.label}>Previously Stayed Organisation Name:</Text>
+                                <TextInput
+                                    style = {globalStyles.inputText}
+                                    onChangeText = {props.handleChange('psoName')}
+                                    value = {props.values.psoName}
+                                />
+                                <Text style = {globalStyles.errormsg}>{ props.touched.psoName && props.errors.psoName }</Text>
 
                                 <Text style = {globalStyles.label}>CWC Reference No:</Text>
                                 <TextInput
@@ -276,6 +278,7 @@ export default class GeneralInfoForm extends React.Component{
                                 onValueChange = {value => {
                                     props.setFieldValue('cwcStayReason', value)
                                 }}
+                                enabled = {props.values.cwcRefNo ? true : false}
                                 >
                                     <Picker.Item color = 'grey' label="CWC Stay Reason" value="" />
                                     {global.cwcStayReason.map((item) => {

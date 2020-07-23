@@ -6,6 +6,8 @@ global.HomeCode = 0;
 
 global.username = '';
 
+global.password = '';
+
 export function getOrgId() {
     return global.OrgId;
 }
@@ -35,4 +37,13 @@ export function setUserName(username) {
 
 export function getUserName() {
     return global.username; 
+}
+
+export function setPassword(password) {
+
+    global.password = password;
+}
+
+export function getPassword() {
+    return global.password;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Text, TextInput, View, Picker, ScrollView, Image,
-    KeyboardAvoidingView} from 'react-native';
+    KeyboardAvoidingView,TouchableOpacity} from 'react-native';
 import {Formik} from 'formik';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -14,11 +14,22 @@ import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
+import { Ionicons } from '@expo/vector-icons';
+import base64 from 'react-native-base64';
+import {getPassword, getUserName} from '../constants/LoginConstant';
+
 
 const ChildGrowthSchema = yup.object({
     AssessmentDate: yup.string().required(),
-    Height: yup.number().required(),
-    Weight: yup.number().required(),
+    Height: yup.number().required()
+         .test('is-height-valid', 'Enter a valid height', (height) => {
+            return height !== undefined && parseFloat(height) > 9;
+              }),
+    Weight: yup.number().required()
+            .test('is-weight-valid', 'Enter a valid weight', (weight) => {
+                return weight !== undefined && parseFloat(weight) > 9;
+            }),
+
     GeneralHealth: yup.string().required(),
     Comments: yup.string()
 })
@@ -74,6 +85,7 @@ _pickAssessmentDate = (event, date, handleChange) => {
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`)
             },
             body: request_body,
         })
@@ -146,17 +158,19 @@ _pickAssessmentDate = (event, date, handleChange) => {
                                                                                         value={new Date()}
                                                                                         mode={'date'}
                                                                                         onChange={(e, date) => this._pickAssessmentDate(e, date, props.handleChange('AssessmentDate'))}
+                                                                                        maximumDate={new Date((new Date()).setDate((new Date()).getDate() - 1))}
+                                                                                        minimumDate={new Date((new Date()).setDate((new Date()).getDate() - 90))}
                                                                                     />
                                                                                 }
                     </View>
                     <Text style={globalStyles.errormsgform}>{props.touched.AssessmentDate && props.errors.AssessmentDate}</Text>
 
                <Text style = {globalStyles.label}>Height(Cm): <Text style={{ color: "red" }}>*</Text></Text>
-                    <TextInput  style={globalStyles.inputText} value = {props.values.Height} onChangeText={props.handleChange("Height")} onBlur={props.handleBlur("Height")}></TextInput>
+                    <TextInput  style={globalStyles.inputText} keyboardType = 'numeric' value = {props.values.Height} onChangeText={props.handleChange("Height")} onBlur={props.handleBlur("Height")}></TextInput>
                     <Text style={globalStyles.errormsgform}>{props.touched.Height && props.errors.Height}</Text>
 
                <Text style = {globalStyles.label}>Weight(Kg): <Text style={{ color: "red" }}>*</Text></Text>
-                    <TextInput style={globalStyles.inputText}  value = {props.values.Weight} onChangeText={props.handleChange("Weight")} onBlur={props.handleBlur("Weight")}></TextInput>
+                    <TextInput style={globalStyles.inputText} keyboardType = 'numeric'  value = {props.values.Weight} onChangeText={props.handleChange("Weight")} onBlur={props.handleBlur("Weight")}></TextInput>
                     <Text style={globalStyles.errormsgform}>
                     {props.touched.Weight && props.errors.Weight}
                     </Text>
@@ -189,10 +203,15 @@ _pickAssessmentDate = (event, date, handleChange) => {
    }
     </Formik>
     <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                        <View style={globalStyles.MainContainer}>
-                            <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                            <SuccessDisplay successDisplay={this.state.successDisplay} type='Status' childNo={this.state.child.firstName}/ >
-                        </View>
+                         <View style={globalStyles.feedbackContainer}>
+                               <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
+                                   <View>
+                                       <Ionicons name="md-close" size={22}></Ionicons>
+                                    </View>
+                               </TouchableOpacity>
+                  <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                  <SuccessDisplay successDisplay={this.state.successDisplay} type='Child growth Status' childNo={this.state.child.firstName} />
+                  </View>
     </Modal>
     <LoadingDisplay loading={this.state.loading}/>
     </View>

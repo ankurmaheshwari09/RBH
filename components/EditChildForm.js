@@ -21,7 +21,8 @@ import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 import {guidGenerator} from '../constants/Base';
 import { Ionicons } from '@expo/vector-icons';
-
+import base64 from 'react-native-base64';
+import {getPassword, getUserName} from '../constants/LoginConstant';
 const EditChildSchema = yup.object({
     // ChildPhoto: yup.object(),
     FirstName: yup.string().required(),
@@ -243,6 +244,7 @@ export default class EditChild extends React.Component{
             {
                 var myHeaders = new Headers();
                 myHeaders.append("Content-Type", "multipart/form-data;boundary=----WebKitFormBoundaryyEmKNDsBKjB7QEqu");
+                myHeaders.append('Authorization', 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`));
                 var formdata = new FormData();
                 formdata.append("file", {
                     uri: imageUri,
@@ -560,6 +562,7 @@ export default class EditChild extends React.Component{
                                             mode= { 'date' }
                                             onChange= {(e,date) => this._pickDoa(e,date,props.handleChange('DOA'))} 
                                             maximumDate= { new Date((new Date()).setDate((new Date()).getDate() - 1)) }
+                                            minimumDate= { new Date((new Date()).setDate((new Date()).getDate() - 3)) }
                                         />
                                     }
                                 </View>

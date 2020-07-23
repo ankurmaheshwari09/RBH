@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
         flex: 5,
         alignItems: 'center',
         justifyContent: 'center',
-        marginLeft: -25,
+        marginLeft: -40,
     },
     menuIcon: {
         alignItems: 'flex-start', 

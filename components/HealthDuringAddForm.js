@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, View, KeyboardAvoidingView, ScrollView, Picker,
-        TextInput, Button} from 'react-native';
+        TextInput, Button,  TouchableOpacity} from 'react-native';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {globalStyles} from '../styles/global';
@@ -11,17 +11,18 @@ import Modal from 'react-native-modal';
 import { LoadingDisplay } from '../utils/LoadingDisplay';
 import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
+import { Ionicons } from '@expo/vector-icons';
 
 const HealthDuringAddSchema = yup.object({
     bloodGroup: yup.string(),
     generalHealth: yup.string(),
     height: yup.number()
         .test('is-height-valid', 'Enter a valid height', (height) => {
-            return height !== undefined && parseFloat(height) > 0;
+            return height !== undefined && parseFloat(height) > 9;
         }),
     weight: yup.number()
         .test('is-weight-valid', 'Enter a valid weight', (weight) => {
-            return weight !== undefined && parseFloat(weight) > 0;
+            return weight !== undefined && parseFloat(weight) > 9;
         }),
     comments: yup.string()
 })
@@ -137,6 +138,7 @@ export default class HealthDuringAdd extends React.Component{
 
                                 <Text style = {globalStyles.label}>Height: <Text style={{ color: "red" }}>*</Text></Text>
                                 <TextInput style = {globalStyles.inputText}
+                                keyboardType = 'numeric'
                                 onChangeText = {props.handleChange('height')}
                                 value = {props.values.height}
                                 placeholder = 'Enter height in cm'
@@ -145,6 +147,7 @@ export default class HealthDuringAdd extends React.Component{
 
                                 <Text style = {globalStyles.label}>Weight: <Text style={{ color: "red" }}>*</Text></Text>
                                 <TextInput style = {globalStyles.inputText}
+                                keyboardType = 'numeric'
                                 onChangeText = {props.handleChange('weight')}
                                 value = {props.values.weight}
                                 placeholder = 'Enter weight in kg'
@@ -168,7 +171,12 @@ export default class HealthDuringAdd extends React.Component{
 
                 </Formik>
                 <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                    <View style={globalStyles.MainContainer}>
+                     <View style={globalStyles.feedbackContainer}>
+                                            <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
+                                                 <View>
+                                                      <Ionicons name="md-close" size={22}></Ionicons>
+                                                 </View>
+                                             </TouchableOpacity>
                         <ErrorDisplay errorDisplay={this.state.errorDisplay} />
                         <SuccessDisplay successDisplay={this.state.successDisplay} type='Health' childNo={this.state.child.firstName} />
                     </View>

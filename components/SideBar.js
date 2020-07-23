@@ -26,7 +26,7 @@ export default class SideBar extends Component {
                     source = {require("../assets/black.png")}
                     style = {{ width: undefined, padding: 16, paddingTop: 48 }}
                 >
-                    <Text style={styles.text}>Rainbow Homes</Text>
+                    <Text style={styles.text}>Rainbow Online Reporting</Text>
                     <Text style={styles.text}>Home Code - {getHomeCode()} </Text>
                     <Text style={styles.text}>{getUserName()}</Text>
                 </ImageBackground>

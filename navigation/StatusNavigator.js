@@ -6,14 +6,14 @@ import StatusSegControl from '../components/StatusSegControl';
 
 const screens = {
     ChildStatus: {
-        screen: StatusSegControl,
+        screen: StatusScreen,
         
     }
 }
 
 const StatusStack = createStackNavigator(screens, {
     defaultNavigationOptions: {
-        title: 'Modify Status/Add Followups',
+        title: 'Modify Status',
         headerStyle: {
             height: 50,
            
