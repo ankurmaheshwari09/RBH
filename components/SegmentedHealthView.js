@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ChildMedicalTreatment from './ChildMedicalTreatment';
 import ChildGrowthForm from './ChildGrowthForm';
+import ChildMultipleCamps from './ChildMultipleCamps';
 import ChildHealthCheckList from './ChildHealthCheckList';
 import HealtDuringAdd from './HealthDuringAddForm'
 import {globalStyles} from '../styles/global';
@@ -93,12 +94,19 @@ constructor(props) {
                          <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:20}}>Child Health CheckList</Text>
                        </TouchableOpacity>
                     </View>
+                     <View>
+                        <TouchableOpacity style = {{borderBottomWidth: this.state.customStyleIndex == 4 ? 3 : 0 ,borderBottomColor: this.state.customStyleIndex == 4 ? 'grey' : '#f0f0f0'}} onPress = {() => this.setState({customStyleIndex: 4})}>
+                                <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:20}}>Child Multiple Camps</Text>
+                         </TouchableOpacity>
+                     </View>
                   </ScrollView>
                   </View>
                     {customStyleIndex === 3 && <HealtDuringAdd navigation = {this.props.navigation} childHealth = {this.state.childHealth} childData = {this.state.childData}/>}
                     {customStyleIndex === 0 && <ChildGrowthForm navigation = {this.props.navigation}/>}
                     {customStyleIndex === 1 && <ChildMedicalTreatment navigation = {this.props.navigation}/>}
                     {customStyleIndex === 2 && <ChildHealthCheckList navigation = {this.props.navigation}/>}
+                    {customStyleIndex === 4 && <ChildMultipleCamps navigation = {this.props.navigation}/>}
+
                 </View>
        );
      }
