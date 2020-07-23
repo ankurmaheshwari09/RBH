@@ -31,7 +31,6 @@ const PrevEduSchema = yup.object({
 export default class PrevEduForm extends React.Component {
     constructor(props) {
         super(props)
-        console.log(this.props.preedustatus != 1)
 
         this.state = {
 
@@ -64,17 +63,17 @@ export default class PrevEduForm extends React.Component {
         this.setState({ loading: true });
 
         let prevEducation = this.props.prevEducation
-        prevEducation.dropoutReason = values.dropOutReason
-        prevEducation.date_from = new Date(parseInt(values.yearOfStudied) - 1, 5)
-        prevEducation.date_to = new Date(parseInt(values.yearOfStudied), 5)
-        prevEducation.medium = values.medium,
+        prevEducation.dropoutReason = values.dropoutReason,
+            prevEducation.date_from = new Date(parseInt(values.yearOfStudied) - 1, 5),
+            prevEducation.date_to = new Date(parseInt(values.yearOfStudied), 5),
+            prevEducation.medium = values.medium,
             prevEducation.schoolName = values.schoolName,
             prevEducation.schooltype = values.schooltype,
             prevEducation.studyingclass = values.class,
             prevEducation.address = values.schoolPlace,
             prevEducation.literacyStatus = this.state.literacyStatus.sort().join(','),
             prevEducation.firstGenLearner = values.FirstGenLearner
-
+        console.log(prevEducation);
         this.getApiMethod(prevEducation).then((response) => {
             this.setState({ loading: false, isVisible: true });
             if (response.ok) {
@@ -104,7 +103,7 @@ export default class PrevEduForm extends React.Component {
                             schooltype: this.props.prevEducation.schooltype,
                             class: this.props.prevEducation.studyingclass,
                             schoolPlace: this.props.prevEducation.address,
-                            literacyStatus: [1, 2, 3],
+                            literacyStatus: '',
                             FirstGenLearner: this.props.prevEducation.firstGenLearner,
                         }
                     }

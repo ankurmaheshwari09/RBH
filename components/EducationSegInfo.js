@@ -45,8 +45,10 @@ export default class EducationSegInfo extends Component {
             console.log(data)
             if (data !== null && JSON.stringify(data) !== JSON.stringify([])) {
                 let edu = data[0];
+                if (edu.studyingclass == null)
+                    edu.studyingclass = new int(0)
                 let required_date = new Date(edu.created_on)
-                let studyingclass = data[0].studyingclass;
+                let studyingclass = edu.studyingclass;
                 for (let i = 1; i < data.length; i++) {
                     console.log(data[i].created_on)
                     if (data[i].created_on == null)
@@ -55,11 +57,13 @@ export default class EducationSegInfo extends Component {
                     if (vardate < required_date) {
                         edu = data[i]
                         required_date = new Date(edu.created_on)
-                    } console.log(edu)
+                    }
                     if (data[i].studyingclass > studyingclass) {
                         studyingclass = data[i].studyingclass
                     }
-                }
+                } if (edu.literacyStatus == null)
+                    edu.literacyStatus = "null"
+
                 this.setState({ prevEducation: edu, studyingclass: studyingclass });
             }
             this.setState({ loading: false })
