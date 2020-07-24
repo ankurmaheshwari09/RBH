@@ -109,7 +109,7 @@ export default class EducationSegInfo extends Component {
                 <View style={globalStyles.scrollContainer}>
 
                     {console.log(this.state.prevEducation.educationNo)}
-                    {this.state.formIndex === 0 && <PrevEduForm navigation={this.props.navigation} prevEducation={this.state.prevEducation} preedustatus={this.state.preedustatus} />}
+                    {this.state.formIndex === 0 && <PrevEduForm navigation={this.props.navigation} prevEducation={this.state.prevEducation} preedustatus={this.state.preedustatus} childData={this.state.childData} />}
                     {this.state.formIndex === 1 && <EducationForm navigation={this.props.navigation} childData={this.state.childData} />}
                     {this.state.formIndex === 2 && <ResultForm navigation={this.props.navigation} prevEducation={this.state.studyingclass} />}
 
