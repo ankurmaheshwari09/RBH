@@ -288,7 +288,7 @@ export default class ChildHealthCheckList extends React.Component{
 
                                 {this.state.showHIVTest ?
                                     <View>
-                                    <Text style = {globalStyles.label}>HIV Test Result:</Text>
+                                    <Text style = {globalStyles.label}>HIV Test Result: <Text style={{ color: "red" }}>*</Text> </Text>
                                     <Picker
                                         selectedValue = {props.values.HIVTestResult}
                                         style = {globalStyles.dropDown}
@@ -313,7 +313,7 @@ export default class ChildHealthCheckList extends React.Component{
 
                                 {this.state.showHIVTest ?
                                 <View style={globalStyles.dobView}>
-                                    <Text style = {globalStyles.label}>HIV Test Date</Text>
+                                    <Text style = {globalStyles.label}>HIV Test Date <Text style={{ color: "red" }}>*</Text> </Text>
                                     <TextInput
                                         style={globalStyles.inputText, globalStyles.dobValue}
                                         value={this.state.HIVTestDate}
@@ -362,7 +362,7 @@ export default class ChildHealthCheckList extends React.Component{
 
                                 {this.state.showTBTest ?
                                     <View>
-                                    <Text style = {globalStyles.label}>TB Test Result:</Text>
+                                    <Text style = {globalStyles.label}>TB Test Result: <Text style={{ color: "red" }}>*</Text> </Text>
                                     <Picker
                                         selectedValue = {props.values.TBTestResult}
                                         style = {globalStyles.dropDown}
@@ -370,7 +370,7 @@ export default class ChildHealthCheckList extends React.Component{
                                         onValueChange={(itemValue, itemIndex) => {
                                             props.setFieldValue('TBTestResult', itemValue)
                                             if(itemValue==''){
-                                                this.setState({TBTestResultError: true});
+                                                this.setState({TBTestResultError: true})
                                             } else{
                                             this.setState({TBTestResultError: false});
                                             props.setFieldValue('TBTestResult', itemValue)}
@@ -387,7 +387,7 @@ export default class ChildHealthCheckList extends React.Component{
 
                                 {this.state.showTBTest ?
                                 <View style={globalStyles.dobView}>
-                                    <Text style = {globalStyles.label}>TB Test Date</Text>
+                                    <Text style = {globalStyles.label}>TB Test Date <Text style={{ color: "red" }}>*</Text> </Text>
                                     <TextInput
                                         style={globalStyles.inputText, globalStyles.dobValue}
                                         value={this.state.TBTestDate}
@@ -436,7 +436,7 @@ export default class ChildHealthCheckList extends React.Component{
                                 <Text style = {globalStyles.errormsg}>{props.touched.Deworming && props.errors.Deworming}</Text>
                                 {this.state.showDewormingDate ?
                                     <View style={globalStyles.dobView}>
-                                        <Text style = {globalStyles.label}>Deworming Date:</Text>
+                                        <Text style = {globalStyles.label}>Deworming Date: <Text style={{ color: "red" }}>*</Text> </Text>
                                         <TextInput
                                             style={globalStyles.inputText, globalStyles.dobValue}
                                             value={this.state.DewormingDate}
@@ -487,7 +487,7 @@ export default class ChildHealthCheckList extends React.Component{
 
                                 {this.state.showGynecologyDate ?
                                     <View style={globalStyles.dobView}>
-                                        <Text style = {globalStyles.label}>Gynecology Date</Text>
+                                        <Text style = {globalStyles.label}>Gynecology Date <Text style={{ color: "red" }}>*</Text> </Text>
                                         <TextInput
                                             style={globalStyles.inputText, globalStyles.dobValue}
                                             value={this.state.GynecologyDate}
