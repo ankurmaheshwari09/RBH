@@ -96,7 +96,7 @@ export default class PrevEduForm extends React.Component {
                 <Formik
                     initialValues={
                         {
-                            dropoutReason: this.state.child.dropoutReason,
+                            dropoutReason: this.props.childData.dropoutReason,
                             yearOfStudied: this.props.prevEducation.date_to ? this.getYear(this.props.prevEducation.date_to) : '',
                             medium: this.props.prevEducation.medium,
                             schoolName: this.props.prevEducation.schoolName,
