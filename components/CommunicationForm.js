@@ -110,31 +110,19 @@ export default class CommunicationForm extends React.Component {
             },
             body: request_body,
         })
-        .then((response) => {
-//               response.json();
-               console.log('Communication Form Status and Response are', response.status, 'and', response.ok);
-               this.setState({ loading: false, isVisible: true, });
-               if (response.ok) {
-                   response.json().then((res) => {
-                       console.log(res);
-                   });
-                   this.setState({ successDisplay: true });
-//                   this.setState({submitAlertMessage: 'Successfully added child communication details'});
-//                   alert(this.state.submitAlertMessage);
-               } else {
-                   throw Error(response.status);
-               }
-        })
-//        .then((responseJson) => {
-//            console.log(responseJson);
-//            this.setState({ successDisplay: true });
-//        })
-        .catch((error) => {
-            console.log(error);
-            this.setState({ errorDisplay: true });
-//            this.setState({submitAlertMessage: 'Unable to add child communication details. Please contact the Admin.'});
-//            alert(this.state.submitAlertMessage);
-        });
+        .then((response) => response.json())
+                .then((responseJson) => {
+                    this.setState({ successDisplay: true });
+                    this.setState({ loading: false, isVisible: true });
+                    console.log(responseJson);
+                    this.setState({submitAlertMessage: 'Successfully added child communication details '});
+
+                })
+                .catch((error) => {
+                    this.setState({submitAlertMessage: 'Unable to add child child communication details. Please contact the Admin.'});
+                    this.setState({ errorDisplay: true });
+                    console.log(error);
+                });
     }
 
     render() {
@@ -160,21 +148,16 @@ export default class CommunicationForm extends React.Component {
                         }
                     }
                     validationSchema={CommunicationFormSchema}
-                    onSubmit={(values, actions) => {
+                    onSubmit={async (values, actions) => {
                         console.log(values);
                         this.submitChildCommunicationForm(values);
                         actions.resetForm();
-//                        props.setFieldValue({'showPresentDetailsError':false});
-                        this.setState({presentDistricts:[], showPresentState:false, showPresentDistrictAndPincode:false, isVisible:false, loading:false, errorDisplay:false, successDisplay:false})
-//                        alert("Data Has been submitted")
-//                        this.props.navigation.push('CommunicationScreen', values)
 
+//
                     }}
                 >
                     {props => (
-//                        <KeyboardAvoidingView behavior="padding"
-//                            enabled style={globalStyles.keyboardavoid}
-//                            keyboardVerticalOffset={200}>
+//
                             <ScrollView showsVerticalScrollIndicator = {false}>
 
                                 <View>
@@ -327,37 +310,19 @@ export default class CommunicationForm extends React.Component {
                     )}
 
                 </Formik>
-                <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
-                  <View style={globalStyles.feedbackContainer}>
-                        <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
-                             <View>
-                                  <Ionicons name="md-close" size={22}></Ionicons>
-                             </View>
-                         </TouchableOpacity>
-                        <ErrorDisplay errorDisplay={this.state.errorDisplay} />
-                        <SuccessDisplay successDisplay={this.state.successDisplay} type='Communication Status' childNo={this.state.child.firstName} />
-                  </View>
-                </Modal>
-                <LoadingDisplay loading={this.state.loading} />
+    <Modal style={globalStyles.modalContainer} isVisible={this.state.isVisible} onBackdropPress={() => this.setState({ isVisible: false })}>
+                             <View style={globalStyles.feedbackContainer}>
+                                   <TouchableOpacity style={globalStyles.closeModalIcon} onPress={() => this.setState({ isVisible: false })}>
+                                       <View>
+                                           <Ionicons name="md-close" size={22}></Ionicons>
+                                        </View>
+                                   </TouchableOpacity>
+                             <ErrorDisplay errorDisplay={this.state.errorDisplay} />
+                              <SuccessDisplay successDisplay={this.state.successDisplay} type='Communication Status' childNo={this.state.child.firstName} />
+                              </View>
+    </Modal>
+     <LoadingDisplay loading={this.state.loading}/>
             </View>
         );
     }
 }
-
-// const Styles = StyleSheet.create({
-//     MainContainer: {
-//         justifyContent: 'space-between',
-//         flex: 1,
-//     },
-//     modalContainer: {
-//         flex: 1,
-//         justifyContent: 'center',
-//         alignItems: 'center',
-//         alignSelf: 'center',
-//         backgroundColor: 'white',
-//         width: Dimensions.get('window').width / 2 + 50,
-//         maxHeight: Dimensions.get('window').height / 4,
-//         top: 150,
-//         borderRadius: 30
-//     }
-// });
