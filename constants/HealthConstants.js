@@ -11,5 +11,6 @@ export function HealthConstants() {
     global.hospitalName;
     getDataAsync(base_url + '/health-camp-hospitalName/' + orgid).then(data => { global.hospitalName = data })
 
-
+    global.generalCheckUpName;
+    getDataAsync(base_url + '/health-checkup').then(data => { global.generalCheckUpName = data })
 }
