@@ -5,6 +5,7 @@ import { globalStyles } from '../styles/global';
 import { generalInfoConstants } from '../constants/GeneralInfoConstants';
 import { statusConstants } from '../constants/StatusConstants';
 import { educationConstants } from '../constants/EducationConstants';
+import { HealthConstants } from '../constants/HealthConstants';
 import {childConstants} from '../constants/ChildConstants';
 import {NotificationConstants} from '../constants/NotificationConstants';
 import {SegmentedHealthView} from '../components/SegmentedHealthView';
@@ -71,6 +72,7 @@ displayHealthRemainder = () => {
         generalInfoConstants()
         statusConstants()
         educationConstants()
+        HealthConstants()
         this.displayHealthRemainder();
     }
 
