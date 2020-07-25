@@ -31,12 +31,13 @@ export function childConstants(){
     getDataAsync(base_url + '/child-statuses').then(data => {global.childStatusList = data});
 }
 
-export function buildTestImageName(childNo){
-    return `/Images/childpic${childNo}.png`
+export function buildTestImageName(childNo, firstName){
+    let date_string = moment(new Date()).format('DDMMYYYYHHmmss')
+    return `/Images/${childNo}_${firstName}_${date_string}.png`
 }
 
 export function buildProdImageName(childNo, firstName){
     let date_string = moment(new Date()).format('DDMMYYYYHHmmss')
-    // return `/ChildImage/${childNo}_${firstName}_${date_string}.png`
-    return `/Images/${childNo}_${firstName}_${date_string}.png`
+    return `/ChildImage/${childNo}_${firstName}_${date_string}.png`
+    
 }

@@ -244,7 +244,7 @@ export default class EditChild extends React.Component{
                 myHeaders.append("Content-Type", "multipart/form-data;boundary=----WebKitFormBoundaryyEmKNDsBKjB7QEqu");
                 myHeaders.append('Authorization', 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`));
                 var formdata = new FormData();
-                let imageName = buildProdImageName(child.childNo, child.firstName);
+                let imageName = buildTestImageName(child.childNo, child.firstName);
                 let photoUrl = base_url+"/upload-image/"+child.childNo + imageName;
                 console.log(photoUrl);
                 formdata.append("file", {
