@@ -15,11 +15,12 @@ import { getOrgId, getHomeCode } from '../constants/LoginConstant';
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
 import * as Permissions from 'expo-permissions';
 import {guidGenerator} from '../constants/Base';
+import {buildTestImageName} from '../constants/ChildConstants';
 import base64 from 'react-native-base64';
 import {getPassword, getUserName} from '../constants/LoginConstant';
 
 const AddChildSchema = yup.object({
-    // ChildPhoto: yup.object().required(),
+    ChildPhoto: yup.string().required(),
     ChildID: yup.string(),
     FirstName: yup.string().required(),
     LastName: yup.string().required(),
@@ -75,6 +76,7 @@ export default class AddChild extends React.Component{
         pageTwo: true,
         pageThree: true,
         currentPage: 1,
+        submitButtonDisabled: false,
     };
 
     componentDidMount() {
@@ -102,6 +104,7 @@ export default class AddChild extends React.Component{
                 this.setState({ image: result.uri });
                 imagePath = result.uri;
                 console.log(this.state.image);
+                console.log(typeof(result.uri))
                 handleChange(result.uri)
             }
         }
@@ -165,6 +168,7 @@ export default class AddChild extends React.Component{
 
     _changeGender = (value, handleChange) => {
         this.setState({gender: value});
+        console.log(value);
         handleChange(value);
     }
 
@@ -251,8 +255,6 @@ export default class AddChild extends React.Component{
                     let childId = responseJson.childNo;
                     let childName = responseJson.firstName;
                     this.loadStats();
-                    let photoUrl = base_url+"/upload-image/"+responseJson.childNo;
-                    console.log(photoUrl);
                     let imageUri = '';
                     if(imagePath === null) {
                         imageUri= ''
@@ -263,8 +265,11 @@ export default class AddChild extends React.Component{
                     console.log("Image URI");
                     console.log(imageUri);
                     console.log("Image URI");
+                    let imageName = buildTestImageName(responseJson.childNo, responseJson.firstName);
+                    let photoUrl = base_url+"/upload-image/"+responseJson.childNo + imageName;
+                    console.log(photoUrl);
                     var formdata = new FormData();
-                    formdata.append('file', { uri: imageUri, name: `${guidGenerator()}.jpg`, type: 'image/jpg' });
+                    formdata.append('file', { uri: imageUri, name: `${imageName.split('/')[2]}.jpg`, type: 'image/jpg' });
                     fetch(photoUrl, {
                         method: 'PUT',
                         headers: {
@@ -375,7 +380,7 @@ export default class AddChild extends React.Component{
                         ChildID: '',
                         FirstName: '',
                         LastName: '',
-                        Gender: '',
+                        Gender: 1,
                         DOB: this.state.dob,
                         DOA: this.state.doa,
                         Religion: '',
@@ -420,10 +425,12 @@ export default class AddChild extends React.Component{
                     }
                     else {
                         this.setState({showLoader: true,loaderIndex:10});
+                        this.setState({submitButtonDisabled: true});
                         let result = this._submitAddChildForm(values);
                         let alertMessage = this.state.submitAlertMessage;
                         console.log(result);
                         this.resetdatesandradio();
+                        this.setState({submitButtonDisabled: false});
                         actions.resetForm();
                     }
                 }}
@@ -451,8 +458,8 @@ export default class AddChild extends React.Component{
                                 {
                                     <Image source={{ uri: this.state.image }} style={globalStyles.uploadImage}/>
                                 }
-                                <Text style = {globalStyles.errormsg}>{props.touched.ChildPhoto && props.errors.ChildPhoto}</Text>
                                 <Button title="Upload Photo" onPress={() => this._pickImage(props.handleChange('ChildPhoto'))} />
+                                <Text style = {globalStyles.errormsg}>{props.touched.ChildPhoto && props.errors.ChildPhoto}</Text>
 
                                 {/* First Name */}
                                 <Text style = {globalStyles.label}>First Name <Text style={{color:"red"}}>*</Text> :</Text>
@@ -492,7 +499,6 @@ export default class AddChild extends React.Component{
                                         buttonInnerColor={'black'}
                                         selectedButtonColor={'blue'}
                                         formHorizontal={false}
-                                        initial={this.state.gender}
                                         onPress={(value) => this._changeGender(value,props.handleChange('Gender'))}
                                 />
                                 <Text style = {globalStyles.errormsg}>{props.touched.Gender && props.errors.Gender}</Text>
@@ -752,7 +758,7 @@ export default class AddChild extends React.Component{
                                 <Text style = {globalStyles.errormsg}>{props.touched.ChildStatus && props.errors.ChildStatus}</Text>
                                 
 
-                                <Button style = {globalStyles.button} title="Submit" onPress={props.handleSubmit} />
+                                <Button style = {globalStyles.button} title="Submit" onPress={props.handleSubmit} disabled={this.state.submitButtonDisabled}/>
                                 </View>}
                             </View>
                         </ScrollView>  
