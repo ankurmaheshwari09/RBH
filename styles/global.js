@@ -1,5 +1,6 @@
 import { StyleSheet, Dimensions } from 'react-native';
 import { AuthSession } from 'expo';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 export const globalStyles = StyleSheet.create({
     maincontainer: {
@@ -182,11 +183,27 @@ export const globalStyles = StyleSheet.create({
         color: 'black',
         width: 20
     },
+    homeTextView: {
+        flex: 1,
+        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        paddingLeft: Dimensions.get('window').width / 120.5
+    },
     homeScreenText: {
         top: '-80%',
-        padding: 10,
+        padding: 5,
         fontSize: 15,
         position: 'relative'
+    },
+    homeScreenTextContainer: {
+        // flex: 2,
+        position: 'relative',
+        // top: Dimensions.get('window').height / 14,
+        // left: Dimensions.get('window').width / 6,
+        top: hp('13%'),
+        left: wp('17%'),
+        padding: 15
     },
     errormsgform: {
         padding: 1,
@@ -231,8 +248,28 @@ export const globalStyles = StyleSheet.create({
         paddingLeft: 5,
         fontWeight: 'bold',
     },
-    backgroundlogoimageview: {
-        position: 'absolute', top: "20%", right: 0, left: 0, zIndex: -2,
+    homescreenlogoimageview: {
+        position: 'relative',
+        // top: Dimensions.get('window').height / 50 - 35,
+        top: hp('5%'),
+        right: wp('3%'),
+        // left: wp('15%'),
+        zIndex: -2,
+    },
+    homescreenButtonStyle: {
+        position: 'relative',
+        flexDirection: 'row',
+        // top: Dimensions.get('window').height / 10,
+        // left: Dimensions.get('window').width / 15
+        top: hp('8%'),
+        left: wp('4.5%'),
+    },
+    HeadStyle: { 
+        height: hp('5%'),
+        alignContent: "center"
+      },
+      TableText: { 
+        margin: hp('1%')
     },
     backgroundlogoimage: {
         opacity: 0.2,
