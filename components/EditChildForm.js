@@ -231,8 +231,6 @@ export default class EditChild extends React.Component{
             this.setState({ loading: false});
         }
         else{
-            let photoUrl = base_url+"/upload-image/"+child.childNo;
-            console.log(photoUrl);
             let imageUri = ''
             if(this.state.image == null) {
                 imageUri= ''
@@ -246,9 +244,12 @@ export default class EditChild extends React.Component{
                 myHeaders.append("Content-Type", "multipart/form-data;boundary=----WebKitFormBoundaryyEmKNDsBKjB7QEqu");
                 myHeaders.append('Authorization', 'Basic ' + base64.encode(`${getUserName()}:${getPassword()}`));
                 var formdata = new FormData();
+                let imageName = buildTestImageName(child.childNo, child.firstName);
+                let photoUrl = base_url+"/upload-image/"+child.childNo + imageName;
+                console.log(photoUrl);
                 formdata.append("file", {
                     uri: imageUri,
-                    name: `${guidGenerator()}.jpg`,
+                    name: `${imageName.split('/')[2]}.jpg`,
                     type: `image/jpg`
                 });
                 var requestOptions = {
@@ -260,7 +261,7 @@ export default class EditChild extends React.Component{
                 .then((response) => {
                     if(response.status == 200){
                         console.log(response.status)
-                        child.picture = buildTestImageName(child.childNo)
+                        child.picture = imageName.split('/')[2];
                         let path = `child/${child.childNo}`
                         UpdateApi.updateData(JSON.stringify(child), path).then((response) => {
                             if(response.ok){

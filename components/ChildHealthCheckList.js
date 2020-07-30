@@ -15,20 +15,23 @@ import { ErrorDisplay } from '../utils/ErrorDispaly';
 import { SuccessDisplay } from "../utils/SuccessDisplay";
 import base64 from 'react-native-base64';
 import {getPassword, getUserName} from '../constants/LoginConstant';
+
 const HealthCheckListSchema = yup.object({
+  showGeneralCheckUpDateError: yup.boolean(),
+  generalCheckUpName: yup.string(),
+  generalCheckUpNameDetails: yup.string().when('generalCheckUpName', {
+      is: 'Other',then: yup.string().required("New GeneralCheckUp Name is a required field")
+  }),
+  generalCheckUpDate: yup.string().when('showGeneralCheckUpDateError', {
+      is: true, then: yup.string().required("GeneralCheckUp Date is a required field")
+  }),
     HIVTest: yup.string(),
-    //HIVTest: yup.string().required("HIV Test is a required field"),
     //HIVTestResult: yup.string().required("HIV Test Result is a required field"),
     TBTest: yup.string(),
-    //TBTest: yup.string().required("TB Test is a required field"),
     //TBTestResult: yup.string().required("TB Test Result is a required field"),
     Deworming: yup.string(),
-    //Deworming: yup.string().required("Deworming is a required field"),
     //DewormingDate: yup.string().required("Deworming Date is a required field"),
-    //CampsCheckUps: yup.string().required("Camps Check Ups is a required field"),
-    CampsCheckUps: yup.string(),
     Gynecology: yup.string(),
-    //Gynecology: yup.string().required("Gynecology is a required field"),
     //GynecologyDate: yup.string().required("Gynecology Date is a required field")
 });
 
@@ -43,32 +46,92 @@ export default class ChildHealthCheckList extends React.Component{
             successDisplay: false,
             DewormingDate: '',
             GynecologyDate: '',
-            showHIVTestResult: false,
+            showHIVTestDetails: false,
             HIVTestResultError: false,
-            showTBTestResult: false,
+            HIVTestDateError: false,
+            showTBTestDetails: false,
             TBTestResultError: false,
+            TBTestDateError:false,
+            showElementHIVTestDate: false,
+            showElementTBTestDate: false,
             showElementDewormingDate: false,
             showDewormingDate: false,
             showElementGynecologyDate: false,
             showGynecologyDate: false,
             DewormingDateError: false,
-            GynecologyDateError: false
+            GynecologyDateError: false,
+            generalCheckUpDate:'',
+            generalCheckUpName:'',
+            generalCheckUpNameDetails:'',
+            showGeneralCheckUpDate:false,
+            showElementsGeneralCheckUp:false,
+            showElementGeneralCheckUpDate: false
         }
+        this._pickHIVTestDate = this._pickHIVTestDate.bind(this);
+        this._pickTBTestDate = this._pickTBTestDate.bind(this);
         this._pickDewormingDate = this._pickDewormingDate.bind(this);
         this._pickGynecologyDate = this._pickGynecologyDate.bind(this);
+        this._pickGeneralCheckUpDate = this._pickGeneralCheckUpDate.bind(this);
+
     }
 
+    handleHIVTestDate = date => {
+        this.setState({
+          HIVTestDate: date
+        });
+    };
+    handleTBTestDate = date => {
+        this.setState({
+          TBTestDate: date
+        });
+    };
+    handleGeneralCheckUpDate = date => {
+        this.setState({
+          generalCheckUpDate: date
+        });
+    };
     handleDewormingDate = date => {
         this.setState({
           DewormingDate: date
         });
     };
-
     handleGynecologyDate = date => {
         this.setState({
           GynecologyDate: date
         });
     };
+
+    _pickHIVTestDate = (event, date, handleChange) => {
+        console.log(date);
+        let a = moment(date).format('YYYY-MM-DD');
+        console.log(a);
+        console.log(typeof (a));
+        this.setState({
+            HIVTestDate: a, showElementHIVTestDate: false, HIVTestDateError: false
+        });
+        handleChange(a);
+    }
+    _pickTBTestDate = (event, date, handleChange) => {
+        console.log(date);
+        let a = moment(date).format('YYYY-MM-DD');
+        console.log(a);
+        console.log(typeof (a));
+        this.setState({
+            TBTestDate: a, showElementTBTestDate: false, TBTestDateError: false
+        });
+        handleChange(a);
+    }
+
+    _pickGeneralCheckUpDate = (event, date, handleChange) => {
+        console.log(date);
+        let a = moment(date).format('YYYY-MM-DD');
+        console.log(a);
+        console.log(typeof (a));
+        this.setState({
+            generalCheckUpDate: a, showElementGeneralCheckUpDate: false
+        });
+        handleChange(a);
+    }
 
     _pickDewormingDate = (event, date, handleChange) => {
         console.log(date);
@@ -92,29 +155,40 @@ export default class ChildHealthCheckList extends React.Component{
         handleChange(a);
     }
 
-    showDewormingDatepicker = () => {
-        this.setState({ showElementDewormingDate: true });
+    showHIVTestDatepicker = () => {
+            this.setState({ showElementHIVTestDate: true });
     };
-
+    showTBTestDatepicker = () => {
+            this.setState({ showElementTBTestDate: true });
+    };
+    showDewormingDatepicker = () => {
+            this.setState({ showElementDewormingDate: true });
+    };
     showGynecologyDatepicker = () => {
             this.setState({ showElementGynecologyDate: true });
     };
-
+    showGeneralCheckUpDatepicker = () => {
+            this.setState({ showElementGeneralCheckUpDate: true })
+    }
     handleDobChange = () => {
         console.log("change called");
     };
 
     submitChildHealthCheckListForm(values) {
+        this.setState({ loading: true });
         let res = true;
         let request_body = JSON.stringify({
             "childNo": this.state.child.childNo,
             "hivTestDone":values.HIVTest,
             "hivTestResult":values.HIVTestResult,
+            "hivtestDate":values.HIVTestDate,
             "tbTestDone":values.TBTest,
             "tbTestResult":values.TBTestResult,
+            "tbtestDate":values.TBTestDate,
+            "generalCheckUpName":values.generalCheckUpName == 'Other' ? values.generalCheckUpNameDetails : values.generalCheckUpName,
+            "generalCheckUpDate":values.generalCheckUpDate,
             "dewormingDone":values.Deworming,
             "dewormingDate":values.DewormingDate,
-            "campCheckupNotes":values.CampsCheckUps,
             "gynecologyCheckupDone":values.Gynecology,
             "gynecologyCheckupDate":values.GynecologyDate,
         });
@@ -129,9 +203,8 @@ export default class ChildHealthCheckList extends React.Component{
             body: request_body,
         })
         .then((response) => {
-//            response.json())
             console.log('Child Health Check List Form Status and Response are', response.status, 'and', response.ok);
-           this.setState({ loading: false, isVisible: true, });
+           this.setState({ loading: false, isVisible: true });
            if (response.ok) {
                response.json().then((res) => {
                    console.log(res);
@@ -167,12 +240,18 @@ export default class ChildHealthCheckList extends React.Component{
                         {
                             HIVTest: '',
                             HIVTestResult: '',
+                            HIVTestDate: '',
                             TBTest: '',
                             TBTestResult: '',
+                            TBTestDate: '',
+                            generalCheckUpName:'',
+                            generalCheckUpNameDetails:'',
+                            generalCheckUpDate:'',
+                            showGeneralCheckUpDateError:false,
                             Deworming: '',
 //                            DewormingDate: this.state.DewormingDate,
                             DewormingDate:'',
-                            CampsCheckUps: '',
+                            // CampsCheckUps: '',
                             Gynecology: '',
                             GynecologyDate: '',
 //                            GynecologyDate: this.state.GynecologyDate,
@@ -181,24 +260,33 @@ export default class ChildHealthCheckList extends React.Component{
                     validationSchema = {HealthCheckListSchema}
                     onSubmit = { async (values, actions) => {
                         console.log(values);
-                        this.setState({ HIVTestResultError: false, TBTestResultError: false, DewormingDateError: false, GynecologyDateError:false});
-                        if(values.HIVTestResult == '' && this.state.showHIVTestResult == true) {
+                        this.setState({ HIVTestResultError: false, TBTestResultError: false, HIVTestDateError: false,
+                          TBTestDateError:false, DewormingDateError: false, GynecologyDateError:false});
+                        if(values.HIVTestResult == '' && this.state.showHIVTestDetails == true) {
                             this.setState({ HIVTestResultError: true});
-                        } if(values.TBTestResult == '' && this.state.showTBTestResult == true) {
+                        } if(values.HIVTestDate == '' && this.state.showHIVTestDetails == true) {
+                            this.setState({ HIVTestDateError: true});
+                        } if(values.TBTestResult == '' && this.state.showTBTestDetails == true) {
                             this.setState({ TBTestResultError: true});
+                        } if(values.TBTestDate == '' && this.state.showTBTestDetails == true) {
+                            this.setState({ TBTestDateError: true});
                         } if(values.DewormingDate == '' && this.state.showDewormingDate == true) {
                             this.setState({ DewormingDateError: true});
                         } if(values.GynecologyDate == '' && this.state.showGynecologyDate == true) {
                             this.setState({ GynecologyDateError: true});
                         }
-                        if(!this.state.HIVTestResultError && !this.state.TBTestResultError && !this.state.DewormingDateError && !this.state.GynecologyDateError) {
+                        if(!this.state.HIVTestResultError && !this.state.TBTestResultError && !this.state.HIVTestDateError &&
+                          !this.state.TBTestDateError && !this.state.DewormingDateError && !this.state.GynecologyDateError) {
                             this.submitChildHealthCheckListForm(values);
                             actions.resetForm();
-                            this.setState({isVisible:false, loading:false, errorDisplay:false, successDisplay:false})
-                            this.setState({DewormingDate:'', GynecologyDate:'', HIVTestResultError:false, TBTestResultError:false,
-                                           showHIVTestResult:false, showTBTestResult:false, showDewormingDate:false,
-                                           showGynecologyDate:false, showElementDewormingDate:false, showElementGynecologyDate:false,
-                                           DewormingDateError:false, GynecologyDateError:false});
+                            this.setState({ errorDisplay:false, successDisplay:false})
+                            this.setState({DewormingDate:'', GynecologyDate:'', TBTestDate:'', HIVTestDate:'',generalCheckUpName:'',generalCheckUpNameDetails:'',
+                                           HIVTestResultError:false, HIVTestDateError:false, TBTestResultError:false, TBTestDateError:false,
+                                           showHIVTestDetails:false, showTBTestDetails:false, showDewormingDate:false,
+                                           showGynecologyDate:false, showElementHIVTestDate:false, showElementTBTestDate:false,
+                                           showElementDewormingDate:false, showElementGynecologyDate:false,showElementGeneralCheckUpDate:false,
+                                           DewormingDateError:false, GynecologyDateError:false,
+                                           generalCheckUpDate:'',showGeneralCheckUpDate:false,showElementsGeneralCheckUp:false,showGeneralCheckUpDateError:false});
                         }
                     }}
                 >
@@ -214,9 +302,12 @@ export default class ChildHealthCheckList extends React.Component{
                                     onValueChange={(itemValue, itemIndex) => {
                                         props.setFieldValue('HIVTest', itemValue)
                                         if(itemValue == 'true'){
-                                        this.setState({showHIVTestResult : true})
+                                          this.setState({showHIVTestDetails : true})
                                         } else{
-                                        this.setState({showHIVTestResult : false})}
+                                          this.setState({showHIVTestDetails : false});
+                                          props.setFieldValue('HIVTestResult','');
+                                          props.setFieldValue('HIVTestDate','')
+                                        }
                                     }}
                                     value = {props.values.HIVTest}
                                 >
@@ -226,9 +317,9 @@ export default class ChildHealthCheckList extends React.Component{
                                 </Picker>
                                 <Text style = {globalStyles.errormsg}>{props.touched.HIVTest && props.errors.HIVTest}</Text>
 
-                                {this.state.showHIVTestResult ?
+                                {this.state.showHIVTestDetails ?
                                     <View>
-                                    <Text style = {globalStyles.label}>HIV Test Result:</Text>
+                                    <Text style = {globalStyles.label}>HIV Test Result: <Text style={{ color: "red" }}>*</Text> </Text>
                                     <Picker
                                         selectedValue = {props.values.HIVTestResult}
                                         style = {globalStyles.dropDown}
@@ -238,18 +329,46 @@ export default class ChildHealthCheckList extends React.Component{
                                             if(itemValue==''){
                                                 this.setState({HIVTestResultError: true})
                                             } else{
-                                            this.setState({HIVTestResultError: false});
+                                            this.setState({HIVTestResultError: false})
                                             }
                                         }}
                                         value = {props.values.HIVTestResult}
                                     >
-                                        <Picker.Item label='Select HIV Test Result' value = ''/>
+                                        <Picker.Item color = 'grey' label='Select HIV Test Result' value = ''/>
                                         <Picker.Item label='Positive' value = 'true'/>
                                         <Picker.Item label='Negative' value = 'false'/>
                                     </Picker>
                                     </View>
                                 :null}
                                 {this.state.HIVTestResultError ? <Text style={globalStyles.errormsg}> HIV Test Result is a required field </Text> : null}
+
+                                {this.state.showHIVTestDetails ?
+                                <View style={globalStyles.dobView}>
+                                    <Text style = {globalStyles.label}>HIV Test Date <Text style={{ color: "red" }}>*</Text> </Text>
+                                    <TextInput
+                                        style={globalStyles.inputText, globalStyles.dobValue}
+                                        value={this.state.HIVTestDate}
+                                        editable={false}
+                                        onValueChange={props.handleChange('HIVTestDate')}
+                                    />
+                                    <TouchableHighlight onPress={this.showHIVTestDatepicker}>
+                                        <View>
+                                            <Feather style={globalStyles.dobBtn} name="calendar" />
+                                        </View>
+                                    </TouchableHighlight>
+                                    {this.state.showElementHIVTestDate &&
+                                        <DateTimePicker
+                                            style={{ width: 100 }}
+                                            mode="date"
+                                            value={new Date()}
+                                            mode={'date'}
+                                            onChange={(e, date) => this._pickHIVTestDate(e, date, props.handleChange('HIVTestDate'))}
+                                            maximumDate={new Date((new Date()).setDate((new Date()).getDate() - 1))}
+                                        />
+                                    }
+                                </View>
+                                :null}
+                                {this.state.HIVTestDateError ? <Text style={globalStyles.errormsg}> HIV Test Date is a required field </Text> : null}
 
                                 <Text style = {globalStyles.label}>TB Test:</Text>
 
@@ -260,9 +379,12 @@ export default class ChildHealthCheckList extends React.Component{
                                     onValueChange={(itemValue, itemIndex) => {
                                         props.setFieldValue('TBTest', itemValue)
                                         if(itemValue == 'true'){
-                                        this.setState({showTBTestResult : true})
+                                          this.setState({showTBTestDetails : true})
                                         } else{
-                                        this.setState({showTBTestResult : false}) }
+                                          this.setState({showTBTestDetails : false});
+                                          props.setFieldValue('TBTestResult','');
+                                          props.setFieldValue('TBTestDate','')
+                                        }
                                     }}
                                     value = {props.values.TBTest}
                                 >
@@ -272,9 +394,9 @@ export default class ChildHealthCheckList extends React.Component{
                                 </Picker>
                                 <Text style = {globalStyles.errormsg}>{props.touched.TBTest && props.errors.TBTest}</Text>
 
-                                {this.state.showTBTestResult ?
+                                {this.state.showTBTestDetails ?
                                     <View>
-                                    <Text style = {globalStyles.label}>TB Test Result:</Text>
+                                    <Text style = {globalStyles.label}>TB Test Result: <Text style={{ color: "red" }}>*</Text> </Text>
                                     <Picker
                                         selectedValue = {props.values.TBTestResult}
                                         style = {globalStyles.dropDown}
@@ -282,7 +404,7 @@ export default class ChildHealthCheckList extends React.Component{
                                         onValueChange={(itemValue, itemIndex) => {
                                             props.setFieldValue('TBTestResult', itemValue)
                                             if(itemValue==''){
-                                                this.setState({TBTestResultError: true})
+                                                this.setState({TBTestResultError: true});
                                             } else{
                                             this.setState({TBTestResultError: false});
                                             props.setFieldValue('TBTestResult', itemValue)}
@@ -297,8 +419,110 @@ export default class ChildHealthCheckList extends React.Component{
                                 :null}
                                 {this.state.TBTestResultError ? <Text style={globalStyles.errormsg}> TB Test Result is a required field </Text> : null}
 
-                                <Text style = {globalStyles.label}>Deworming:</Text>
+                                {this.state.showTBTestDetails ?
+                                <View style={globalStyles.dobView}>
+                                    <Text style = {globalStyles.label}>TB Test Date <Text style={{ color: "red" }}>*</Text> </Text>
+                                    <TextInput
+                                        style={globalStyles.inputText, globalStyles.dobValue}
+                                        value={this.state.TBTestDate}
+                                        editable={false}
+                                        onValueChange={props.handleChange('TBTestDate')}
+                                    />
+                                    <TouchableHighlight onPress={this.showTBTestDatepicker}>
+                                        <View>
+                                            <Feather style={globalStyles.dobBtn} name="calendar" />
+                                        </View>
+                                    </TouchableHighlight>
+                                    {this.state.showElementTBTestDate &&
+                                        <DateTimePicker
+                                            style={{ width: 100 }}
+                                            mode="date"
+                                            value={new Date()}
+                                            mode={'date'}
+                                            onChange={(e, date) => this._pickTBTestDate(e, date, props.handleChange('TBTestDate'))}
+                                            maximumDate={new Date((new Date()).setDate((new Date()).getDate() - 1))}
+                                        />
+                                    }
+                                </View>
+                                :null}
+                                {this.state.TBTestDateError ? <Text style={globalStyles.errormsg}> TB Test Date is a required field </Text> : null}
 
+
+                                <Text style={globalStyles.label}>GeneralCheckUp Name:</Text>
+                                <Picker
+                                    selectedValue={props.values.generalCheckUpName}
+                                    style={globalStyles.dropDown}
+                                    onValueChange={(itemValue, itemIndex) => {
+                                        props.setFieldValue('generalCheckUpName', itemValue);
+                                        props.setFieldValue('generalCheckUpNameDetails','');
+                                        props.setFieldValue('generalCheckUpDate','');
+                                        if(itemValue==''){
+                                            this.setState({ showElementsGeneralCheckUp: false });
+                                            this.setState({showGeneralCheckUpDate: false});
+                                            props.setFieldValue('showGeneralCheckUpDateError', false);
+                                        } else if (itemValue == 'Other') {
+                                            this.setState({ showElementsGeneralCheckUp: true });
+                                            this.setState({showGeneralCheckUpDate: true});
+                                            props.setFieldValue('showGeneralCheckUpDateError', true);
+                                        } else {
+                                            this.setState({ showElementsGeneralCheckUp: false });
+                                            this.setState({showGeneralCheckUpDate: true});
+                                            props.setFieldValue('showGeneralCheckUpDateError', true);
+                                        }
+                                    }}
+                                    value={props.values.generalCheckUpName}
+                                >
+                                    <Picker.Item color='grey' label="Select GeneralCheckUp Name" value='' />
+                                    {global.generalCheckUpName.map((item) => {
+                                        return <Picker.Item key={item.id} label={item.description} value={item.description} />
+                                    })}
+                                    <Picker.Item label="Add New GeneralCheckUp Name" value='Other' />
+                                </Picker>
+                                <Text style={globalStyles.errormsg}>{props.touched.generalCheckUpName && props.errors.generalCheckUpName}</Text>
+
+                                {/*generalCheckUp Name to enter if other is selected*/}
+                                {this.state.showElementsGeneralCheckUp ?
+                                    <View>
+                                        <Text style={globalStyles.label}>New GeneralCheckUp Name: <Text style={{ color: "red" }}>*</Text> </Text>
+                                        <TextInput
+                                            style={globalStyles.input}
+                                            onChangeText={props.handleChange('generalCheckUpNameDetails')}
+                                            value={props.values.generalCheckUpNameDetails}
+                                        />
+                                        < Text style={globalStyles.errormsg}>{props.touched.generalCheckUpNameDetails && props.errors.generalCheckUpNameDetails}</Text>
+                                    </View> : null}
+
+                                {/*generalCheckUpDate */}
+                                {this.state.showGeneralCheckUpDate ?
+                                    <View style={globalStyles.dobView}>
+                                        <Text style = {globalStyles.label}>GeneralCheckUp Date <Text style={{ color: "red" }}>*</Text> </Text>
+                                        <TextInput
+                                            style={globalStyles.inputText, globalStyles.dobValue}
+                                            value={props.values.generalCheckUpDate}
+                                            editable={false}
+                                            onValueChange={props.handleChange('generalCheckUpDate')}
+
+                                        />
+                                        <TouchableHighlight onPress={this.showGeneralCheckUpDatepicker}>
+                                            <View>
+                                                <Feather style={globalStyles.dobBtn} name="calendar" />
+                                            </View>
+                                        </TouchableHighlight>
+                                        {this.state.showElementGeneralCheckUpDate &&
+                                            <DateTimePicker
+                                                style={{ width: 100 }}
+                                                mode="date"
+                                                value={new Date()}
+                                                mode={'date'}
+                                                onChange={(e, date) => this._pickGeneralCheckUpDate(e, date, props.handleChange('generalCheckUpDate'))}
+                                                maximumDate={new Date((new Date()).setDate((new Date()).getDate() - 1))}
+                                            />
+                                        }
+                                    </View>
+                                :null}
+                                <Text style={globalStyles.errormsg}>{props.touched.generalCheckUpDate && props.errors.generalCheckUpDate}</Text>
+
+                                <Text style = {globalStyles.label}>Deworming:</Text>
                                 <Picker
                                     selectedValue = {props.values.Deworming}
                                     onValueChange = {props.handleChange('Deworming')}
@@ -307,9 +531,11 @@ export default class ChildHealthCheckList extends React.Component{
                                     onValueChange={(itemValue, itemIndex) => {
                                         props.setFieldValue('Deworming', itemValue)
                                         if(itemValue == 'true'){
-                                        this.setState({showDewormingDate : true})
+                                          this.setState({showDewormingDate : true})
                                         } else{
-                                        this.setState({showDewormingDate : false})}
+                                          this.setState({showDewormingDate : false});
+                                          props.setFieldValue('DewormingDate','')
+                                        }
                                     }}
                                     value = {props.values.Deworming}
                                 >
@@ -320,7 +546,7 @@ export default class ChildHealthCheckList extends React.Component{
                                 <Text style = {globalStyles.errormsg}>{props.touched.Deworming && props.errors.Deworming}</Text>
                                 {this.state.showDewormingDate ?
                                     <View style={globalStyles.dobView}>
-                                        <Text style = {globalStyles.text}>Deworming Date:</Text>
+                                        <Text style = {globalStyles.label}>Deworming Date <Text style={{ color: "red" }}>*</Text> </Text>
                                         <TextInput
                                             style={globalStyles.inputText, globalStyles.dobValue}
                                             value={this.state.DewormingDate}
@@ -347,16 +573,7 @@ export default class ChildHealthCheckList extends React.Component{
                                 :null}
                                 {this.state.DewormingDateError ? <Text style={globalStyles.errormsg}> Deworming Date is a required field </Text> : null}
 
-                                <Text style = {globalStyles.label}>Camps Check Ups:</Text>
-
-                                <TextInput
-                                    style = {globalStyles.inputText}
-                                    onChangeText = {props.handleChange('CampsCheckUps')}
-                                    value = {props.values.CampsCheckUps}
-                                />
-                                <Text style = {globalStyles.errormsg}>{props.touched.CampsCheckUps && props.errors.CampsCheckUps}</Text>
                                 <Text style = {globalStyles.label}>Gynecology:</Text>
-
                                 <Picker
                                     selectedValue = {props.values.Gynecology}
                                     onValueChange = {props.handleChange('Gynecology')}
@@ -365,9 +582,11 @@ export default class ChildHealthCheckList extends React.Component{
                                     onValueChange={(itemValue, itemIndex) => {
                                         props.setFieldValue('Gynecology', itemValue)
                                         if(itemValue == 'true'){
-                                        this.setState({showGynecologyDate : true})
+                                          this.setState({showGynecologyDate : true})
                                         } else{
-                                        this.setState({showGynecologyDate : false})}
+                                          this.setState({showGynecologyDate : false});
+                                          props.setFieldValue('GynecologyDate','')
+                                        }
                                     }}
                                     value = {props.values.Gynecology}
                                 >
@@ -380,7 +599,7 @@ export default class ChildHealthCheckList extends React.Component{
 
                                 {this.state.showGynecologyDate ?
                                     <View style={globalStyles.dobView}>
-                                        <Text style = {globalStyles.text}>Gynecology Date</Text>
+                                        <Text style = {globalStyles.label}>Gynecology Date <Text style={{ color: "red" }}>*</Text> </Text>
                                         <TextInput
                                             style={globalStyles.inputText, globalStyles.dobValue}
                                             value={this.state.GynecologyDate}
@@ -428,52 +647,3 @@ export default class ChildHealthCheckList extends React.Component{
         );
     }
 }
-
-// const Styles = StyleSheet.create({
-//     healthformheading: {
-//         fontSize: 18,
-//         alignSelf: 'center',
-//         marginBottom: 35,
-//         marginTop: 10,
-//         backgroundColor:'#48BBEC',
-//         color: 'white',
-//         borderWidth: 1,
-//         borderRadius: 8
-//     },
-//     dobView: {
-//         flex: 1,
-//         flexDirection: 'row'
-//     },
-//     dobValue: {
-//         borderWidth: 1,
-//         borderColor: '#ddd',
-//         padding: 10,
-//         marginBottom: 10,
-//         fontSize: 18,
-//         borderRadius: 6,
-//         flex: 3,
-//         marginLeft: 10,
-//         marginRight: 15
-//     },
-//     dobBtn: {
-//         marginLeft: 2,
-//         flex: 2,
-//         fontSize: 40,
-//         marginRight: 15
-//     },
-//     MainContainer: {
-//         justifyContent: 'space-between',
-//         flex: 1,
-//     },
-//     modalContainer: {
-//         flex: 1,
-//         justifyContent: 'center',
-//         alignItems: 'center',
-//         alignSelf: 'center',
-//         backgroundColor: 'white',
-//         width: Dimensions.get('window').width / 2 + 50,
-//         maxHeight: Dimensions.get('window').height / 4,
-//         top: 150,
-//         borderRadius: 30
-//     }
-// });

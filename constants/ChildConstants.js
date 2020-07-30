@@ -1,4 +1,5 @@
 import {base_url, getDataAsync} from './Base'
+import moment from 'moment';
 
 export function childConstants(){
 
@@ -30,11 +31,13 @@ export function childConstants(){
     getDataAsync(base_url + '/child-statuses').then(data => {global.childStatusList = data});
 }
 
-export function buildTestImageName(childNo){
-    return `childpic${childNo}.png`
+export function buildTestImageName(childNo, firstName){
+    let date_string = moment(new Date()).format('DDMMYYYYHHmmss')
+    return `/Images/${childNo}_${firstName}_${date_string}.png`
 }
 
-export function buildProdImageName(childStrigId, firstName){
-    date_string = moment(new Date()).format('DDMMYYYYHHmmss')
-    return `${childStrigId}_${firstName}_${date_string}.png`
+export function buildProdImageName(childNo, firstName){
+    let date_string = moment(new Date()).format('DDMMYYYYHHmmss')
+    return `/ChildImage/${childNo}_${firstName}_${date_string}.png`
+    
 }
