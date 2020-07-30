@@ -155,7 +155,7 @@ export default class StatusScreen extends React.Component {
         }
         console.log(path);
         UpdateApi.updateData(request_body, path).then((response) => {
-            this.setState({ loading: false, isVisible: true });
+            this.setState({ loading: false, isVisible: true, errorDisplay: false });
             if (response.ok) {
                 response.json().then((res) => {
                     console.log(res);
@@ -247,7 +247,6 @@ export default class StatusScreen extends React.Component {
     
 
     onSubmitEmailContainer() {
-
         this.validateEmailContainer();
     }
 
@@ -552,7 +551,11 @@ export default class StatusScreen extends React.Component {
 
 
                                             {/*User Credentials*/}
+                                          
+                                                
                                             <Text style={globalStyles.label}>Create User Credentials : (optional) </Text>
+
+                                           
                                             <View>
                                             <RadioForm
                                                 style={{marginLeft: 10, marginTop:5}}
@@ -576,7 +579,7 @@ export default class StatusScreen extends React.Component {
                                             <Modal style={styles.emailContainer} isVisible={this.state.isMailModelVisible} onBackdropPress={() => { this.setState({ isMailModelVisible: false }) }}>
                                                 <View>
 
-                                                    <TouchableOpacity style={styles.closeModalIcon} onPress={() => { this.setState({ isMailModelVisible: false }) }}>
+                                                    <TouchableOpacity style={styles.closeModalIcon} onPress={() => { this.onSubmitEmailContainer(),this.setState({ isMailModelVisible: false }) }}>
                                                         <View>
                                                             <Ionicons name="md-close-circle-outline" size={22}></Ionicons>
                                                         </View>
