@@ -204,7 +204,7 @@ showStartDatepicker = () => {
                                         </View> : null}
 
              {/*Hospital Name*/}
-                                         <Text style={globalStyles.label}>Hospital Name: <Text style={{ color: "red" }}>*</Text> </Text>
+                                         <Text style={globalStyles.label}>Hospital/Clinic/Institutions/Org Name: <Text style={{ color: "red" }}>*</Text> </Text>
                                          <Picker
                                              selectedValue={props.values.hospitalName}
                                              style={globalStyles.dropDown}

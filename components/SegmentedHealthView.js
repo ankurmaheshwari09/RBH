@@ -96,7 +96,7 @@ constructor(props) {
                     </View>
                      <View>
                         <TouchableOpacity style = {{borderBottomWidth: this.state.customStyleIndex == 4 ? 3 : 0 ,borderBottomColor: this.state.customStyleIndex == 4 ? 'grey' : '#f0f0f0'}} onPress = {() => this.setState({customStyleIndex: 4})}>
-                                <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:20}}>Child Multiple Camps</Text>
+                                <Text style = {{paddingLeft: 10, paddingRight: 20, paddingTop:20}}>Health Checkup/Camps</Text>
                          </TouchableOpacity>
                      </View>
                   </ScrollView>
