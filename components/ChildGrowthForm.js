@@ -23,11 +23,11 @@ const ChildGrowthSchema = yup.object({
     AssessmentDate: yup.string().required(),
     Height: yup.number().required()
          .test('is-height-valid', 'Enter a valid height', (height) => {
-            return height !== undefined && parseFloat(height) > 9;
+            return height !== undefined && parseFloat(height) > 9 && parseFloat(height) < 1000;
               }),
     Weight: yup.number().required()
             .test('is-weight-valid', 'Enter a valid weight', (weight) => {
-                return weight !== undefined && parseFloat(weight) > 9;
+                return weight !== undefined && parseFloat(weight) > 9 && parseFloat(weight) <1000;
             }),
 
     GeneralHealth: yup.string().required(),
