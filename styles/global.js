@@ -256,6 +256,9 @@ export const globalStyles = StyleSheet.create({
         // left: wp('15%'),
         zIndex: -2,
     },
+    backgroundlogoimageview: {
+        position: 'absolute', top: "20%", right: 0, left: 0, zIndex: -2,
+    },
     homescreenButtonStyle: {
         position: 'relative',
         flexDirection: 'row',

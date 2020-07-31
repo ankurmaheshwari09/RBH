@@ -142,6 +142,7 @@ export default class HealthDuringAdd extends React.Component{
                                 onChangeText = {props.handleChange('height')}
                                 value = {props.values.height}
                                 placeholder = 'Enter height in cm'
+                                maxLength = {3}
                                 />
                                 <Text style = {globalStyles.errormsg}>{props.touched.height && props.errors.height}</Text>
 
@@ -151,6 +152,7 @@ export default class HealthDuringAdd extends React.Component{
                                 onChangeText = {props.handleChange('weight')}
                                 value = {props.values.weight}
                                 placeholder = 'Enter weight in kg'
+                                maxLength = {3}
                                 />
                                 <Text style = {globalStyles.errormsg}>{props.touched.weight && props.errors.weight}</Text>
                                 <Text style = {globalStyles.label}>Comments:</Text>

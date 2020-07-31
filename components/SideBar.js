@@ -28,7 +28,7 @@ export default class SideBar extends Component {
                 >
                     <Text style={styles.text}>Rainbow Online Reporting</Text>
                     <Text style={styles.text}>Home Code - {getHomeCode()} </Text>
-                    <Text style={styles.text}>{getUserName()}</Text>
+                    <Text style={styles.text}>User - {getUserName()}</Text>
                 </ImageBackground>
                 <View>
                     <DrawerNavigatorItems {...this.props} />
