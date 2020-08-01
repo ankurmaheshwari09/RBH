@@ -318,7 +318,7 @@ export default class EditChild extends React.Component{
                         ParentalStatus: this.state.child.parentalStatus ? this.state.child.parentalStatus : '',
                         ReasonForAdmission: this.state.child.reasonForAdmission ? parseInt(this.state.child.reasonForAdmission) : '',
                         PreviousEducationStatus: this.state.child.educationStatus ? this.state.child.educationStatus : '',
-                        AdmittedBy: this.state.child.admittedBy ? this.state.child.admittedBy : '',
+                        AdmittedBy: this.state.child.admittedBy ? parseInt(this.state.child.admittedBy) : '',
                         ReferredSource: this.state.child.referredSource ? parseInt(this.state.child.referredSource) : '',
                         ReferredBy: this.state.child.referredBy ? this.state.child.referredBy : '',
                         //ChildStatus: this.state.child.childStatus ? this.state.child.childStatus : '',
