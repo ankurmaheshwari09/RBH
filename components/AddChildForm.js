@@ -15,7 +15,7 @@ import { getOrgId, getHomeCode } from '../constants/LoginConstant';
 import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
 import * as Permissions from 'expo-permissions';
 import {guidGenerator} from '../constants/Base';
-import {buildTestImageName} from '../constants/ChildConstants';
+import {buildTestImageName, buildProdImageName} from '../constants/ChildConstants';
 import base64 from 'react-native-base64';
 import {getPassword, getUserName} from '../constants/LoginConstant';
 

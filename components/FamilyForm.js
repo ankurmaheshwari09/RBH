@@ -26,7 +26,7 @@ const FamilyFormSchema = yup.object({
     Age: yup.string().matches('^[1-9][0-9]*', 'Age should not start with 0'),
     Present: yup.string().required(),
     Remarks: yup.string(),
-    Income: yup.string().min(4).matches('^[1-9][0-9]*', 'Income should not start with 0')
+    Income: yup.string().min(4).max(6).matches('^[1-9][0-9]*', 'Income should not start with 0')
 })
 
 let arr = "";
