@@ -198,9 +198,9 @@ export default class ViewProfile extends React.Component {
                     }}
                 >
               {props => (
-                <KeyboardAvoidingView behavior="padding"
-                enabled style={globalStyles.keyboardavoid}
-                keyboardVerticalOffset={200}>
+                <KeyboardAvoidingView behavior="null"
+                            enabled style={globalStyles.keyboardavoid}
+                            keyboardVerticalOffset={0}>
                 <ScrollView>
 
                 <View>
