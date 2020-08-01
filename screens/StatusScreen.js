@@ -570,12 +570,15 @@ export default class StatusScreen extends React.Component {
                                                 />
                                             </View>
                                             <View>
-                                                {this.state.emailContainerEmpty ? < Text style={globalStyles.errormsg}>Enter atleast one Value</Text> : null}
+                                                {this.state.emailContainerEmpty ? < Text style={globalStyles.errormsg}>Provide coordinator details if you doesn't have child email/phnNo</Text> : null}
                                             </View>
                                             <View>
                                                 {this.state.emailError || this.state.phNoError ? < Text style={globalStyles.errormsg}>Enter correct email or PhNo</Text> : null}
                                             </View>
 
+                                            <KeyboardAvoidingView behavior="null"
+                                                enabled style={globalStyles.keyboardavoid}
+                                                keyboardVerticalOffset={0}>
                                             <Modal style={styles.emailContainer} isVisible={this.state.isMailModelVisible} onBackdropPress={() => { this.setState({ isMailModelVisible: false }) }}>
                                                 <View>
 
@@ -584,7 +587,7 @@ export default class StatusScreen extends React.Component {
                                                             <Ionicons name="md-close-circle-outline" size={22}></Ionicons>
                                                         </View>
                                                     </TouchableOpacity>
-                                                     
+                                                    <Text style={globalStyles.label}>Provide the following deatils to send email & sms <Text style={{ color: "red" }}>*</Text>:</Text>
                                                     <Text style={globalStyles.label}>Enter Child Email: </Text>
                                                     <TextInput
                                                         style={globalStyles.inputText}
@@ -625,6 +628,7 @@ export default class StatusScreen extends React.Component {
 
                                                 </View>
                                                 </Modal>
+                                            </KeyboardAvoidingView>
                                             
                                         </View>
                                         : null}
@@ -687,11 +691,12 @@ const styles = StyleSheet.create({
     emailContainer: {
         alignItems: 'center',
         backgroundColor: '#F2EEEE',
-        width: Dimensions.get('window').width / 2 + 50,
-        maxHeight: Dimensions.get('window').height / 3,
-        marginTop: Dimensions.get('window').height / 3,
-        marginLeft: Dimensions.get('window').width / 5,
-        borderRadius: 30
+        width: Dimensions.get('window').width / 2 + 100,
+        maxHeight: Dimensions.get('window').height / 3 + 30,
+        marginTop: Dimensions.get('window').height / 4,
+        marginLeft: Dimensions.get('window').width / 6,
+        borderRadius: 30,
+        padding: 20
         //  margin: 90,
     },
     actionItemsModal:{
@@ -714,8 +719,8 @@ const styles = StyleSheet.create({
         color: 'green'
     },
     closeModalIcon: {
-        left: Dimensions.get('window').width / 2.5,
-        top: Dimensions.get('window').height / 200 ,
+        left: Dimensions.get('window').width / 2 +50,
+        top: Dimensions.get('window').height / 200 - 8,
     },
     disabledDobBox: {
         borderWidth: 1,
