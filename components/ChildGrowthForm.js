@@ -166,11 +166,12 @@ _pickAssessmentDate = (event, date, handleChange) => {
                     <Text style={globalStyles.errormsgform}>{props.touched.AssessmentDate && props.errors.AssessmentDate}</Text>
 
                <Text style = {globalStyles.label}>Height(Cm): <Text style={{ color: "red" }}>*</Text></Text>
-                    <TextInput  style={globalStyles.inputText} keyboardType = 'numeric' value = {props.values.Height} onChangeText={props.handleChange("Height")} onBlur={props.handleBlur("Height")}></TextInput>
+                    <TextInput  style={globalStyles.inputText} keyboardType = 'numeric' value = {props.values.Height} onChangeText={props.handleChange("Height")} onBlur={props.handleBlur("Height")}  placeholder = 'Enter height in cm' maxLength = {3}></TextInput>
+
                     <Text style={globalStyles.errormsgform}>{props.touched.Height && props.errors.Height}</Text>
 
                <Text style = {globalStyles.label}>Weight(Kg): <Text style={{ color: "red" }}>*</Text></Text>
-                    <TextInput style={globalStyles.inputText} keyboardType = 'numeric'  value = {props.values.Weight} onChangeText={props.handleChange("Weight")} onBlur={props.handleBlur("Weight")}></TextInput>
+                    <TextInput style={globalStyles.inputText} keyboardType = 'numeric'  value = {props.values.Weight} onChangeText={props.handleChange("Weight")} onBlur={props.handleBlur("Weight")} placeholder = 'Enter weight in kg' maxLength = {3}></TextInput>
                     <Text style={globalStyles.errormsgform}>
                     {props.touched.Weight && props.errors.Weight}
                     </Text>
