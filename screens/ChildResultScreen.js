@@ -108,6 +108,7 @@ export default class ChildResultScreen extends React.Component {
                                     style={globalStyles.dropDown}
                                     onValueChange={(Class) => props.setFieldValue('Class', Class)}
                                     value={props.values.Class}
+                                    enabled={false}
                                 >
                                     <Picker.Item color='grey' label="Select Class" value="" />
                                     {global.studyingclass.map((item) => {
