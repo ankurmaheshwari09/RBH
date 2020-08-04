@@ -252,6 +252,8 @@ export default class GeneralInfoForm extends React.Component{
                                     style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('noOfTimesLeavingHome')} 
                                     value = {props.values.noOfTimesLeavingHome}
+                                    keyboardType = 'numeric'
+                                    maxLength = {2}
                                 />
                                 <Text style = {globalStyles.errormsg}>{ props.touched.noOfTimesLeavingHome && props.errors.noOfTimesLeavingHome }</Text>
 
