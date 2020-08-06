@@ -237,8 +237,8 @@ export default class ChildList extends Component {
 
         if (status == 'Observation') {
             if (this.checkStatusDateExpired(childStatusDate, status)) {
-                this.state.data[index].style = styles.red;
-                return styles.red;
+                this.state.data[index].style = styles.blueBorder;
+                return styles.blueBorder;
             } else {
                 this.state.data[index].style = styles.blue;
                 return styles.blue;
@@ -249,8 +249,8 @@ export default class ChildList extends Component {
             return styles.pink;
         } else if (status == 'Absent') {
             if (this.checkStatusDateExpired(childStatusDate, status)) {
-                this.state.data[index].style = styles.red;
-                return styles.red;
+                this.state.data[index].style = styles.yellowBorder;
+                return styles.yellowBorder;
             } else {
                 this.state.data[index].style = styles.yellow;
                 return styles.yellow;
@@ -302,7 +302,7 @@ export default class ChildList extends Component {
     }
     getImageStyle(style) {
         // console.log(style.backgroundColor,'......................');
-        if (style === styles.red) {
+        if (style === styles.yellowBorder || style === styles.blueBorder) {
             return styles.imageWithBorder;
         } else {
             return styles.image;
@@ -395,7 +395,7 @@ export default class ChildList extends Component {
                                                 <Text style={styles.heading}>Status:</Text >
                                                 {item.childStatus == 'Closed' ? <Text style={styles.cardContent}>Exit</Text> :
                                                     <Text style={styles.cardContent}>{item.childStatus}</Text>}
-                                                {item.style == styles.red ? < Ionicons name="md-warning" size={20} color="red" /> : null}
+                                                {item.style == styles.yellowBorder ? < Ionicons name="md-warning" size={20} color="red" /> : null}
                                             </View>
                                             <View style={{ flexDirection: 'row' }}>
                                                 <Text style={styles.heading}>Profile Update: </Text >
@@ -547,8 +547,13 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffff99',
         //  borderWidth: 5
     },
-    red: {
-        backgroundColor: '#ffcccc',
+    yellowBorder: {
+        backgroundColor: '#ffff99',
+        borderColor: '#ff0000',
+        borderWidth: 3
+    },
+    blueBorder: {
+        backgroundColor: '#AED6F1',
         borderColor: '#ff0000',
         borderWidth: 3
     }
