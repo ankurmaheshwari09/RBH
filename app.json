@@ -1,9 +1,9 @@
 {
   "expo": {
     "name": "ROR",
-    "slug": "trial-run",
+    "slug": "ror",
     "privacy": "public",
-    "sdkVersion": "36.0.0",
+    "sdkVersion": "38.0.0",
     "platforms": [
       "android",
       "web"
@@ -27,7 +27,7 @@
     },
     "android": {
       "versionCode": 1,
-      "package": "com.dummy.RBH",
+      "package": "com.ROR.RBH",
       "permissions": [
         "CAMERA",
         "READ_INTERNAL_STORAGE",
