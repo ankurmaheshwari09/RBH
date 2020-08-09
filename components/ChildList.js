@@ -87,7 +87,7 @@ export default class ChildList extends Component {
         this.setState({
             currentTime: new Date()
         });
-        const path = 'https://rest-service.azurewebsites.net/api/v1/childrenWithProfileStatus/' + orgId;
+        const path = base_url + '/childrenWithProfileStatus/' + orgId;
         console.log(path, 'lllll');
         this.setState({ search: null, loading: true });
         try {
