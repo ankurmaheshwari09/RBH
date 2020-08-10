@@ -1,8 +1,9 @@
 import base64 from 'react-native-base64';
+import {base_url} from './Base';
 import {getPassword, getUserName} from './LoginConstant';
 class UpdateApi {
     static updateData(jsonBody, update) {
-        const path = `https://rest-service.azurewebsites.net/api/v1/${update}`;
+        const path = `${base_url}/${update}`;
         console.log(path, 'Calling PUT');
         console.log(jsonBody, 'llllll');
         return fetch(path, {
@@ -20,7 +21,7 @@ class UpdateApi {
     }
     static addData(jsonBody, update) {
         console.log('Calling POST')
-        const path = `https://rest-service.azurewebsites.net/api/v1/${update}`;
+        const path = `${base_url}/${update}`;
         console.log(path, 'calling POST');
         console.log(jsonBody, 'llllll');
         return fetch(path, {
