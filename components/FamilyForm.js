@@ -456,8 +456,9 @@ export default class FamilyForm extends React.Component {
                                 }}
                             >
                                 {props => (
-                                    <KeyboardAvoidingView
+                                    <KeyboardAvoidingView behavior="null"
                                         enabled style={globalStyles.keyboardavoid}
+                                        keyboardVerticalOffset={0}
                                     >
                                     <ScrollView showsVerticalScrollIndicator={false}>
 
@@ -614,8 +615,9 @@ export default class FamilyForm extends React.Component {
                                 }}
                             >
                                 {props => (
-                                    <KeyboardAvoidingView
+                                    <KeyboardAvoidingView behavior="null"
                                         enabled style={globalStyles.keyboardavoid}
+                                        keyboardVerticalOffset={0}
                                     >
                                     <ScrollView showsVerticalScrollIndicator={false}>
 
@@ -692,6 +694,7 @@ export default class FamilyForm extends React.Component {
                                                     onChangeText={props.handleChange('Income')} //This will update the IdentificationMArk value in 'values'
                                                     value={props.values.Income} //value updated in 'values' is reflected here
                                                     minLength={4}
+                                                    maxLength={6}
                                             />
                                             <Text style={globalStyles.errormsg}>{props.touched.Income && props.errors.Income}</Text>
                                             <Text style={globalStyles.label}>Remarks :</Text>

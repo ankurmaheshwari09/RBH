@@ -195,7 +195,7 @@ export default class EducationScreen extends React.Component {
                 {props => (
                     <KeyboardAvoidingView behavior="null"
                         enabled style={globalStyles.keyboardavoid}
-                        keyboardVerticalOffset={200}>
+                        keyboardVerticalOffset={0}>
                         <ScrollView showsVerticalScrollIndicator={false}>
 
                             <View>
