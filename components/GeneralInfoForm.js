@@ -239,7 +239,7 @@ export default class GeneralInfoForm extends React.Component{
                                 />
                                 <Text style = {globalStyles.errormsg}>{ props.touched.durationOnStreet && props.errors.durationOnStreet }</Text>
 
-                                <Text style = {globalStyles.label}>Abuse On Street/Working place:</Text>
+                                <Text style = {globalStyles.label}>Any Abuse On Street/Working place:</Text>
                                 <TextInput
                                     style = {globalStyles.inputText}
                                     onChangeText = {props.handleChange('abuseOnStreet')} //This will update the IdentificationMArk value in 'values'

@@ -310,9 +310,9 @@ export default class CommitteeScreen extends React.Component {
                     }}
                 >
         {props => (
-            <KeyboardAvoidingView behavior="padding"
+            <KeyboardAvoidingView behavior="null"
                 enabled style={globalStyles.keyboardavoid}
-                keyboardVerticalOffset={200}>
+                keyboardVerticalOffset={0}>
                 <ScrollView showsVerticalScrollIndicator={false}>
 
                     <View>
